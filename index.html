@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.2.0 — металлоконструкции и склад остатков</title>
+<title>Раскрой PRO 5.3.0 — металлоконструкции и склад остатков</title>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -40,10 +40,19 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 @media(max-width:1060px){.toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.toolbar{grid-template-columns:1fr;gap:8px}.toolbar-group{padding:10px}.toolbar-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar-buttons .btn{font-size:12px;padding:8px}.mode-note{grid-column:span 2}.aboutgrid{grid-template-columns:1fr}.donation{max-width:340px;margin:auto}}
 @media(max-width:360px){.toolbar-buttons{grid-template-columns:1fr}}
+
+/* Local backup control — isolated from print layout */
+.backup-banner{background:#fff4de;border:1px solid #e1ba70;color:#67461a;padding:12px 16px;border-radius:9px;margin-bottom:14px;line-height:1.6}
+.backup-row{border:1px solid #dce5ee;border-radius:9px;margin:8px 0;padding:12px;background:#fbfdff;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.backup-row .backup-meta{font-size:12px;color:#65778c;margin-top:4px}
+.backup-actions{display:flex;flex-wrap:wrap;gap:6px}
+.backup-stats{font-size:12px;color:#526b7e;line-height:1.6}
+.backup-stats strong{color:#20615c}
+@media print{#storage-banner{display:none!important}}
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.2.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.3.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -59,6 +68,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <div class="toolbar-buttons">
         <button class="btn" id="save">↓ Сохранить проект JSON</button>
         <button class="btn" id="load">↑ Открыть проект JSON</button>
+        <button class="btn" id="backups-button" data-tab="backups">♻ Резервные копии</button>
         <button class="btn danger" id="reset">Сбросить на пример</button>
       </div>
     </div>
@@ -80,6 +90,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       </div>
     </div>
   </nav>
+  <div id="storage-banner" class="backup-banner noprint hide" role="alert"></div>
   <input type="file" id="file-json" accept="application/json,.json" hidden><input type="file" id="file-csv" accept="text/csv,.csv,.txt" hidden>
   <div class="layout">
   <div class="main">
@@ -108,12 +119,25 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <div class="tablewrap"><table><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th></th></tr></thead><tbody id="stock-body"></tbody></table></div>
       <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addstock">+ Добавить длину / остаток</button><button class="btn sm" id="pastestocks">▦ Вставить из Excel</button></div><span class="muted smtext">При оформлении раскроя складские остатки списываются, а пригодные хвосты добавляются как новые складские позиции. Закупочные варианты не списываются.</span></div>
     </section>
-    <section class="panel"><div class="tabs noprint"><button class="tab active" data-tab="summary">Сводка</button><button class="tab" data-tab="maps">Карты раскроя</button><button class="tab" data-tab="compare">Сравнение длин</button><button class="tab" data-tab="warehouse">Остатки и склад</button><button class="tab" data-tab="journal">Журнал операций</button><button class="tab" data-tab="guide">Инструкция</button><button class="tab" data-tab="about">О программе</button></div>
+    <section class="panel"><div class="tabs noprint"><button class="tab active" data-tab="summary">Сводка</button><button class="tab" data-tab="maps">Карты раскроя</button><button class="tab" data-tab="compare">Сравнение длин</button><button class="tab" data-tab="warehouse">Остатки и склад</button><button class="tab" data-tab="journal">Журнал операций</button><button class="tab" data-tab="backups">Резервные копии</button><button class="tab" data-tab="guide">Инструкция</button><button class="tab" data-tab="about">О программе</button></div>
       <div id="panel-summary" class="tabPanel"></div>
       <div id="panel-maps" class="tabPanel hide"></div>
       <div id="panel-compare" class="tabPanel hide"></div>
       <div id="panel-warehouse" class="tabPanel hide"></div>
       <div id="panel-journal" class="tabPanel hide"></div>
+      <div id="panel-backups" class="tabPanel hide" aria-label="Локальные резервные копии">
+        <h2>Резервные копии и восстановление</h2>
+        <p class="sub">Копии хранятся в IndexedDB этого браузера для текущего адреса сайта, отдельно от рабочего проекта. Очистка данных сайта может удалить и эти копии.</p>
+        <p id="backup-stats" class="backup-stats" aria-live="polite">Проверка локального хранилища…</p>
+        <div class="actionrow noprint">
+          <button type="button" class="btn primary" id="snapshot-now">＋ Создать резервную копию</button>
+          <button type="button" class="btn" id="backup-export-current">↓ Скачать текущий JSON</button>
+          <button type="button" class="btn" id="backup-refresh">↻ Обновить список</button>
+        </div>
+        <p class="note">Автоснимок создаётся после изменения данных (с небольшой задержкой), при открытии программы и перед важными операциями. Хранится до 12 автоматических и 20 защитных снимков. Для восстановления нажмите «Восстановить» напротив нужной даты.</p>
+        <div id="backup-list" aria-live="polite"><p class="muted">Загрузка списка…</p></div>
+        <div class="warning">Для долговременного хранения склада регулярно используйте «Скачать текущий JSON» и храните его на диске, SSD или в резервном облачном архиве. Копии этого браузера не синхронизируются с другими устройствами.</div>
+      </div>
       <div id="panel-about" class="tabPanel hide" aria-labelledby="about-heading">
         <h2 id="about-heading">О программе «Раскрой PRO»</h2>
         <div class="aboutgrid">
@@ -156,6 +180,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <li>Откройте <b>«Остатки и склад»</b>: проверьте перечень пригодных отрезков (будущий склад) и отходов, а также расход складских хлыстов.</li>
       <li>Только после фактической резки нажмите <b>«Провести склад»</b>, подтвердите операцию. Остатки по плану (с округлением вниз до 1 мм) станут складскими позициями для следующих заказов, использованные складские отрезки будут списаны. Проверка физического выхода обязательна.</li>
       <li>Откройте <b>«Журнал операций»</b> и проверьте списания, приходы и отходы. Два раза провести один и тот же номер заказа нельзя.</li>
+      <li>Откройте <b>«Резервные копии»</b> для создания снимка или восстановления проекта из IndexedDB. Перед опасными операциями копия делается автоматически. Храните отдельный JSON вне браузера.</li>
       <li>Сохраните <b>проект JSON</b> после проведения — это переносной архив склада вместе с журналом. При создании следующего заказа используйте <b>«Новый заказ (склад сохранить)»</b>.</li>
       <li>Выведите рабочие карты на принтер или сохраните Excel-отчёт (включая листы складских движений); проект можно открыть позднее.</li>
       </ol><h3>Что важно учитывать</h3><p>Расчёт применим к <b>одномерному линейному раскрою</b>. Не учитываются косые запилы, подготовка к сварке, ограничения последовательности станка, нестандартные захваты/зажимы и контроль геометрии — их учитывает технолог до выдачи карт в производство.</p>
@@ -171,7 +196,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.2.0</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.3.0</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
@@ -186,16 +211,31 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 <script>
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const initial=()=>({version:6,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',warehousePolicy:'economic',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
-let state, result=null, comparisons=[],modeComparisons=[];
-try{const old=localStorage.getItem('cutting_pro_5')||localStorage.getItem('cutting_pro_4')||localStorage.getItem('cutting_pro_3');state=old?Object.assign(initial(),JSON.parse(old)):initial()}catch(e){state=initial()}
-if(!Array.isArray(state.parts)||!Array.isArray(state.stocks)){state=initial()}
-if(!Array.isArray(state.bookedOrders))state.bookedOrders=[];
-if(!Array.isArray(state.journal))state.journal=[];
-state.version=6;
-if(!state.meta)state.meta=initial().meta;
-state.settings={...initial().settings,...(state.settings||{})};
-if(!state.meta.order)state.meta.order='МК-2026-001';
+const initial=()=>({version:7,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',warehousePolicy:'economic',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
+// Versioned data format. Never silently discard unreadable or newer projects.
+const DATA_SCHEMA=7, APP_RELEASE='5.3.0', STORAGE_KEY='cutting_pro_5';
+let state, result=null, comparisons=[], modeComparisons=[];
+let startupOriginal=null, startupLoadError='', startupLock=false, startupKey='';
+function normalizeProject(input){
+ if(!input || typeof input!=='object' || Array.isArray(input))throw Error('Корневой объект проекта не распознан.');
+ const version=input.version===undefined?3:Number(input.version);
+ if(!Number.isInteger(version)||version<1||version>DATA_SCHEMA)throw Error(version>DATA_SCHEMA?'Проект создан в более новой версии программы ('+version+'). Обновите калькулятор.':'Неподдерживаемая версия формата проекта.');
+ if(!Array.isArray(input.parts)||!Array.isArray(input.stocks))throw Error('В проекте отсутствует ведомость деталей или склад.');
+ if(input.parts.length>20000||input.stocks.length>20000)throw Error('Слишком большой файл проекта.');
+ if(input.settings!==undefined&&(!input.settings||typeof input.settings!=='object'||Array.isArray(input.settings)))throw Error('Настройки проекта имеют неверный формат.');
+ if(input.meta!==undefined&&(!input.meta||typeof input.meta!=='object'||Array.isArray(input.meta)))throw Error('Данные заказа имеют неверный формат.');
+ if(input.bookedOrders!==undefined&&!Array.isArray(input.bookedOrders))throw Error('Неверный формат проведённых заказов.');
+ if(input.journal!==undefined&&!Array.isArray(input.journal))throw Error('Неверный формат складского журнала.');
+ if(input.lastBookedReport!==undefined && input.lastBookedReport!==null && (typeof input.lastBookedReport!=='object'||Array.isArray(input.lastBookedReport)))throw Error('Неверный формат последнего проведённого заказа.');
+ for(const p of [...input.parts,...input.stocks])if(!p||typeof p!=='object'||Array.isArray(p))throw Error('Неверный формат строки ведомости.');
+ const defaults=initial();
+ return {...defaults,meta:{...defaults.meta,...(input.meta||{})},settings:{...defaults.settings,...(input.settings||{})},parts:input.parts,stocks:input.stocks,bookedOrders:input.bookedOrders||[],journal:input.journal||[],lastBookedReport:input.lastBookedReport||null,version:DATA_SCHEMA};
+}
+try{
+ let raw=null;for(const key of [STORAGE_KEY,'cutting_pro_4','cutting_pro_3']){const val=localStorage.getItem(key);if(val!==null){raw=val;startupKey=key;break;}}
+ if(raw!==null){startupOriginal=JSON.parse(raw);state=normalizeProject(startupOriginal);if(Number(startupOriginal.version||3)!==DATA_SCHEMA||startupKey!==STORAGE_KEY)startupLock=true;}
+ else state=initial();
+}catch(e){startupLoadError='Сохранённые данные не удалось безопасно загрузить: '+e.message;startupLock=true;state=initial();}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=x=>{if(x===null||x===undefined||String(x).trim()==='')return null;const v=Number(String(x).trim().replace(/\s/g,'').replace(',','.'));return Number.isFinite(v)?v:NaN};
 const nfmt=(x,d=0)=>Number(x||0).toLocaleString('ru-RU',{maximumFractionDigits:d,minimumFractionDigits:d});
@@ -205,7 +245,11 @@ const validLength=v=>Number.isFinite(v)&&v>0&&Number.isSafeInteger(Math.round(v*
 const mf=x=>Number(x||0).toLocaleString('ru-RU',{maximumFractionDigits:3});const key=(m,g)=>JSON.stringify([String(m).trim().toLowerCase(),String(g).trim().toLowerCase()]);
 const clampZero=x=>Math.max(0,Math.abs(x)<0.000001?0:x);
 function putStatus(t,err=false){$('#status').textContent=t;$('#status').style.color=err?'#a33b43':'#516f7f'}
-function persist(){try{localStorage.setItem('cutting_pro_5',JSON.stringify(state))}catch(e){}}
+function persist(){
+ if(startupLock)return false;
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));scheduleAutoSnapshot();return true;}
+ catch(e){reportStorageIssue('Не удалось сохранить рабочий проект в localStorage: '+e.message);return false;}
+}
 const orderKey=()=>String(state.meta.order||'').trim().toLocaleLowerCase('ru-RU');
 const alreadyBooked=()=>state.bookedOrders.includes(orderKey());
 function flashBookState(){const b=$('#book');if(b){b.disabled=alreadyBooked()||!result;b.title=alreadyBooked()?'Этот номер заказа уже проведён в журнале':(!result?'Сначала рассчитайте раскрой':'Закрыть заказ по плановым остаткам');b.style.opacity=b.disabled?'.50':'1';}}
@@ -801,7 +845,7 @@ function renderJournal(){const target=$('#panel-journal');if(!target)return;
 }
 function stableReportSnapshot(r){return JSON.parse(JSON.stringify(r,(k,v)=>v===Infinity?'__INF__':v));}
 function restoreReportSnapshot(r){if(!r)return null;return JSON.parse(JSON.stringify(r),(k,v)=>v==='__INF__'?Infinity:v);}
-function bookStock(){
+async function bookStock(){
  if(!result){putStatus('Сначала рассчитайте актуальный план.',true);return;}
  const order=String(state.meta.order||'').trim();if(!order){alert('Для проведения укажите уникальный номер заказа.');return;}
  if(alreadyBooked()){alert('Заказ «'+order+'» уже проведён. Для следующего заказа используйте новый номер.');return;}
@@ -809,6 +853,7 @@ function bookStock(){
  for(const [id,q] of mv.consumed){const st=state.stocks.find(x=>String(x.id)===id);if(!st||st.kind!=='remnant'||(num(st.qty)||0)<q){alert('На складе уже недостаточно позиции '+id+'. Повторите расчёт.');return;}}
  const question=`Подтвердить проведение заказа «${order}» ПО ПЛАНУ?\n\nСписать складских отрезков: ${[...mv.consumed.values()].reduce((a,b)=>a+b,0)} шт.\nОприходовать полезных остатков: ${mv.produced.length} шт. (${mf(mv.produced.reduce((a,x)=>a+x.length,0))} мм).\nОтразить непригодные обрезки: ${mv.scrap.length} шт.\n\nПосле подтверждения сохраните JSON-проект. Это не фактический акт приёмки материала.`;
  if(!confirm(question))return;
+ if(!await requiredSafetySnapshot('Перед проведением склада: '+order))return;
  const backup=JSON.parse(JSON.stringify(state.stocks));const moves=[];
  for(const [id,qty] of mv.consumed){const st=state.stocks.find(x=>String(x.id)===id);st.qty=(num(st.qty)||0)-qty;moves.push({type:'Расход со склада',material:st.material,grade:st.grade,length:num(st.length),qty,note:'Складская позиция '+id});}
  for(const p of mv.produced){let st=state.stocks.find(x=>x.kind==='remnant'&&key(x.material,x.grade)===key(p.material,p.grade)&&Math.abs((num(x.length)||0)-p.length)<0.00001 && String(x.origin||'')===p.origin);if(st)st.qty=(num(st.qty)||0)+1;else state.stocks.push({id:'R4-'+Date.now().toString(36)+'-'+p.bar+'-'+Math.floor(Math.random()*10000),material:p.material,grade:p.grade,length:p.length,qty:1,price:'',kind:'remnant',origin:p.origin});
@@ -818,12 +863,12 @@ function bookStock(){
  moves.push({type:'Подрезка торцов',material:'Все профили',grade:'',length:Math.round(result.stats.trim*1000)/1000,qty:1,note:'Сумма торцевых припусков'});
  const entry={id:'J-'+Date.now(),time:new Date().toLocaleString('ru-RU'),order,orderKey:orderKey(),bars:result.stats.barCount,usedRemnants:[...mv.consumed.values()].reduce((a,b)=>a+b,0),returned:mv.produced.length,returnLength:mv.produced.reduce((a,x)=>a+x.length,0),scrapCount:mv.scrap.length,scrapLength:mv.scrap.reduce((a,x)=>a+x.length,0),moves,stockBefore:backup};
  state.journal.push(entry);state.bookedOrders.push(orderKey());state.lastBookedReport={orderKey:orderKey(),report:stableReportSnapshot(result)};
- renderStocks();renderSummary(result);renderMaps(result);renderWarehouse(result);renderJournal();renderSidebar(result.stats);flashBookState();persist();putStatus('Заказ '+order+' проведён. Полезных отрезков принято: '+mv.produced.length+' шт. Сохраните проект JSON для резервной копии.');switchTab('journal');
+  renderStocks();renderSummary(result);renderMaps(result);renderWarehouse(result);renderJournal();renderSidebar(result.stats);flashBookState();persist();await saveBackup('После проведения склада: '+order,true).catch(reportBackupFailure);putStatus('Заказ '+order+' проведён. Полезных отрезков принято: '+mv.produced.length+' шт. Сохраните проект JSON для резервной копии.');switchTab('journal');
 }
 function downloadCSV(name,rows){download(name,new Blob(['\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));}
 function exportInventory(){downloadCSV('Склад_остатков_'+makeName(state.meta.order)+'.csv',[['Профиль','Сталь','Длина мм','Количество шт','Источник / место хранения','ID позиции'],...state.stocks.filter(x=>x.kind==='remnant').map(x=>[x.material,x.grade,x.length,x.qty,x.origin||'',x.id])]);}
 function exportJournal(){downloadCSV('Журнал_движений_'+makeName(state.meta.order)+'.csv',[['Заказ','Дата','Операция','Профиль','Сталь','Длина мм','Кол-во','Основание'],...state.journal.flatMap(j=>(j.moves||[]).map(m=>[j.order,j.time,m.type,m.material,m.grade,m.length,m.qty,m.note]))]);}
-function createNextOrder(){if(!confirm('Открыть новый заказ с текущими складскими остатками? Ведомость деталей будет очищена. Сначала сохраните JSON-проект.'))return;const next=prompt('Номер нового заказа (обязательно новый, не проведённый):','МК-2026-002');if(next===null)return;const k=String(next).trim().toLocaleLowerCase('ru-RU');if(!k||state.bookedOrders.includes(k)){alert('Укажите непустой уникальный номер заказа.');return;}state.meta.order=next.trim();state.parts=[];state.lastBookedReport=null;result=null;comparisons=[];modeComparisons=[];renderAll();persist();flashBookState();putStatus('Новый заказ создан. Склад сохранён, ведомость деталей очищена. Добавьте детали и рассчитайте раскрой.');switchTab('guide');}
+async function createNextOrder(){if(!confirm('Открыть новый заказ с текущими складскими остатками? Ведомость деталей будет очищена. Сначала сохраните JSON-проект.'))return;const next=prompt('Номер нового заказа (обязательно новый, не проведённый):','МК-2026-002');if(next===null)return;const k=String(next).trim().toLocaleLowerCase('ru-RU');if(!k||state.bookedOrders.includes(k)){alert('Укажите непустой уникальный номер заказа.');return;}if(!await requiredSafetySnapshot('Перед созданием заказа '+next.trim()))return;state.meta.order=next.trim();state.parts=[];state.lastBookedReport=null;result=null;comparisons=[];modeComparisons=[];renderAll();persist();await saveBackup('После создания заказа '+next.trim(),true).catch(reportBackupFailure);flashBookState();putStatus('Новый заказ создан. Склад сохранён, ведомость деталей очищена. Добавьте детали и рассчитайте раскрой.');switchTab('guide');}
 function benchmarkModes(){
  try{const cfg=collect();modeComparisons=[];
   for(const mode of ['quick','balanced','deep','exact']){try{const r=solveAll({...cfg,searchMode:mode});modeComparisons.push({mode,stats:r.stats,proofs:r.proofs});}catch(e){modeComparisons.push({mode,error:e.message});}}
@@ -836,16 +881,16 @@ function renderCompare(){if(!comparisons.length){$('#panel-compare').innerHTML='
  const modes='<h2>Сравнение алгоритмов</h2><p class="sub">Расчёты независимы. Величина «покупка» показывает длину покупных хлыстов; окончательный выбор делается в параметрах проекта и повторным расчётом.</p><button class="btn" id="benchmark">Сравнить все 4 режима</button>'+(modeComparisons.length?niceTable(['Алгоритм','Купить хлыстов','Купить, м','Невозвратные потери, м','Стоимость','Статус'],mr):'<p class="note">Нажмите кнопку для сравнения быстрых, сбалансированных, углублённых и точных расчётов.</p>');
  $('#panel-compare').innerHTML=modes+'<h2>Сравнение исходных длин</h2><p class="sub">Каждый вариант считается отдельно (в «Точном» режиме — сбалансированным алгоритмом для быстрого сравнения) — исключительно из хлыстов соответствующей строки склада. Основной план из «Сводки» может сочетать разные длины и складские остатки.</p>'+niceTable(['Материал','Хлыст, мм','Тип','Хлыстов','Купить, м','Выход','Остаток, м','Цена закупки','Статус'],rows)+'<p class="note">В таблице «остаток» включает возвратный и невозвратный концевой остаток, без пропила и подрезок.</p>';$('#benchmark').onclick=benchmarkModes;}
 function calculate(){try{modeComparisons=[];const config=collect();result=solveAll(config);comparisons=calcCompare(config);renderSummary(result);renderMaps(result);renderCompare();renderSidebar(result.stats);renderWarehouse(result);renderJournal();flashBookState();persist();putStatus('Расчёт выполнен: '+nfmt(result.stats.pieceCount)+' деталей, '+nfmt(result.stats.barCount)+' хлыстов.');}catch(e){result=null;comparisons=[];$('#panel-summary').innerHTML='<div class="error">'+esc(e.message)+'</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderSidebar(null);renderWarehouse(null);renderJournal();flashBookState();putStatus('Ошибка входных данных: '+e.message,true)}}
-function switchTab(n){if(!result&&n!=='guide'&&n!=='journal'&&n!=='warehouse'&&n!=='about')calculate();$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));$$('.tabPanel').forEach(p=>p.classList.toggle('hide',p.id!=='panel-'+n));}
+function switchTab(n){if(!result&&n!=='guide'&&n!=='journal'&&n!=='warehouse'&&n!=='about'&&n!=='backups')calculate();if(n==='backups')void renderBackups();$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));$$('.tabPanel').forEach(p=>p.classList.toggle('hide',p.id!=='panel-'+n));}
 function download(name,blob){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
 const makeName=s=>String(s||'заказ').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').slice(0,60);
-function saveProject(){persist();download(makeName(state.meta.order)+'_проект_раскроя.json',new Blob([JSON.stringify({...state,version:6},null,2)],{type:'application/json;charset=utf-8'}));putStatus('Проект сохранён в JSON.');}
+function saveProject(){persist();downloadJSON(state);putStatus('Проект выгружен в JSON. Храните файл за пределами браузера.');}
 function csvEscape(x){let s=String(x??'');return /[;\n\r"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function exportCSV(){const rows=[['Позиция','Профиль','Сталь','Длина, мм','Количество','Примечание'],...state.parts.map(p=>[p.pos,p.material,p.grade,p.length,p.qty,p.note])];download('Детали_'+makeName(state.meta.order)+'.csv',new Blob(['\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));}
 function parseCSV(text){const lines=[];let row=[],field='',quoted=false;const peek=text.split(/\r?\n/).slice(0,12);const header=peek.find(x=>/позици/i.test(x)&&/длин/i.test(x))||peek.find(x=>/[;,\t]/.test(x))||peek[0]||'';const choices=[';','\t',','];const del=choices.sort((a,b)=>header.split(b).length-header.split(a).length)[0];
  for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){field+='"';i++}else quoted=!quoted;}else if(ch===del&&!quoted){row.push(field);field='';}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(field);if(row.some(s=>s.trim()))lines.push(row);row=[];field='';}else field+=ch;}
  row.push(field);if(row.some(s=>s.trim()))lines.push(row);return lines;}
-function importCSV(txt){
+async function importCSV(txt){
  const rows=parseCSV(txt.replace(/^\ufeff/,''));if(rows.length<2)throw Error('CSV должен содержать строку заголовка и минимум одну деталь.');
  const normal=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
  const headIndex=rows.findIndex(r=>r.some(v=>normal(v).includes('позици'))&&r.some(v=>normal(v).includes('длин'))&&r.some(v=>normal(v).includes('колич')));
@@ -859,7 +904,7 @@ function importCSV(txt){
  }
  if(!newParts.length)throw Error('В файле не найдено ни одной детали с длиной и количеством.');
  for(const [i,p] of newParts.entries())if(!validLength(num(p.length)))throw Error('CSV, строка '+(i+1)+': длина должна быть положительной (до 3 знаков после запятой).');
- state.parts=newParts;renderParts();persist();calculate();}
+ if(!await requiredSafetySnapshot('Перед импортом деталей CSV'))return;state.parts=newParts;renderParts();persist();calculate();await saveBackup('После импорта CSV',true).catch(reportBackupFailure);}
 // Не требующий библиотек генератор Excel .xlsx: ZIP (store) + Office Open XML.
 function xml(s){return esc(s).replace(/\r/g,'&#13;').replace(/\n/g,'&#10;');}
 function colName(n){let s='';while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s;}
@@ -904,7 +949,7 @@ function openPaste(target){pasteTarget=target;$('#pasteTitle').textContent=targe
  $('#pasteHint').textContent=target==='parts'?'Форматы: Длина / Кол-во; либо Позиция / Профиль / Сталь / Длина / Кол-во / Примечание.':'Форматы: Длина / Кол-во; либо Профиль / Сталь / Длина / Кол-во / Цена / Тип / Источник. Тип: «Покупка» или «Склад». Для склада количество обязательно.';
  $('#pasteDialog').showModal();$('#pasteText').focus();}
 function parsePasteRows(text){return parseCSV(text.replace(/^\ufeff/,'')).filter(r=>r.some(x=>String(x).trim()));}
-function pasteRows(){
+async function pasteRows(){
  const rows=parsePasteRows($('#pasteText').value),mat=$('#pasteMaterial').value.trim(),grade=$('#pasteGrade').value.trim();
  if(!rows.length)throw Error('Вставьте данные в поле ввода.');
  const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
@@ -931,9 +976,10 @@ function pasteRows(){
   }
  }
  if(!imported.length)throw Error('Нет строк для импорта.');
- if($('#pasteMode').value==='replace'&&!confirm('Заменить существующую таблицу? Складские остатки и доступные закупочные позиции этой таблицы будут перезаписаны. Сохраните резервную копию JSON.'))return;
+  if($('#pasteMode').value==='replace'&&!confirm('Заменить существующую таблицу? Перед заменой будет сделана защитная копия.'))return;
+  if(!await requiredSafetySnapshot('Перед импортом Excel в таблицу '+pasteTarget))return;
  state[pasteTarget]=$('#pasteMode').value==='append'?[...state[pasteTarget],...imported]:imported;
- if(pasteTarget==='parts')renderParts();else renderStocks();markDirty();persist();$('#pasteDialog').close();putStatus('Импортировано '+imported.length+' строк из Excel. Проверьте таблицу и выполните расчёт.');
+ if(pasteTarget==='parts')renderParts();else renderStocks();markDirty();persist();await saveBackup('После импорта Excel в '+pasteTarget,true).catch(reportBackupFailure);$('#pasteDialog').close();putStatus('Импортировано '+imported.length+' строк из Excel. Проверьте таблицу и выполните расчёт.');
 }
 
 function adjustLength(el,delta){
@@ -943,6 +989,164 @@ function adjustLength(el,delta){
  el.value=String(next).replace('.',',');
  el.dispatchEvent(new Event('input',{bubbles:true}));
 }
+// Browser-local versioned backups: no network, cookies, service worker or server.
+const BACKUP_DB='raskroy_pro_local_backups', BACKUP_STORE='snapshots';
+const AUTO_BACKUP_LIMIT=12, PROTECTED_BACKUP_LIMIT=20;
+let backupDbPromise=null, backupQueue=Promise.resolve(), backupTimer=null;
+let lastBackupFingerprint='', backupStorageError='', backupStatus='Подключение…';
+let safetyBusy=false;
+function projectFingerprint(value){
+ const data=typeof value==='string'?value:JSON.stringify(value);let hash=2166136261;
+ for(let i=0;i<data.length;i++){hash^=data.charCodeAt(i);hash=Math.imul(hash,16777619);}
+ return (hash>>>0).toString(16).padStart(8,'0')+':'+data.length;
+}
+function backupDB(){
+ if(!('indexedDB' in window))return Promise.reject(Error('IndexedDB недоступна в этом браузере.'));
+ if(!backupDbPromise){
+  backupDbPromise=new Promise((resolve,reject)=>{
+   const req=indexedDB.open(BACKUP_DB,1);
+   req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(BACKUP_STORE))db.createObjectStore(BACKUP_STORE,{keyPath:'id',autoIncrement:true});};
+   req.onsuccess=()=>{const db=req.result;db.onversionchange=()=>db.close();resolve(db);};
+   req.onerror=()=>reject(req.error||Error('Не удалось открыть IndexedDB.'));
+   req.onblocked=()=>reject(Error('IndexedDB заблокирована другой вкладкой. Закройте дублирующие вкладки.'));
+  }).catch(e=>{backupDbPromise=null;throw e;});
+ }
+ return backupDbPromise;
+}
+function snapshotKind(reason){return reason.startsWith('Автокопия')||reason==='Начало сеанса'?'auto':'protected';}
+async function insertBackup(reason,force,payload){
+ const raw=JSON.stringify(payload),fingerprint=projectFingerprint(raw),kind=snapshotKind(reason);
+ if(!force&&fingerprint===lastBackupFingerprint)return null;
+ const db=await backupDB();
+ const item={createdAt:Date.now(),reason,kind,appVersion:APP_RELEASE,schemaVersion:Number(payload.version||3),fingerprint,data:payload,order:String(payload.meta?.order||'—'),stockLines:payload.stocks?.filter(x=>x.kind==='remnant').length||0,journalLines:payload.journal?.length||0};
+ await new Promise((resolve,reject)=>{
+  const tx=db.transaction(BACKUP_STORE,'readwrite'),store=tx.objectStore(BACKUP_STORE);
+  store.add(item);
+  const request=store.getAll();
+  request.onsuccess=()=>{
+   const all=request.result.sort((a,b)=>a.id-b.id);
+   for(const category of ['auto','protected']){
+    const group=all.filter(x=>category==='auto'?x.kind==='auto':x.kind!=='auto');
+    const limit=category==='auto'?AUTO_BACKUP_LIMIT:PROTECTED_BACKUP_LIMIT;
+    for(const entry of group.slice(0,Math.max(0,group.length-limit)))store.delete(entry.id);
+   }
+  };
+  tx.oncomplete=resolve;
+  tx.onerror=()=>reject(tx.error||Error('Ошибка записи в IndexedDB.'));
+  tx.onabort=()=>reject(tx.error||Error('Транзакция резервного копирования отменена.'));
+ });
+ lastBackupFingerprint=fingerprint;backupStorageError='';backupStatus='Работает';updateBackupBanner();
+ return item;
+}
+function saveBackup(reason,force=false,source=state){
+ // Capture the exact project before queuing, so a later change cannot alter the snapshot.
+ const payload=JSON.parse(JSON.stringify(source));
+ const operation=()=>insertBackup(reason,force,payload);
+ const pending=backupQueue.catch(()=>{}).then(operation);
+ backupQueue=pending;
+ return pending;
+}
+function scheduleAutoSnapshot(){
+ if(startupLock)return;
+ clearTimeout(backupTimer);
+ backupTimer=setTimeout(()=>{void saveBackup('Автокопия после изменения',false).catch(reportBackupFailure);},12000);
+}
+function reportBackupFailure(error){backupStorageError='Резервные копии: '+(error?.message||String(error));backupStatus='Ошибка';updateBackupBanner();}
+function reportStorageIssue(message){backupStorageError=message;backupStatus='Ошибка сохранения';updateBackupBanner();}
+function updateBackupBanner(){
+ const banner=$('#storage-banner');if(!banner)return;
+ const bits=[];
+ if(startupLoadError)bits.push('<b>Исходный проект заблокирован от перезаписи:</b> '+esc(startupLoadError)+'. Откройте «Резервные копии» или загрузите исправный JSON.');
+ else if(startupLock)bits.push('<b>Перенос старого формата:</b> сначала необходимо сохранить защитную копию прежнего проекта. Пока это не удастся, исходные данные не перезаписываются.');
+ if(backupStorageError)bits.push('<b>Внимание:</b> '+esc(backupStorageError)+'. Сохраните JSON на диск. Защитные операции временно заблокированы.');
+ if(bits.length){banner.innerHTML=bits.join('<p></p>')+' <button class="btn sm" type="button" id="open-backups-from-warning">Открыть восстановление</button>'+(startupLoadError?' <button class="btn sm" type="button" id="download-broken-storage">Скачать исходную запись</button>':'');banner.classList.remove('hide');}
+ else{banner.classList.add('hide');banner.textContent='';}
+}
+function downloadJSON(data,filename){
+ const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\..+$/,'').replace('T','_');
+ const name=filename||'Raskroy_PRO_'+stamp+'.json';
+ download(name,new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}));
+}
+async function archiveUnreadableBeforeImport(){
+ try{
+  const raw=localStorage.getItem(startupKey||STORAGE_KEY);
+  if(raw===null)throw Error('Исходная запись не найдена.');
+  const db=await backupDB();
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction(BACKUP_STORE,'readwrite');
+   tx.objectStore(BACKUP_STORE).add({createdAt:Date.now(),reason:'Оригинал несовместимого или повреждённого проекта',kind:'raw',appVersion:APP_RELEASE,schemaVersion:0,rawOriginal:raw,fingerprint:projectFingerprint(raw),order:'Нераспознанный проект',stockLines:0,journalLines:0});
+   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||Error('Ошибка сохранения исходной записи.'));tx.onabort=()=>reject(tx.error||Error('Транзакция отменена.'));
+  });
+  return true;
+ }catch(e){reportBackupFailure(e);alert('Восстановление отменено. Не удалось сохранить исходную проблемную запись: '+e.message);return false;}
+}
+async function requiredSafetySnapshot(reason){
+ if(safetyBusy){putStatus('Дождитесь завершения предыдущей операции.',true);return false;}
+ if(startupLock){putStatus('Рабочий проект заблокирован от перезаписи. Восстановите данные из копии.',true);switchTab('backups');return false;}
+ safetyBusy=true;
+ try{
+  await saveBackup(reason,true);
+  backupStorageError='';return true;
+ }catch(e){reportBackupFailure(e);alert('Операция отменена: не удалось создать защитную копию.\n\n'+e.message+'\n\nСначала сохраните проект в JSON и устраните проблему с IndexedDB.');return false;}
+ finally{safetyBusy=false;}
+}
+function verifyBackup(item){
+ if(!item||!item.data||!item.fingerprint)throw Error('Резервная копия неполная.');
+ if(projectFingerprint(item.data)!==item.fingerprint)throw Error('Контрольная сумма резервной копии не совпадает.');
+ normalizeProject(item.data); // also rejects projects created by newer software
+ return true;
+}
+async function listBackups(){const db=await backupDB();return new Promise((resolve,reject)=>{
+ const tx=db.transaction(BACKUP_STORE,'readonly'),req=tx.objectStore(BACKUP_STORE).getAll();
+ req.onsuccess=()=>resolve(req.result.sort((a,b)=>b.id-a.id));
+ req.onerror=()=>reject(req.error||Error('Невозможно получить резервные копии.'));
+});}
+async function getBackup(id){const db=await backupDB();return new Promise((resolve,reject)=>{
+ const tx=db.transaction(BACKUP_STORE,'readonly'),req=tx.objectStore(BACKUP_STORE).get(id);
+ req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error||Error('Не удалось прочитать копию.'));
+});}
+async function renderBackups(){
+ const list=$('#backup-list'),stats=$('#backup-stats');if(!list||!stats)return;
+ try{
+  const backups=await listBackups();const autos=backups.filter(x=>x.kind==='auto').length, rawCount=backups.filter(x=>x.kind==='raw').length;
+  stats.innerHTML='<strong>IndexedDB: доступна</strong> · Всего копий: '+backups.length+' (автоматических: '+autos+', защитных: '+(backups.length-autos-rawCount)+', исходных записей: '+rawCount+') · Формат данных: '+DATA_SCHEMA+'. Последняя копия: '+(backups.length?new Date(backups[0].createdAt).toLocaleString('ru-RU'):'пока нет')+'.';
+  list.innerHTML=backups.length?backups.map(x=>`<div class="backup-row"><div><b>№${x.id} · ${esc(x.reason||'Без названия')}</b><div class="backup-meta">${new Date(x.createdAt).toLocaleString('ru-RU')} · Заказ ${esc(x.order||'—')} · складских позиций ${Number(x.stockLines||0)} · журнал ${Number(x.journalLines||0)} · формат ${Number(x.schemaVersion||0)}</div></div><div class="backup-actions">${x.kind==='raw'?`<button type="button" class="btn sm" data-backup-action="raw" data-backup-id="${x.id}">↓ Исходная запись</button>`:`<button type="button" class="btn sm" data-backup-action="download" data-backup-id="${x.id}">↓ JSON</button><button type="button" class="btn sm primary" data-backup-action="restore" data-backup-id="${x.id}">Восстановить</button>`}</div></div>`).join(''):'<div class="empty">Резервных копий пока нет. Нажмите «Создать резервную копию».</div>';
+  backupStatus='Работает';
+ }catch(e){stats.textContent='IndexedDB недоступна: '+e.message;list.innerHTML='<div class="error">Локальное восстановление недоступно. Экспортируйте проект JSON вручную.</div>';reportBackupFailure(e);}
+}
+function installProject(project){
+ // Validate first; the old project is not touched until this point.
+ const incoming=normalizeProject(project);
+ state=incoming;startupOriginal=null;startupLoadError='';startupLock=false;
+ result=null;comparisons=[];modeComparisons=[];
+ renderAll();persist();calculate();updateBackupBanner();
+}
+async function initializeBackups(){
+ updateBackupBanner();
+ try{
+  await backupDB();
+  if(startupLoadError){backupStatus='Ожидание восстановления';updateBackupBanner();await renderBackups();switchTab('backups');return;}
+  if(startupLock&&startupOriginal){
+   // Preserve exact original JSON before migrating its schema or changing its storage key.
+   await saveBackup('Перед переходом с формата '+(startupOriginal.version||3)+' на '+DATA_SCHEMA,true,startupOriginal);
+   startupLock=false;
+   persist();
+   await saveBackup('После перехода на формат '+DATA_SCHEMA,true);
+  }else{
+   await saveBackup('Начало сеанса',false);
+  }
+  updateBackupBanner();
+ }catch(e){reportBackupFailure(e);}
+ await renderBackups();
+}
+if(typeof document.addEventListener==='function')document.addEventListener('click',e=>{
+ if(e.target.id==='open-backups-from-warning'){switchTab('backups');$('#panel-backups').scrollIntoView({block:'start'});}
+ if(e.target.id==='download-broken-storage'){
+  try{const raw=localStorage.getItem(startupKey||STORAGE_KEY);if(raw!==null)download('Raskroy_unreadable_original.txt',new Blob([raw],{type:'text/plain;charset=utf-8'}));}
+  catch(error){alert('Не удалось выгрузить исходную запись: '+error.message);}
+ }
+});
+
 function events(){
  document.addEventListener('keydown',e=>{
   if(e.target.matches('input[data-field="length"]')&&(e.key==='ArrowUp'||e.key==='ArrowDown')){
@@ -951,10 +1155,10 @@ function events(){
  });
  document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
  document.addEventListener('change',e=>{const t=e.target;if(t.dataset.field||t.dataset.setting){if(t.dataset.field){const row=t.closest('tr[data-row-id]');const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p)p[t.dataset.field]=t.value;}else state.settings[t.dataset.setting]=t.value;persist();}});
- document.addEventListener('click',e=>{
+ document.addEventListener('click',async e=>{
   const step=e.target.closest('[data-step-length]');
   if(step){const el=step.closest('tr[data-row-id]')?.querySelector('input[data-field="length"]');if(el)adjustLength(el,Number(step.dataset.stepLength));return;}
-  const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
+  const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;if(!await requiredSafetySnapshot('Перед удалением строки '+k))return;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
    switchTab(tab.dataset.tab);
    // Buttons in the top toolbar/footer control sections far below the fold.
    // Bring the selected content into view, while keeping normal tab navigation unchanged.
@@ -965,11 +1169,25 @@ function events(){
   }});
  $('#solve').onclick=()=>{calculate();switchTab('summary')};$('#addpart').onclick=()=>{state.parts.push({id:Date.now()+Math.random(),pos:'Д-'+String(state.parts.length+1).padStart(2,'0'),material:state.parts.at(-1)?.material||'',grade:state.parts.at(-1)?.grade||'',length:'',qty:1,note:''});renderParts();markDirty();persist();};
  $('#addstock').onclick=()=>{state.stocks.push({id:Date.now()+Math.random(),material:state.stocks.at(-1)?.material||'',grade:state.stocks.at(-1)?.grade||'',length:'',qty:'',price:'',kind:'new',origin:''});renderStocks();markDirty();persist();};
- $('#save').onclick=saveProject;$('#load').onclick=()=>$('#file-json').click();$('#file-json').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.parts)||!Array.isArray(data.stocks)||!data.settings)throw Error('Неверный формат JSON проекта.');state={...initial(),meta:{...initial().meta,...data.meta},settings:{...initial().settings,...data.settings},parts:data.parts,stocks:data.stocks,bookedOrders:Array.isArray(data.bookedOrders)?data.bookedOrders:[],journal:Array.isArray(data.journal)?data.journal:[],lastBookedReport:data.lastBookedReport||null};result=null;renderAll();persist();calculate();putStatus('Проект загружен из '+file.name);}catch(ex){alert('Не удалось открыть: '+ex.message)}e.target.value='';};
- $('#pasteparts').onclick=()=>openPaste('parts');$('#pastestocks').onclick=()=>openPaste('stocks');$('#applyPaste').onclick=()=>{try{pasteRows()}catch(e){alert('Импорт: '+e.message)}};$('#coords').onclick=exportCoordinatesCSV;$('#csv').onclick=exportCSV;$('#importcsv').onclick=()=>$('#file-csv').click();$('#file-csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{importCSV(await f.text());putStatus('Импортированы детали из '+f.name)}catch(ex){alert('Ошибка CSV: '+ex.message)}e.target.value='';};
+  $('#save').onclick=saveProject;
+ $('#load').onclick=()=>$('#file-json').click();
+ $('#file-json').onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try{
+   const data=normalizeProject(JSON.parse(await file.text()));
+   if(!confirm('Заменить текущий проект данными из '+file.name+'? Перед заменой создаётся резервная копия.'))return;
+   if(startupLoadError){if(!await archiveUnreadableBeforeImport())return;}else if(!await requiredSafetySnapshot('Перед импортом JSON: '+file.name))return;
+   installProject(data);await saveBackup('После импорта JSON: '+file.name,true).catch(reportBackupFailure);putStatus('Проект загружен из '+file.name);
+  }catch(ex){alert('Не удалось открыть: '+ex.message)}finally{e.target.value='';}
+ };
+ $('#pasteparts').onclick=()=>openPaste('parts');$('#pastestocks').onclick=()=>openPaste('stocks');$('#applyPaste').onclick=async()=>{try{await pasteRows()}catch(e){alert('Импорт: '+e.message)}};$('#coords').onclick=exportCoordinatesCSV;$('#csv').onclick=exportCSV;$('#importcsv').onclick=()=>$('#file-csv').click();$('#file-csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importCSV(await f.text());putStatus('Импортированы детали из '+f.name)}catch(ex){alert('Ошибка CSV: '+ex.message)}e.target.value='';};
  $('#xlsx').onclick=exportXLSX;$('#book').onclick=bookStock;$('#neworder').onclick=createNextOrder;$('#print').onclick=()=>{if(!result)calculate();if(result){switchTab('maps');$$('.cutcoords').forEach(x=>x.open=true);window.print();}};
- $('#reset').onclick=()=>{if(confirm('ВНИМАНИЕ! Будут удалены текущий склад, журнал операций и детали. Предварительно обязательно сохраните JSON-проект. Сбросить всё на пример?')){state=initial();result=null;renderAll();calculate();switchTab('summary');persist();}};}
-renderAll();events();
+ $('#reset').onclick=async()=>{if(confirm('Сбросить все данные на пример? Перед сбросом создаётся защитная копия проекта, склада и журнала.')){if(!await requiredSafetySnapshot('Перед полным сбросом'))return;installProject(initial());await saveBackup('После сброса на пример',true).catch(reportBackupFailure);switchTab('summary');}};
+ $('#snapshot-now').onclick=async()=>{try{await saveBackup('Ручная копия',true);await renderBackups();putStatus('Резервная копия создана.')}catch(e){reportBackupFailure(e);}};
+ $('#backup-export-current').onclick=saveProject;$('#backup-refresh').onclick=()=>void renderBackups();
+ $('#backup-list').addEventListener('click',async e=>{const button=e.target.closest('[data-backup-action]');if(!button)return;const id=Number(button.dataset.backupId);if(!Number.isSafeInteger(id))return;try{const snapshot=await getBackup(id);if(!snapshot)throw Error('Резервная копия не найдена.');if(snapshot.kind==='raw'){if(projectFingerprint(snapshot.rawOriginal)!==snapshot.fingerprint)throw Error('Повреждена исходная резервная копия.');}else verifyBackup(snapshot);if(button.dataset.backupAction==='raw'){download('Raskroy_unreadable_original_'+id+'.txt',new Blob([snapshot.rawOriginal||''],{type:'text/plain;charset=utf-8'}));return;}if(button.dataset.backupAction==='download'){downloadJSON(snapshot.data,'Raskroy_backup_'+id+'.json');return;}if(button.dataset.backupAction==='restore'){if(!confirm('Восстановить резервную копию от '+new Date(snapshot.createdAt).toLocaleString('ru-RU')+'? Текущий проект будет заменён.'))return;if(startupLoadError){if(!await archiveUnreadableBeforeImport())return;}else if(!await requiredSafetySnapshot('Перед восстановлением копии #'+id))return;installProject(normalizeProject(snapshot.data));await saveBackup('После восстановления копии #'+id,true);await renderBackups();putStatus('Восстановлен проект из резервной копии #'+id);switchTab('backups');}}catch(err){alert('Ошибка восстановления: '+err.message);reportBackupFailure(err);}});
+}
+renderAll();events();void initializeBackups();
 if(state.lastBookedReport&&state.lastBookedReport.orderKey===orderKey()){
  try{result=restoreReportSnapshot(state.lastBookedReport.report);renderSummary(result);renderMaps(result);renderWarehouse(result);renderJournal();renderSidebar(result.stats);flashBookState();putStatus('Восстановлен проведённый заказ и его исходный расчёт. Для следующего заказа нажмите «Новый заказ (склад сохранить)».');}
  catch(e){calculate();}
