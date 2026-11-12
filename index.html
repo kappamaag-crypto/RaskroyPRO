@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.1 — металлоконструкции и склад остатков</title>
+<title>Раскрой PRO 5.1.1 — металлоконструкции и склад остатков</title>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -35,7 +35,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1.1 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -162,7 +162,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
@@ -586,7 +586,15 @@ function pasteRows(){
 
 function events(){document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
  document.addEventListener('change',e=>{const t=e.target;if(t.dataset.field||t.dataset.setting){if(t.dataset.field){const row=t.closest('tr[data-row-id]');const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p)p[t.dataset.field]=t.value;}else state.settings[t.dataset.setting]=t.value;persist();}});
- document.addEventListener('click',e=>{const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab)switchTab(tab.dataset.tab);});
+ document.addEventListener('click',e=>{const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
+   switchTab(tab.dataset.tab);
+   // Buttons in the top toolbar/footer control sections far below the fold.
+   // Bring the selected content into view, while keeping normal tab navigation unchanged.
+   if(tab.closest('.toolbar')||tab.closest('.appfooter')){
+    const panel=document.getElementById('panel-'+tab.dataset.tab);
+    if(panel){panel.scrollIntoView({behavior:'auto',block:'start'});}
+   }
+  }});
  $('#solve').onclick=()=>{calculate();switchTab('summary')};$('#addpart').onclick=()=>{state.parts.push({id:Date.now()+Math.random(),pos:'Д-'+String(state.parts.length+1).padStart(2,'0'),material:state.parts.at(-1)?.material||'',grade:state.parts.at(-1)?.grade||'',length:'',qty:1,note:''});renderParts();markDirty();persist();};
  $('#addstock').onclick=()=>{state.stocks.push({id:Date.now()+Math.random(),material:state.stocks.at(-1)?.material||'',grade:state.stocks.at(-1)?.grade||'',length:'',qty:'',price:'',kind:'new',origin:''});renderStocks();markDirty();persist();};
  $('#save').onclick=saveProject;$('#load').onclick=()=>$('#file-json').click();$('#file-json').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.parts)||!Array.isArray(data.stocks)||!data.settings)throw Error('Неверный формат JSON проекта.');state={...initial(),meta:{...initial().meta,...data.meta},settings:{...initial().settings,...data.settings},parts:data.parts,stocks:data.stocks,bookedOrders:Array.isArray(data.bookedOrders)?data.bookedOrders:[],journal:Array.isArray(data.journal)?data.journal:[],lastBookedReport:data.lastBookedReport||null};result=null;renderAll();persist();calculate();putStatus('Проект загружен из '+file.name);}catch(ex){alert('Не удалось открыть: '+ex.message)}e.target.value='';};
