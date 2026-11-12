@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
+<title>Раскрой PRO 5.1 — металлоконструкции и склад остатков</title>
+<style>
+:root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
+*{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
+header{background:#132f43;color:white;padding:23px max(18px,calc((100vw - 1380px)/2));border-bottom:4px solid #20a68c}header h1{margin:0;font-size:27px;letter-spacing:-.8px}header p{margin:5px 0 0;color:#bfd1df}.shell{max-width:1380px;margin:auto;padding:20px 18px 70px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}.btn{border:1px solid #c7d6e2;background:white;padding:9px 13px;border-radius:8px;cursor:pointer;color:#18384e;font-weight:600;white-space:nowrap;transition:.13s}.btn:hover{background:#eff5f9;border-color:#9db9c9}.btn.primary{background:#126b79;color:#fff;border-color:#126b79}.btn.primary:hover{background:#0b5663}.btn.danger{color:#ae3442}.btn.sm{padding:5px 10px;font-size:12px}.toolbar .sp{flex:1}.layout{display:grid;grid-template-columns:minmax(0,1fr) 305px;gap:18px}.main{min-width:0}.panel{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px;padding:19px;margin-bottom:16px}.panel h2{font-size:17px;margin:0 0 12px;color:#1b465f}.panel h3{font-size:15px;margin:14px 0 9px}.muted{color:var(--muted)}.sub{font-size:12px;color:var(--muted);margin-top:-6px;margin-bottom:13px}.gridform{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}label{display:block;color:#42586b;font-size:12px;font-weight:600}input,select{font:inherit;border:1px solid #cddae6;background:#fff;color:#183445;border-radius:6px;padding:9px 8px;width:100%;min-width:0;outline-color:#159e9e}label input,label select{margin-top:5px}input[type=number]{font-variant-numeric:tabular-nums}.tablewrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:13px}th{padding:10px 8px;text-align:left;background:#edf3f8;color:#315268;font-weight:700;font-size:12px}td{padding:6px 7px;border-top:1px solid #e9eef3}td input,td select{padding:7px;min-width:70px}tr:nth-child(even) td{background:#fbfcfe}td .material{min-width:150px}td .grade{min-width:105px}.pos{min-width:100px}.tdnum{width:93px}.qty{width:86px}.w130{width:130px}.minicol{width:49px}td input[type=number]{text-align:right}.footerbar{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap}.info{border:1px solid #cae7e1;background:#f0faf7;padding:11px 13px;border-radius:8px;color:#245c51}.error{background:#fff2f2;border:1px solid #f0c7c7;color:#922c37;padding:11px 12px;border-radius:8px;margin:11px 0;white-space:pre-line}.warning{background:#fff7e9;border:1px solid #f0ddbc;color:#80510f;padding:11px 12px;border-radius:8px;margin:10px 0}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:14px;border-radius:9px;background:#f1f6f9}.stat .value{font-size:23px;font-weight:800;letter-spacing:-.8px;color:#143c53}.stat .cap{font-size:12px;color:#5d7486}.stat.wide{grid-column:span 2;background:#eaf6f1}.stat.wide .value{color:#137059}.sticky{position:sticky;top:12px;align-self:start}.tabs{display:flex;flex-wrap:wrap;gap:7px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:15px}.tab{border:0;border-radius:7px;background:#edf3f7;color:#3b5a70;font-weight:650;padding:9px 13px;cursor:pointer}.tab.active{background:#d9eee8;color:#135a4e}.hide{display:none!important}.barcard{padding:14px 15px;border:1px solid #e2e9ef;border-radius:10px;margin:12px 0;background:#fff;break-inside:avoid}.barhead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-weight:700;margin-bottom:8px}.bar{display:flex;border-radius:6px;overflow:hidden;height:48px;background:#eef1f3;border:1px solid #a9b8c1}.segment{height:100%;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;border-right:1px solid #fff8;overflow:hidden;text-overflow:clip;white-space:nowrap;padding:0 2px}.segment.tail{background:repeating-linear-gradient(45deg,#a9b6bf,#a9b6bf 5px,#c2cbd2 5px,#c2cbd2 10px);color:#31414d}.segment.trim{background:#7b8997}.barfoot{color:#607486;font-size:12px;display:flex;flex-wrap:wrap;gap:14px;margin-top:7px}.grouphead{font-size:16px;margin:19px 0 7px;border-bottom:1px solid #e7edf2;padding-bottom:6px}.nowrap{white-space:nowrap}.smtext{font-size:12px}.note{margin:8px 0;color:#587082;font-size:12px}.tabPanel{min-height:100px}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chip{border:1px solid #d7e2ec;background:#f6f8fb;padding:5px 9px;border-radius:6px;font-size:12px}.righthead{font-size:14px;color:#527184;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.sidefoot{font-size:12px;color:#738497;line-height:1.7;margin-top:12px}.comparison{margin-top:8px}.tablewrap td .ok{color:#0d7c59;font-weight:700}.tablewrap td .bad{color:#aa3343}.target{font-weight:700;color:#164f72}.kicker{color:#1a8b75;text-transform:uppercase;letter-spacing:1.2px;font-size:11px;font-weight:800;margin-bottom:5px}.insideActions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.empty{padding:25px;color:#778b98;text-align:center;border:1px dashed #cbd6de;border-radius:8px}.guide p{margin:8px 0}.guide li{margin:7px 0}.pill{display:inline-block;font-size:11px;color:#12695d;background:#e8f6f1;padding:2px 7px;border-radius:5px;font-weight:700}.printOnly{display:none}.warehousepanel{border-left:4px solid #18836f}.goodtag{background:#e6f7ee;color:#10694e;border-radius:5px;padding:3px 6px;font-weight:700;white-space:nowrap}.scraptag{background:#fbe9eb;color:#963c40;border-radius:5px;padding:3px 6px;font-weight:700;white-space:nowrap}.stocklog{margin-top:12px}.stocklog details{border:1px solid #dde5ee;border-radius:7px;padding:10px;margin:10px 0}.draftbadge{background:#fff7df;color:#775600;border-radius:4px;padding:2px 6px}.bookedbadge{background:#dff3e7;color:#137352;border-radius:4px;padding:2px 6px}.dangerhint{color:#8e2936}.miniheader{font-weight:750;color:#1c4a5b;margin:12px 0 5px}.actionrow{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.lineinfo{font-size:12px;color:#4b6a7d}.barcard .barfoot span{max-width:100%;overflow-wrap:anywhere}#status{font-size:12px;color:#4c6677;margin:8px 0 0}.checkrow{display:flex;align-items:center;gap:8px}.checkrow input{width:auto}.divrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.smallprint{font-size:11px;color:#677d8a}
+dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow:0 24px 70px #091c3480;border-radius:14px;padding:22px}dialog::backdrop{background:#091d33a8}.pasteform textarea{font:13px/1.5 Consolas,monospace;width:100%;resize:vertical;border:1px solid #cddae6;border-radius:7px;padding:10px;margin-top:6px}.pasteform h2{margin:0 0 10px}.cutcoords{margin:9px 0 5px}.cutcoords summary{font-weight:700;color:#1a617e;cursor:pointer}.repeat{background:#dcebef;color:#1b5e69;border-radius:5px;padding:2px 7px;font-weight:700}.barcard .barhead .subtle{font-size:12px;font-weight:400;color:#6b7f8d}.segment.cut{background:#d68b41;color:#51381b}.algorithmline{margin:8px 0;color:#385d6d;font-size:12px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.sticky{position:static}.stats{grid-template-columns:repeat(4,1fr)}.stat.wide{grid-column:span 2}.gridform{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.shell{padding:12px 9px 50px}header{padding:17px 13px}header h1{font-size:22px}.panel{padding:13px}.gridform{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{gap:6px}.toolbar .sp{display:none}.btn{padding:8px 10px;font-size:12px}.bar{height:40px}}
+@media print{body{background:#fff;color:#000;font-size:11px}header,.toolbar,.side,.tabs,.inputpanel,.noprint,.footerbar{display:none!important}.shell{padding:0;max-width:none}.layout{display:block}.panel{box-shadow:none;border:0;padding:0;margin:0}.printOnly{display:block}.tabPanel{display:none!important}#panel-maps{display:block!important}.barcard{border:1px solid #bbb;padding:9px;break-inside:avoid}.bar{height:32px;print-color-adjust:exact;-webkit-print-color-adjust:exact}.barfoot{font-size:10px}.printPage{page-break-after:always}}
+
+/* Раскрой PRO 5.1: упорядоченная панель и информационные разделы */
+.toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px;align-items:stretch}
+.toolbar-group{min-width:0;border:1px solid var(--line);background:white;border-radius:12px;padding:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.toolbar-title{font-size:11px;font-weight:800;letter-spacing:.075em;text-transform:uppercase;color:#587080;padding:0 2px}
+.toolbar-buttons{display:grid;grid-template-columns:1fr;grid-auto-rows:minmax(37px,auto);gap:7px}
+.toolbar-buttons .btn{display:block;width:100%;min-width:0;text-align:left;white-space:normal;line-height:1.22;min-height:37px}
+.mode-note{grid-column:span 2;align-self:end;background:#ecf6f7;border:1px solid #c8e4e5;border-radius:7px;padding:8px 11px;color:#3d5b64;font-size:11px;line-height:1.5}
+.aboutgrid{display:grid;grid-template-columns:minmax(0,1fr) 275px;gap:24px;align-items:start}
+.aboutgrid p{margin:10px 0;line-height:1.6}
+.about-list{padding-left:20px}.about-list li{margin:8px 0}
+.aboutside{min-width:0}.donation{border:1px solid #d6e8e3;border-radius:12px;background:#f5fbf9;padding:16px;text-align:center}.donation h3{margin:0 0 9px}.donation .sub{margin:7px 0 11px}.donate-qr{width:min(220px,100%);height:auto;aspect-ratio:1;object-fit:contain;background:white;padding:8px;border:1px solid #d9e4e9;border-radius:8px;display:block;margin:auto}
+.contactline a,.aboutgrid a,.appfooter a{color:#126c83;text-underline-offset:2px}
+.legal{background:#fff7ec;border:1px solid #ead4b0;border-radius:10px;padding:13px 17px;margin:20px 0 12px}.legal h3{margin:0 0 5px}.legal p{margin:0;line-height:1.7}
+.appfooter{margin-top:12px;border-top:1px solid #d9e4e9;padding:15px 2px;color:#506778;font-size:12px;display:flex;justify-content:space-between;gap:18px;align-items:start;flex-wrap:wrap}
+.appfooter p{margin:0;max-width:700px}.linklike{background:none;border:0;color:#126c83;text-decoration:underline;font:inherit;padding:0;cursor:pointer}
+@media(max-width:1060px){.toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.toolbar{grid-template-columns:1fr;gap:8px}.toolbar-group{padding:10px}.toolbar-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar-buttons .btn{font-size:12px;padding:8px}.mode-note{grid-column:span 2}.aboutgrid{grid-template-columns:1fr}.donation{max-width:340px;margin:auto}}
+@media(max-width:360px){.toolbar-buttons{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<div class="shell">
+  <nav class="toolbar noprint" aria-label="Действия калькулятора">
+    <div class="toolbar-group">
+      <div class="toolbar-title">Расчёт и склад</div>
+      <div class="toolbar-buttons">
+        <button class="btn primary" id="solve">▸ Рассчитать раскрой</button>
+        <button class="btn primary" id="book">✓ Провести склад</button>
+        <button class="btn" id="neworder">＋ Новый заказ</button>
+      </div>
+    </div>
+    <div class="toolbar-group">
+      <div class="toolbar-title">Проект</div>
+      <div class="toolbar-buttons">
+        <button class="btn" id="save">↓ Сохранить проект JSON</button>
+        <button class="btn" id="load">↑ Открыть проект JSON</button>
+        <button class="btn danger" id="reset">Сбросить на пример</button>
+      </div>
+    </div>
+    <div class="toolbar-group">
+      <div class="toolbar-title">Экспорт</div>
+      <div class="toolbar-buttons">
+        <button class="btn" id="xlsx">↓ Отчёт Excel</button>
+        <button class="btn" id="coords">↓ Координаты CSV</button>
+        <button class="btn" id="csv">↓ Детали CSV</button>
+        <button class="btn" id="print">⎙ Карты на печать</button>
+      </div>
+    </div>
+    <div class="toolbar-group">
+      <div class="toolbar-title">Импорт и информация</div>
+      <div class="toolbar-buttons">
+        <button class="btn" id="importcsv">↑ Импорт деталей CSV</button>
+        <button class="btn" data-tab="guide">? Инструкция</button>
+        <button class="btn" data-tab="about">ⓘ О программе и авторе</button>
+      </div>
+    </div>
+  </nav>
+  <input type="file" id="file-json" accept="application/json,.json" hidden><input type="file" id="file-csv" accept="text/csv,.csv,.txt" hidden>
+  <div class="layout">
+  <div class="main">
+    <section class="panel inputpanel"><h2>01 · Проект и параметры резки</h2>
+    <div class="gridform">
+      <label>Заказ / объект<input type="text" data-meta="order" placeholder="МК-2026-001"></label>
+      <label>Заказчик / цех<input type="text" data-meta="client" placeholder="Цех металлоконструкций"></label>
+      <label>Ширина реза, мм<input type="number" min="0" step="0.1" data-setting="kerf"></label>
+      <label>Подрезка каждого торца, мм<input type="number" min="0" step="0.1" data-setting="trim"></label>
+      <label>Мин. полезный остаток, мм<input type="number" min="0" step="1" data-setting="remnantMin"></label>
+      <label>Приоритет оптимизации<select data-setting="objective"><option value="purchase">Минимум закупаемой длины</option><option value="cost">Минимум стоимости</option><option value="waste">Минимум невозвратных отходов</option></select></label>
+      <label>Режим оптимизации<select data-setting="searchMode"><option value="quick">Быстрый</option><option value="balanced">Сбалансированный</option><option value="deep">Углублённый</option></select></label>
+      <div class="mode-note"><b>Режимы:</b> быстрый — базовая эвристика; сбалансированный — расширенный поиск с динамическим заполнением и уплотнением; углублённый — больше попыток. Каждый следующий режим включает результаты предыдущего, поэтому по выбранному критерию не должен быть хуже. Глобальный оптимум не гарантируется.</div>
+      <label>Группировать одинаковые карты<select data-setting="groupMaps"><option value="yes">Да — одна схема × количество</option><option value="no">Нет — отдельная карта на хлыст</option></select></label>
+      <label>Единица валюты<input data-setting="currency" type="text" placeholder="₽" maxlength="8"></label>
+      <label>Исполнитель<input data-meta="author" type="text" placeholder="Мастер участка"></label>
+    </div>
+    <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
+    </section>
+    <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
+      <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
+      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: целые миллиметры, шаг 1 мм</span></div>
+    </section>
+    <section class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
+      <div class="tablewrap"><table><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th></th></tr></thead><tbody id="stock-body"></tbody></table></div>
+      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addstock">+ Добавить длину / остаток</button><button class="btn sm" id="pastestocks">▦ Вставить из Excel</button></div><span class="muted smtext">При оформлении раскроя складские остатки списываются, а пригодные хвосты добавляются как новые складские позиции. Закупочные варианты не списываются.</span></div>
+    </section>
+    <section class="panel"><div class="tabs noprint"><button class="tab active" data-tab="summary">Сводка</button><button class="tab" data-tab="maps">Карты раскроя</button><button class="tab" data-tab="compare">Сравнение длин</button><button class="tab" data-tab="warehouse">Остатки и склад</button><button class="tab" data-tab="journal">Журнал операций</button><button class="tab" data-tab="guide">Инструкция</button><button class="tab" data-tab="about">О программе</button></div>
+      <div id="panel-summary" class="tabPanel"></div>
+      <div id="panel-maps" class="tabPanel hide"></div>
+      <div id="panel-compare" class="tabPanel hide"></div>
+      <div id="panel-warehouse" class="tabPanel hide"></div>
+      <div id="panel-journal" class="tabPanel hide"></div>
+      <div id="panel-about" class="tabPanel hide" aria-labelledby="about-heading">
+        <h2 id="about-heading">О программе «Раскрой PRO»</h2>
+        <div class="aboutgrid">
+          <div>
+            <p>«Раскрой PRO» — бесплатный справочный калькулятор одномерного раскроя профильных труб, уголка, швеллера, двутавра, арматуры и другого линейного металлопроката. Вы можете составлять ведомости деталей, сравнивать варианты закупки, формировать карты резки, отслеживать полезные остатки и складские проводки.</p>
+            <h3>Как устроены режимы оптимизации</h3>
+            <ul class="about-list">
+              <li><b>Быстрый:</b> несколько вариантов жадного заполнения хлыстов без динамической оптимизации и уплотнения.</li>
+              <li><b>Сбалансированный:</b> включает все варианты быстрого режима, расширенные попытки, ограниченную задачу о рюкзаке (DP) для целых миллиметров и локальное уплотнение.</li>
+              <li><b>Углублённый:</b> включает предыдущие режимы, дополнительные попытки заполнения и более частое применение DP. Может работать заметно дольше.</li>
+            </ul>
+            <p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритм эвристический; точный глобальный минимум не гарантируется.</p>
+            <h3>Разработчик и обратная связь</h3>
+            <p class="contactline">Телефон: <a href="tel:+79829059348">+7 982 905-93-48</a></p>
+            <p class="contactline">Электронная почта: <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a></p>
+            <p>Исходный код и обновления: <a href="https://github.com/kappamaag-crypto/RaskroyPRO" target="_blank" rel="noopener noreferrer">GitHub · RaskroyPRO</a>.</p>
+          </div>
+          <div class="aboutside">
+            <div class="donation">
+              <h3>Поддержать разработку</h3>
+              <p class="sub">Добровольный донат — отсканируйте QR-код или откройте страницу оплаты.</p>
+              <a href="https://spasibomir.ru/pay/36264" target="_blank" rel="noopener noreferrer" aria-label="Перейти на страницу добровольного пожертвования"><img class="donate-qr" width="220" height="220" loading="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABgQAAAYEAQMAAAAYWvNEAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAGvklEQVR4nO3cQW4bMQwFUN/A97+lb+AC6aKCyJKayHIc4P3VZIYU+bQ2cruJiIiIiIiIiIiIiIiIiIiIyP9zfy4lb/769Pj3OORRFAyD88dL6xAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQnBTkCxaTqto1eF5wZR0CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICgncJ8vlVQV77lfz3Is+5oLikdh0CAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICgs8V3Kbkq9x2MAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEv0fQPuZbDW8JCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICH6ZIE++6+IJ84JtwZV1vtFCsFBA0LQQLBQQNC0ECwUETQvBQgFB00KwUEDQtBAsFBA0LQQLBQRNC8FCAUHTQrBQQNC0ECwUEDQtBAsFBE0LwUIBQdNCsFBA0LQQLBQQNC2fLGhTYA48rq1DQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQHBU8M20q/zN19/h32zku75gqyshINgPAcF+CAj2Q0CwHwKC/RAQ7IeAYD8EBPshINgPAcF+CAj2Q0CwHwKC/RAQ7OczBfn8kGLB/F9nVMQZE7Rzqn/fQUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBwSFCdWawdjr/iurJrfosEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBEcFxfx8wXDQ2gW1a7eY4Q4ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICI4Kwm815kk5ppo0D60w+R3kJwzfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjOC9qPYdIasRLk/Pnc/GYICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICN4rmI9/rD3mxHZ+K8jXKS6UgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOD1gnt6Whi6pg21aycEwbx22JeAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA4Lyg3Wo4KGjLgxpi2LVduyggICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDgluNx9TwX5ViFtLQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQHBBwiGj+H4QvtMz6y0eds3TyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOC+otip2DW35/HT3S4K8mYCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDgXYKh+z8fl2qrn5m0u+ZpCwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIjgry44vH0DbvPuSRjrjNbcXN5LUEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD8mKFy3y29zV7FrqyUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOCrId11csLyVbGhoy1OMiOsQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEJwRVJjCdSsK5rf3dH65SnpYuw4BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBwSsFw9pDwvxiq2FSyJog3yGsQ0BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEDwVsGVVNoCXtXO2nZaXktAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA8HpBVTe3DLWPeV6LmR/DDvljcRgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBwRsE85mLx6/VVsT5ksJhfS0BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBwXHB0PKc3xa7hgWLcytBnuROu2sjICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIPghwbxrSLFKjnkWb/vBBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/LwgF89Bq/pU7aLUEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBG8VVAfl8/Pj8zso1g6X1OHqBQkICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIXihokze3axd30Nbm8EgkICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDgjEBEREREREREREREREREREZE5fwD8KVNQChR/kgAAAABJRU5ErkJggjwhRE9DVFlQRSBodG1sPgo8aHRtbCBsYW5nPSJydSIgdHJhbnNsYXRlPSJubyIgY2xhc3M9Im5vdHJhbnNsYXRlIj4KIDxoZWFkPgogCTxtZXRhIGNoYXJzZXQ9InV0Zi04Ij4KCTxtZXRhIG5hbWU9Imdvb2dsZSIgY29udGVudD0ibm90cmFuc2xhdGUiPgogCTx0aXRsZT48L3RpdGxlPgogCTxtZXRhIG5hbWU9ImRlc2NyaXB0aW9uIiBjb250ZW50PSIiPgogICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEsIG1heGltdW0tc2NhbGU9MSI+CiAgIDxtZXRhIG5hbWU9ImNzcmYtdG9rZW4iIGNvbnRlbnQ9IjMyZWMzZWJiY2I2YTEzYzBkMjg4OTQwZmM5NmYzMjkyNzM0Y2E5NWYyMzVhNmU1YzVlOWI5ZDQ0NTc5NmUzNGYiPgogIDxsaW5rIHJlbD0iY2Fub25pY2FsIiBocmVmPSJodHRwczovL3NwYXNpYm9taXIucnUvZG93bmxvYWQvcXJjb2RlLzM2MjY0Ij4KICAgIDxsaW5rIHJlbD0ic3R5bGVzaGVldCIgaHJlZj0iL2Nzcy9saWJzLWZlYzcwYjY1ZjEuY3NzP3Y9NSI+CiAgPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBocmVmPSIvY3NzL3N0eWxlcy00OTE2ODJmZjBmLmNzcz92PTYiPgogIDxsaW5rIHJlbD0ic3R5bGVzaGVldCIgaHJlZj0iL2Nzcy9zdHlsZXMtZG9wLmNzcz92PTc0Ij4KICA8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jc3MvZm9udGF3ZXNvbWUubWluLmNzcz92PTEiIHR5cGU9InRleHQvY3NzIj4KICA8bGluayBocmVmPSIvY3NzL21hdGVyaWFsSWNvbnMuY3NzP3Y9MSIgcmVsPSJzdHlsZXNoZWV0IiB0eXBlPSJ0ZXh0L2NzcyI+CiAgICA8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jc3MvanF1ZXJ5LmZhbmN5Ym94Lm1pbi5jc3M/dj0xIiB0eXBlPSJ0ZXh0L2NzcyI+CiAgPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBocmVmPSIvY3NzL2RhdGVwaWNrZXIubWluLmNzcz92PTEiIHR5cGU9InRleHQvY3NzIj4KICA8bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jc3MvdXNlci5taW4uY3NzP3Y9ODciIHR5cGU9InRleHQvY3NzIj4KCiAgICAgPG1ldGEgcHJvcGVydHk9Im9nOmltYWdlIiBjb250ZW50PSIvaW1hZ2VzL2xvZ28tc3BzbWlyLnBuZz92PTIiLz4KICA8bGluayByZWw9ImltYWdlX3NyYyIgaHJlZj0iL2ltYWdlcy9sb2dvLXNwc21pci5wbmc/dj0yMyIvPgogIDxsaW5rIHJlbD0iYXBwbGUtdG91Y2gtaWNvbiIgaHJlZj0iL2ltYWdlcy9sb2dvLXNwc21pci5wbmc/dj0yIiB0eXBlPSJpbWFnZS9wbmciLz4KICA8bGluayByZWw9Imljb24iIGhyZWY9Ii9mYXZpY29uLmljbz92PTIiIHR5cGU9ImltYWdlL3gtaWNvbiIvPgoKICAgICAgICAgICAgIDxsaW5rIHJlbD0ic3R5bGVzaGVldCIgaHJlZj0iL2Nzcy9uaWdodC5taW4uY3NzP3Y9MzkiPgogICAgICAgICAgICAgICAgICAgICAgPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBocmVmPSIvY3NzL3JlZ2lzdHJhdGlvbi1yZWRlc2lnbi5jc3M/dj0yMDI2MTAwMTA0Ij4KICAgICAgICAgICAgICAgICAgIDxtZXRhIG5hbWU9ImFwcGxlLWl0dW5lcy1hcHAiIGNvbnRlbnQ9ImFwcC1pZD0xNTkzODczNjU5Ij4KICAgICAKCiAJPG1ldGEgbmFtZT0ibXNhcHBsaWNhdGlvbi1UaWxlQ29sb3IiIGNvbnRlbnQ9IiMwMDAwMDAiPgogIDxtZXRhIG5hbWU9InRoZW1lLWNvbG9yIiBjb250ZW50PSIjMDAwMDAwIj4KICA8bWV0YSBuYW1lPSJmYWNlYm9vay1kb21haW4tdmVyaWZpY2F0aW9uIiBjb250ZW50PSJ0ZHBvcDJ0a2FzaDVwaGs2aGt6bTA3anBkZndhd3oiIC8+CiAJPG1ldGEgbmFtZT0ieWFuZGV4LXZlcmlmaWNhdGlvbiIgY29udGVudD0iNGU5MTJlZTE0YWRjNjA2MyIgLz4KIAk8bWV0YSBuYW1lPSJnb29nbGUtc2l0ZS12ZXJpZmljYXRpb24iIGNvbnRlbnQ9Ik5heTVLRWk3TDVxUHd1UzQyM0xEVWVzOGJhZ0xWUEk4azhsRnRGcVJ1RFEiIC8+CgogICAgICA8L2hlYWQ+CiA8Ym9keSBjbGFzcz0iZG93bmxvYWQtcGFnZSI+CiAKCjxkaXYgY2xhc3M9InN2Zy1pY29ucyI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sbnM6dj0iaHR0cHM6Ly92ZWN0YS5pby9uYW5vIj4KPHN5bWJvbCBpZD0ibHMtYXBwc3RvcmUiIHZpZXdCb3g9IjAgMCAxNTQgNDgiPgogICAgPGcgZmlsbD0iY3VycmVudENvbG9yIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwYXRoIGZpbGwtcnVsZT0ibm9uemVybyIgZD0iTTMuMDA2IDFBMi4wMDYgMi4wMDYgMCAwIDAgMSAzLjAwNnY0MS45ODhDMSA0Ni4xMDIgMS44OTMgNDcgMy4wMDYgNDdoMTQ3Ljk4OEEyLjAwNiAyLjAwNiAwIDAgMCAxNTMgNDQuOTk0VjMuMDA2QTIuMDAyIDIuMDAyIDAgMCAwIDE1MC45OTQgMUgzLjAwNnptMC0xaDE0Ny45ODhBMy4wMDIgMy4wMDIgMCAwIDEgMTU0IDMuMDA2djQxLjk4OEEzLjAwNiAzLjAwNiAwIDAgMSAxNTAuOTk0IDQ4SDMuMDA2QTMuMDAyIDMuMDAyIDAgMCAxIDAgNDQuOTk0VjMuMDA2QTMuMDA2IDMuMDA2IDAgMCAxIDMuMDA2IDB6Ij48L3BhdGg+CiAgICAgICAgPHRleHQgZm9udC1mYW1pbHk9Ik9wZW5TYW5zLVNlbWlCb2xkLCBPcGVuIFNhbnMiIGZvbnQtc2l6ZT0iMTAiIGZvbnQtd2VpZ2h0PSI1MDAiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEgMSkiPgogICAgICAgICAgICA8dHNwYW4geD0iNTAiIHk9IjE2Ij5Eb3dubG9hZCBvbiB0aGU8L3RzcGFuPgogICAgICAgIDwvdGV4dD4KICAgICAgICA8cGF0aCBkPSJNNjEuMDcyIDM2LjQ3OGwtLjIxMy0uNjA3Yy0uMTQzLS40MDQtLjMwNi0uODctLjQ5LTEuMzk4bC0uNDktMS4zOTgtLjIxMy0uNjA2aC01LjU2OWwtMS40MDYgNC4wMDloLTEuODM0bDUuMTYxLTE0LjAwOGgxLjcyN2w1LjE2IDE0LjAwOGgtMS44MzN6bS00LjIyLTExLjg4MmwtLjIyOC42NDZjLS4xNTIuNDMtLjMzOC45NjItLjU1NyAxLjU5NmE0NDMuNDkyIDQ0My40OTIgMCAwIDEtMS4yMjggMy41bC0uMjI4LjY0NWg0LjU0bC0yLjI0LTYuMzg3aC0uMDU5em0xMi43MDggMS4zMmMxLjMzMyAwIDIuNDEzLjQ4OSAzLjI0IDEuNDY2LjgyOC45NzcgMS4yNDIgMi4yNjUgMS4yNDIgMy44NjQgMCAxLjU5OC0uNDEgMi44ODYtMS4yMzIgMy44NjMtLjgyMS45NzctMS44OTEgMS40NjYtMy4yMSAxLjQ2Ni0uNzQ1IDAtMS40MDQtLjE1Ny0xLjk4LS40NzFhMy40NSAzLjQ1IDAgMCAxLTEuMzU4LTEuMzI1aC0uMDM5djUuMTkzaC0xLjY4OFYyNi4wMTNoMS42MDF2MS43aC4wMzljLjMwNC0uNTQ0Ljc2My0uOTggMS4zNzctMS4zMDZhNC4yMSA0LjIxIDAgMCAxIDIuMDA4LS40OXptLS4zMSA5LjE1NGMuOTI1IDAgMS42NjctLjM0OCAyLjIyNi0xLjA0My41Ni0uNjk2Ljg0LTEuNjIzLjg0LTIuNzgxIDAtMS4xNTktLjI4LTIuMDg2LS44NC0yLjc4Mi0uNTYtLjY5NS0xLjMwMS0xLjA0My0yLjIyNi0xLjA0My0uODk5IDAtMS42My4zNTMtMi4xOTIgMS4wNTgtLjU2My43MDUtLjg0NCAxLjYyOC0uODQ0IDIuNzY3cy4yOCAyLjA2Ljg0NCAyLjc2NmMuNTYyLjcwNSAxLjI5MyAxLjA1OCAyLjE5MiAxLjA1OHptMTEuODM1LTkuMTU0YzEuMzMyIDAgMi40MTIuNDg5IDMuMjQgMS40NjYuODI4Ljk3NyAxLjI0MiAyLjI2NSAxLjI0MiAzLjg2NCAwIDEuNTk4LS40MSAyLjg4Ni0xLjIzMiAzLjg2My0uODIxLjk3Ny0xLjg5MiAxLjQ2Ni0zLjIxMSAxLjQ2Ni0uNzQ0IDAtMS40MDQtLjE1Ny0xLjk4LS40NzFhMy40NSAzLjQ1IDAgMCAxLTEuMzU3LTEuMzI1aC0uMDM5djUuMTkzSDc2LjA2VjI2LjAxM2gxLjZ2MS43aC4wNGMuMzAzLS41NDQuNzYzLS45OCAxLjM3Ny0xLjMwNmE0LjIxIDQuMjEgMCAwIDEgMi4wMDgtLjQ5em0tLjMxIDkuMTU0Yy45MjQgMCAxLjY2Ny0uMzQ4IDIuMjI2LTEuMDQzLjU2LS42OTYuODQtMS42MjMuODQtMi43ODEgMC0xLjE1OS0uMjgtMi4wODYtLjg0LTIuNzgyLS41Ni0uNjk1LTEuMzAyLTEuMDQzLTIuMjI2LTEuMDQzLS45IDAtMS42My4zNTMtMi4xOTMgMS4wNTgtLjU2Mi43MDUtLjg0NCAxLjYyOC0uODQ0IDIuNzY3cy4yODIgMi4wNi44NDQgMi43NjZjLjU2My43MDUgMS4yOTQgMS4wNTggMi4xOTMgMS4wNTh6bTExLjM1LTIuNDQ2Yy4wODQgMS4yMzYuNiAyLjIyNiAxLjU0NyAyLjk3Ljk0Ny43NDUgMi4xNjIgMS4xMTcgMy42NDMgMS4xMTcgMS42MSAwIDIuODg2LS4zNzQgMy44MjctMS4xMjEuOTQtLjc0OCAxLjQxMS0xLjc2MiAxLjQxMS0zLjA0NCAwLTEuMDAzLS4zMTctMS44MDUtLjk1LTIuNDA3LS42MzQtLjYwMi0xLjY3Ni0xLjA4NC0zLjEyNC0xLjQ0NmwtMS40NjUtLjM4OWMtLjk1LS4yNDYtMS42MzUtLjUzOC0yLjA1Mi0uODc4YTEuNjEgMS42MSAwIDAgMS0uNjI2LTEuMzA2YzAtLjY4Ni4yODctMS4yNDIuODU5LTEuNjcuNTcyLS40MjcgMS4zMTEtLjY0IDIuMjE3LS42NC45MTIgMCAxLjY1Mi4yMTcgMi4yMjEuNjUuNTcuNDM0Ljg5MyAxLjAyNi45NyAxLjc3N2gxLjc0NmMtLjAzOC0xLjE3OC0uNTE0LTIuMTQtMS40MjYtMi44ODMtLjkxMi0uNzQ1LTIuMDYzLTEuMTE3LTMuNDUzLTEuMTE3LTEuNDU1IDAtMi42NDQuMzctMy41NjUgMS4xMDctLjkyMi43MzgtMS4zODMgMS42ODktMS4zODMgMi44NTQgMCAxLjgzMSAxLjI0MiAzLjA2NCAzLjcyNiAzLjY5OGwxLjc5NC40NjZjLjk0NC4yNCAxLjYzMi41NSAyLjA2Mi45MzIuNDMuMzgyLjY0NS44Ny42NDUgMS40NjYgMCAuNjg2LS4zMDkgMS4yNTQtLjkyNyAxLjcwMy0uNjE3LjQ1LTEuMzk4LjY3NS0yLjM0Mi42NzUtLjk5NiAwLTEuODI0LS4yMy0yLjQ4NC0uNjktLjY2LS40NTktMS4wMzEtMS4wNjctMS4xMTUtMS44MjRoLTEuNzU2em0xMy4wNDctOC45N3YyLjM2aC0xLjQ1NXYxLjM5N2gxLjQ1NXY2LjM0OWMwIDEuMDAzLjIwMiAxLjcyLjYwNyAyLjE1LjQwNC40MyAxLjA3OC42NDUgMi4wMjIuNjQ1LjIgMCAuNDA2LS4wMDguNjE2LS4wMjQuMjEtLjAxNi4zNjctLjAzNy40Ny0uMDYzdi0xLjQyN2ExMy4wMSAxMy4wMSAwIDAgMS0uMzI5LjAzYy0uMTYyLjAxMi0uMjk0LjAxOS0uMzk4LjAxOS0uNDQ2IDAtLjc3NC0uMTE0LS45ODQtLjM0LS4yMS0uMjI3LS4zMTYtLjU4LS4zMTYtMS4wNTh2LTYuMjhoMi4wMzd2LTEuMzk5aC0yLjAzN3YtMi4zNThoLTEuNjg4em0xMC4xNDcgMTIuOTJjLTEuNDY4IDAtMi42MzgtLjQ4My0zLjUxMS0xLjQ1LS44NzMtLjk2OC0xLjMxLTIuMjYtMS4zMS0zLjg3OCAwLTEuNjI1LjQzNy0yLjkyIDEuMzEtMy44ODMuODczLS45NjUgMi4wNDMtMS40NDcgMy41MTEtMS40NDcgMS40NjkgMCAyLjY0LjQ4MiAzLjUxMiAxLjQ0Ny44NzMuOTY0IDEuMzEgMi4yNTggMS4zMSAzLjg4MyAwIDEuNjE3LS40MzcgMi45MS0xLjMxIDMuODc4LS44NzMuOTY3LTIuMDQzIDEuNDUtMy41MTIgMS40NXptMC0xLjUwNGMuOTc3IDAgMS43MzktLjMzOCAyLjI4NS0xLjAxNC41NDctLjY3Ni44Mi0xLjYxMy44Mi0yLjgxIDAtMS4yMDQtLjI3My0yLjE0My0uODItMi44MTYtLjU0Ni0uNjczLTEuMzA4LTEuMDEtMi4yODUtMS4wMS0uOTc2IDAtMS43MzguMzM5LTIuMjg0IDEuMDE1LS41NDcuNjc3LS44MiAxLjYxMy0uODIgMi44MSAwIDEuMTk4LjI3NSAyLjEzNS44MjUgMi44MS41NS42NzcgMS4zMSAxLjAxNSAyLjI4IDEuMDE1em02Ljg0IDEuNDA4aDEuNjg4di02LjQ3NWMwLS43MzguMjA1LTEuMzMzLjYxNi0xLjc4Ni40MS0uNDUzLjk1NS0uNjggMS42MzQtLjY4LjIwNyAwIC4zOTYuMDEuNTY4LjAzLjE3MS4wMTkuMjkuMDQyLjM1NC4wNjd2LTEuNjZhNC4xMjkgNC4xMjkgMCAwIDAtLjY5OS0uMDU4Yy0uNjA4IDAtMS4xNDMuMTYyLTEuNjA1LjQ4Ni0uNDYzLjMyMy0uNzcxLjc2LS45MjcgMS4zMWgtLjAzOHYtMS42OTloLTEuNTkxdjEwLjQ2NXptMTAuNzEtOS4wNzZjLS44MjIgMC0xLjUwMy4yNzEtMi4wNDMuODE1LS41NC41NDQtLjgzOSAxLjI1OS0uODk3IDIuMTQ1aDUuNzUzYy0uMDItLjg4Ni0uMjg3LTEuNjAxLS44LTIuMTQ1LS41MTUtLjU0NC0xLjE4Ni0uODE1LTIuMDE0LS44MTV6bTIuNzc0IDYuMDg2aDEuNjY4Yy0uMTQyLjktLjYyIDEuNjM5LTEuNDM1IDIuMjE4LS44MTUuNTgtMS43ODIuODY5LTIuOS44NjktMS40NjkgMC0yLjYzNS0uNDc3LTMuNDk4LTEuNDMyLS44NjMtLjk1NS0xLjI5NS0yLjI0LTEuMjk1LTMuODU5IDAtMS42MjQuNDMtMi45MjUgMS4yOS0zLjkwMi44Ni0uOTc3IDIuMDAyLTEuNDY2IDMuNDI0LTEuNDY2IDEuMzk3IDAgMi41MDMuNDYgMy4zMTggMS4zNzlzMS4yMjIgMi4xNyAxLjIyMiAzLjc1NnYuNjZoLTcuNTA4di4wOThjMCAuOTk2LjI4MSAxLjc5Mi44NDQgMi4zODguNTYzLjU5NSAxLjMxLjg5MyAyLjI0Ljg5My42NTQgMCAxLjIxOC0uMTQ0IDEuNjk0LS40MzIuNDc1LS4yODguNzg3LS42NzguOTM2LTEuMTd6Ij48L3BhdGg+CiAgICAgICAgPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBkPSJNMzcuMDMyIDM0LjIxOWMtMS4yMDIgMS43NTEtMi40NDYgMy40OTItNC40MSAzLjUyOC0xLjkzMi4wMzYtMi41NTEtMS4xNC00Ljc1Ni0xLjE0LTIuMjA3IDAtMi44OTcgMS4xMDQtNC43MjIgMS4xNzYtMS44OTUuMDcxLTMuMzM2LTEuODkxLTQuNTQ5LTMuNjM0LTIuNDc2LTMuNTY1LTQuMzY2LTEwLjA4LTEuODI0LTE0LjQ3NiAxLjI1OS0yLjE4MyAzLjUxNC0zLjU2NSA1Ljk1OC0zLjYwMSAxLjg2Mi0uMDM0IDMuNjIgMS4yNSA0Ljc1NyAxLjI1IDEuMTM5IDAgMy4yNzMtMS41NDIgNS41MTctMS4zMTYuOTM5LjAzOSAzLjU3NS4zNzcgNS4yNjggMi44NDUtLjEzNC4wODctMy4xNDcgMS44MzQtMy4xMSA1LjQ3MS4wMzcgNC4zNDYgMy44MjIgNS43OSAzLjg2NiA1LjgxLS4wMzQuMTAyLS42MDUgMi4wNjItMS45OTUgNC4wODd6bS04LjI0NC0yMi45ODZjMS4wNC0xLjIxNCAyLjc5NS0yLjExNiA0LjI0NC0yLjE3Ni4xODUgMS42ODUtLjQ5NSAzLjM3Mi0xLjUgNC41ODgtMS4wMDcgMS4yMTQtMi42NTYgMi4xNTktNC4yNzMgMi4wMzMtLjIyLTEuNjQ5LjU5NS0zLjM2OCAxLjUzLTQuNDQ1eiI+PC9wYXRoPgogICAgPC9nPgo8L3N5bWJvbD4KPHN5bWJvbCBpZD0ibHMtZ29vZ2xlcGxheSIgdmlld0JveD0iMCAwIDE1NCA0OCI+CiAgICA8ZyBmaWxsPSJjdXJyZW50Q29sb3IiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBkPSJNMy4wMDYgMUEyLjAwNiAyLjAwNiAwIDAgMCAxIDMuMDA2djQxLjk4OEMxIDQ2LjEwMiAxLjg5MyA0NyAzLjAwNiA0N2gxNDcuOTg4QTIuMDA2IDIuMDA2IDAgMCAwIDE1MyA0NC45OTRWMy4wMDZBMi4wMDIgMi4wMDIgMCAwIDAgMTUwLjk5NCAxSDMuMDA2em0wLTFoMTQ3Ljk4OEEzLjAwMiAzLjAwMiAwIDAgMSAxNTQgMy4wMDZ2NDEuOTg4QTMuMDA2IDMuMDA2IDAgMCAxIDE1MC45OTQgNDhIMy4wMDZBMy4wMDIgMy4wMDIgMCAwIDEgMCA0NC45OTRWMy4wMDZBMy4wMDYgMy4wMDYgMCAwIDEgMy4wMDYgMHoiPjwvcGF0aD4KICAgICAgICA8cGF0aCBkPSJNMTE2Ljc5NyAzMi42ODJjMCAxLjQxOC0uMzEzIDIuNTQ0LS45NCAzLjM3Ni0uNjI4LjgzMy0xLjQ2OCAxLjI1LTIuNTIgMS4yNS0xLjI0NCAwLTIuMTk2LS40MzgtMi44NTYtMS4zMTN2NC42NDJoLTFWMjguMDRoLjkzMmwuMDUgMS4yODdjLjY1Ni0uOTcgMS42MDUtMS40NTUgMi44NDgtMS40NTUgMS4wODcgMCAxLjk0LjQxMiAyLjU1OCAxLjIzNi42MTkuODI0LjkyOCAxLjk2OC45MjggMy40MzF2LjE0M3ptLTEuMDA4LS4xNzdjMC0xLjE2LS4yMzgtMi4wNzctLjcxNC0yLjc1LS40NzYtLjY3Mi0xLjE0LTEuMDA5LTEuOTktMS4wMDktLjYxNiAwLTEuMTQ2LjE0OS0xLjU4OC40NDYtLjQ0Mi4yOTctLjc4MS43MjktMS4wMTYgMS4yOTV2NC4zNjVjLjI0LjUyLjU4NS45MTkgMS4wMzMgMS4xOTQuNDQ4LjI3NC45NzcuNDEyIDEuNTg3LjQxMi44NDYgMCAxLjUwNS0uMzM4IDEuOTc4LTEuMDE0LjQ3NC0uNjc1LjcxLTEuNjU1LjcxLTIuOTM5em00LjM2IDQuNjM0aC0xLjAwOFYyNC4yMjJoMS4wMDhWMzcuMTR6bTguNDY2IDBjLS4xLS4yODYtLjE2NS0uNzEtLjE5My0xLjI3LS4zNTMuNDYtLjgwMi44MTQtMS4zNDggMS4wNjRhNC4xMjUgNC4xMjUgMCAwIDEtMS43MzQuMzc0Yy0uODc0IDAtMS41ODEtLjI0NC0yLjEyMS0uNzMyLS41NC0uNDg3LS44MS0xLjEwNC0uODEtMS44NSAwLS44ODUuMzY3LTEuNTg2IDEuMTA0LTIuMTAyLjczNi0uNTE2IDEuNzYyLS43NzQgMy4wNzgtLjc3NGgxLjgyM3YtMS4wMzRjMC0uNjUtLjItMS4xNjItLjYtMS41MzUtLjQwMS0uMzcyLS45ODUtLjU1OS0xLjc1Mi0uNTU5LS43IDAtMS4yOC4xOC0xLjczOS41MzgtLjQ1OS4zNi0uNjg5Ljc5LS42ODkgMS4yOTVsLTEuMDA4LS4wMDhjMC0uNzIzLjMzNi0xLjM1IDEuMDA4LTEuODguNjcyLS41MyAxLjQ5OC0uNzk0IDIuNDc4LS43OTQgMS4wMTQgMCAxLjgxMy4yNTQgMi4zOTguNzYuNTg2LjUwOC44ODYgMS4yMTYuOTAzIDIuMTI0djQuMzA2YzAgLjg4LjA5MyAxLjUzOS4yNzcgMS45NzZ2LjFoLTEuMDc1em0tMy4xNTgtLjcyM2MuNjcyIDAgMS4yNzMtLjE2MyAxLjgwMi0uNDg4LjUyOS0uMzI1LjkxNC0uNzYgMS4xNTUtMS4zMDN2LTIuMDAyaC0xLjc5OGMtMS4wMDIuMDExLTEuNzg2LjE5NS0yLjM1Mi41NS0uNTY1LjM1Ny0uODQ4Ljg0Ni0uODQ4IDEuNDY4IDAgLjUxLjE4OS45MzQuNTY3IDEuMjcuMzc4LjMzNy44Ny41MDUgMS40NzQuNTA1em05LjUxNy0uNzI0bDIuNjU0LTcuNjUyaDEuMDg0bC0zLjg4MSAxMC42NDYtLjIwMi40NzFjLS40OTggMS4xMDUtMS4yNjggMS42NTctMi4zMSAxLjY1Ny0uMjQgMC0uNDk4LS4wNC0uNzcyLS4xMThsLS4wMDktLjgzMy41MjEuMDUxYy40OTMgMCAuODkyLS4xMjIgMS4xOTctLjM2Ni4zMDUtLjI0NC41NjQtLjY2My43NzctMS4yNTdsLjQ0NS0xLjIyOC0zLjQyNy05LjAyM2gxLjFsMi44MjMgNy42NTJ6Ij48L3BhdGg+CiAgICAgICAgPHBhdGggZmlsbC1ydWxlPSJub256ZXJvIiBkPSJNMTUgMzYuNjFWMTEuODM4YzAtLjg2NS41LTEuNjEyIDEuMjI3LTEuOTY3bDE0LjMxNCAxNC4zNS0xNC4zMiAxNC4zNTRBMi4xODYgMi4xODYgMCAwIDEgMTUgMzYuNjExem0yMC4wODItNy44MzhMMTkuNDMxIDM3LjgzbDEyLjM0NC0xMi4zNzQgMy4zMDcgMy4zMTZ6bTQuODY1LTYuMjg1Yy41Mi40Ljg1NiAxLjAyOS44NTYgMS43MzcgMCAuNjk3LS4zMjUgMS4zMTgtLjgzMiAxLjcxOGwtMy4zMjUgMS45MjQtMy42MzgtMy42NDcgMy42MzYtMy42NDQgMy4zMDMgMS45MTJ6TTE5LjQ0IDEwLjYxOGwxNS42NCA5LjA1Mi0zLjMwNSAzLjMxM0wxOS40NCAxMC42MTh6Ij48L3BhdGg+CiAgICAgICAgPHBhdGggZD0iTTY1LjUzOSAyOS45MDVzLjEwNy40MjkuMTA3IDEuMTcxYzAgMy41MTktMi41NDIgNS44OTgtNi4wMTUgNS44OThBNi41NzMgNi41NzMgMCAwIDEgNTMgMzAuNDdDNTMgMjcuMTEgNTUuODUxIDI0IDU5LjUzNyAyNGMyLjg5NCAwIDQuNDgyIDEuNzY3IDQuNDgyIDEuNzY3bC0xLjIzNyAxLjI4cy0xLjE4LTEuMjc2LTMuMTgyLTEuMjc2Yy0yLjU5NSAwLTQuNjY0IDIuMDU4LTQuNjY0IDQuNzMxYTQuNjQgNC42NCAwIDAgMCA0LjY1OSA0LjcwMmMxLjk0NSAwIDQuMDA1LTEuMDU2IDQuMjEzLTMuNTMzaC00LjIydi0xLjc2Nmg1Ljk1em00Ljg3NC0xLjI3OGMyLjAwOCAwIDQuMTg1IDEuNDIyIDQuMTg1IDQuMTg0IDAgMi40MS0xLjg3MiA0LjE1NS00LjE1NiA0LjE1NS0yLjUyMyAwLTQuMjItMS45NDQtNC4yMi00LjIwNCAwLTIuMjI2IDEuNzUtNC4xMzUgNC4xOTEtNC4xMzV6bS4wMjUgMS42MzhjLTEuMzUgMC0yLjM4NiAxLjA3OC0yLjM4NiAyLjUyMyAwIDEuNDc1IDEuMDUgMi41NDEgMi4zOCAyLjU0MSAxLjIxMSAwIDIuMzQ1LS45OTggMi4zNDUtMi41MyAwLTEuNTY0LTEuMTM4LTIuNTM0LTIuMzQtMi41MzR6bTkuMDkyLTEuNjM4YzIuMDA3IDAgNC4xODQgMS40MjIgNC4xODQgNC4xODQgMCAyLjQxLTEuODcxIDQuMTU1LTQuMTU1IDQuMTU1LTIuNTIzIDAtNC4yMi0xLjk0NC00LjIyLTQuMjA0IDAtMi4yMjYgMS43NS00LjEzNSA0LjE5MS00LjEzNXptLjAyNCAxLjYzOGMtMS4zNDkgMC0yLjM4NiAxLjA3OC0yLjM4NiAyLjUyMyAwIDEuNDc1IDEuMDUgMi41NDEgMi4zODEgMi41NDEgMS4yMTEgMCAyLjM0NC0uOTk4IDIuMzQ0LTIuNTMgMC0xLjU2NC0xLjEzOC0yLjUzNC0yLjMzOS0yLjUzNHptOC45MTgtMS42MzRjLjk3NiAwIDEuNzExLjM3OCAyLjI0OS45NTd2LS43MDZoMS43NDh2Ny40OTJjMCAyLjk0NC0xLjY5OSA0LjM0OC0zLjkyNyA0LjM0OC0yLjAzOCAwLTMuMTgyLTEuMjU0LTMuNzUtMi40NTZsMS42MDItLjY3Yy4yMjIuNTM4Ljg2MSAxLjQ4NSAyLjEzNSAxLjQ4NSAxLjMxOCAwIDIuMTkxLS44NjIgMi4xOTEtMi4zdi0uODIzYy0uNDY2LjU0Mi0xLjA5OCAxLjAxNC0yLjI4NiAxLjAxNC0xLjkyMiAwLTMuOTY1LTEuNjY1LTMuOTY1LTQuMTc1IDAtMi4yMDMgMS43NjItNC4xNjYgNC4wMDMtNC4xNjZ6bS4xNjIgMS42MzVjLTEuMTc2IDAtMi4zMy45NTUtMi4zMyAyLjU1NiAwIDEuNTQgMS4xMTEgMi41MSAyLjMwNiAyLjUxIDEuMTI2IDAgMi4yNTItLjg5NyAyLjI1Mi0yLjUyNiAwLTEuNjAyLTEuMTI5LTIuNTQtMi4yMjgtMi41NHptMTEuNjA4LTEuNjQ1YzEuNjY3IDAgMi45MjggMS4xMTIgMy40NjggMi40NDRsLjI5LjY4LTUuNTkxIDIuMzJjLjMzNC42MjEuODczIDEuMjYzIDIuMDQ1IDEuMjYzIDEuMDQ0IDAgMS42NjktLjU2NyAyLjA0My0xLjE0N2wxLjQ0MS45NTljLS42NDYuODY0LTEuNzI5IDEuODMtMy40OTMgMS44My0yLjExNCAwLTQuMDkyLTEuNTU4LTQuMDkyLTQuMTg1IDAtMi40ODIgMS43NzUtNC4xNjQgMy44OS00LjE2NHptLjA3MyAxLjYwNGMtMS4yMDcgMC0yLjM1MiAxLjI0My0yLjE5IDIuNDVsMy43MzMtMS41NmMtLjIzMy0uNDg1LS43ODEtLjg5LTEuNTQzLS44OXptLTYuNjI4IDYuNDk3di0xMi4yOWgxLjgzN3YxMi4yOWgtMS44Mzd6TTU2Ljg2MiAxMy4xMjhoMi42Mjd2My41ODRjLS40My4xNC0uODQyLjI0LTEuMjM4LjI5OGE4Ljc2MiA4Ljc2MiAwIDAgMS0xLjI4MS4wODhjLTEuMDgxIDAtMS45MTQtLjMyLTIuNS0uOTYtLjU4Ni0uNjQtLjg4LTEuNTQyLS44OC0yLjcwNyAwLTEuMTUuMzMxLTIuMDQ5Ljk5Mi0yLjY5OC42Ni0uNjUgMS41Ny0uOTc0IDIuNzMtLjk3NC43NDUgMCAxLjQ1MS4xNDMgMi4xMTkuNDNsLS40MS45NzFhNC4xMjQgNC4xMjQgMCAwIDAtMS43MzktLjRjLS43NjEgMC0xLjM2NC4yMzktMS44MDYuNzE4LS40NDMuNDc4LS42NjQgMS4xMzItLjY2NCAxLjk2MiAwIC44NzMuMTk5IDEuNTM2LjU5OCAxLjk5LjM5OC40NTQuOTcyLjY4MSAxLjcyLjY4MS4zNzggMCAuNzgyLS4wNDcgMS4yMTItLjE0MXYtMS44NDFoLTEuNDh2LTEuMDAxem02LjU3NyAzLjk3Yy0uODQgMC0xLjQ5Ni0uMjQ1LTEuOTctLjczNS0uNDczLS40OS0uNzEtMS4xNjUtLjcxLTIuMDI0IDAtLjg4Mi4yMi0xLjU3Ni42NTktMi4wOC40NC0uNTA1IDEuMDQzLS43NTcgMS44MTEtLjc1Ny43MTMgMCAxLjI3Ny4yMTYgMS42OS42NS40MTMuNDMyLjYyIDEuMDI4LjYyIDEuNzg2di42Mkg2MS45NGMuMDE3LjUyNS4xNTguOTI4LjQyNSAxLjIxLjI2Ny4yOC42NDMuNDIxIDEuMTI4LjQyMS4zMiAwIC42MTYtLjAzLjg5MS0uMDlzLjU3LS4xNi44ODctLjN2LjkzMmMtLjI4LjEzNC0uNTY0LjIyOC0uODUuMjg0YTUuMjEgNS4yMSAwIDAgMS0uOTgyLjA4M3ptLS4yMS00LjcyN2MtLjM2NCAwLS42NTYuMTE2LS44NzYuMzQ3LS4yMi4yMy0uMzUuNTY4LS4zOTMgMS4wMWgyLjQ1MWMtLjAwNi0uNDQ1LS4xMTQtLjc4My0uMzIyLTEuMDEzLS4yMDgtLjIzLS40OTUtLjM0NC0uODYtLjM0NHptNS42MjUgMy43OTljLjI4IDAgLjU2LS4wNDQuODQtLjEzMnYuODY0Yy0uMTI3LjA1Ni0uMjkuMTAyLS40OS4xNGEzLjM4IDMuMzggMCAwIDEtLjYyMy4wNTZjLTEuMDg3IDAtMS42My0uNTczLTEuNjMtMS43MnYtMi45MWgtLjczOHYtLjUwN2wuNzktLjQyLjM5Mi0xLjE0M2guNzA4VjExLjZoMS41Mzh2Ljg2OWgtMS41Mzh2Mi44OWMwIC4yNzcuMDY5LjQ4MS4yMDcuNjEzLjEzOC4xMzIuMzIuMTk4LjU0NC4xOTh6bTUuNjY1LjgzSDczLjM3di01LjRoMS4xNDhWMTd6bS0xLjIxNi02LjgzMWMwLS4yMDUuMDU2LS4zNjMuMTY4LS40NzQuMTEyLS4xMS4yNzMtLjE2Ni40ODEtLjE2Ni4yMDIgMCAuMzU5LjA1Ni40NzEuMTY2LjExMy4xMTEuMTY5LjI2OS4xNjkuNDc0IDAgLjE5NS0uMDU2LjM1LS4xNjkuNDYxLS4xMTIuMTEzLS4yNjkuMTY5LS40Ny4xNjktLjIxIDAtLjM3LS4wNTYtLjQ4Mi0uMTY5LS4xMTItLjExMi0uMTY4LS4yNjYtLjE2OC0uNDYxem00Ljg2OCA2Yy4yOCAwIC41Ni0uMDQzLjg0LS4xM3YuODYzYy0uMTI3LjA1Ni0uMjkuMTAyLS40OTEuMTRhMy4zOCAzLjM4IDAgMCAxLS42MjMuMDU2Yy0xLjA4NyAwLTEuNjMtLjU3My0xLjYzLTEuNzJ2LTIuOTFoLS43Mzh2LS41MDdsLjc5MS0uNDIuMzktMS4xNDNoLjcwOVYxMS42aDEuNTM4di44NjloLTEuNTM4djIuODljMCAuMjc3LjA3LjQ4MS4yMDcuNjEzLjEzOS4xMzIuMzIuMTk4LjU0NS4xOTh6bTkuMzA3LTEuODc5YzAgLjg4Mi0uMjI3IDEuNTctLjY4IDIuMDY1LS40NTIuNDk1LTEuMDgyLjc0My0xLjg4OS43NDNhMi41OSAyLjU5IDAgMCAxLTEuMzM4LS4zNDIgMi4yNTYgMi4yNTYgMCAwIDEtLjg5My0uOTgyYy0uMjA5LS40MjYtLjMxMy0uOTItLjMxMy0xLjQ4NCAwLS44NzYuMjI1LTEuNTYuNjc0LTIuMDUuNDUtLjQ5MiAxLjA4Mi0uNzM4IDEuOS0uNzM4Ljc4IDAgMS40LjI1MSAxLjg1NS43NTQuNDU2LjUwMy42ODQgMS4xODEuNjg0IDIuMDM0em0tMy45MzEgMGMwIDEuMjQ3LjQ2IDEuODcgMS4zODIgMS44Ny45MTEgMCAxLjM2Ny0uNjIzIDEuMzY3LTEuODcgMC0xLjIzNC0uNDYtMS44NS0xLjM3Ny0xLjg1LS40ODIgMC0uODMuMTU5LTEuMDQ3LjQ3OC0uMjE3LjMxOS0uMzI1Ljc3Ni0uMzI1IDEuMzcyem0xMCAyLjcxaC0xLjE1MnYtMy4zMmMwLS40MTctLjA4NC0uNzI4LS4yNTItLjkzMy0uMTY4LS4yMDUtLjQzNC0uMzA4LS43OTgtLjMwOC0uNDg1IDAtLjg0LjE0NC0xLjA2NS40My0uMjI0LjI4Ny0uMzM3Ljc2Ny0uMzM3IDEuNDRWMTdoLTEuMTQ3di01LjRoLjg5OGwuMTYxLjcwOGguMDZjLjE2Mi0uMjU4LjM5My0uNDU2LjY5Mi0uNTk2LjMtLjE0LjYzMi0uMjEuOTk3LS4yMSAxLjI5NSAwIDEuOTQzLjY2IDEuOTQzIDEuOTc3VjE3eiI+PC9wYXRoPgogICAgPC9nPgo8L3N5bWJvbD4KPC9zdmc+CjwvZGl2PgoKCgogIAogIAoKICAKCiAgPHNjcmlwdCBzcmM9Ii9qcy9zY3JpcHRzLTE5YzRhMTc0ZGQuanM/dj0zIiBkZWZlcj48L3NjcmlwdD4KICAKICA8c2NyaXB0IHNyYz0iL2pzL2pxdWVyeS0zLjYuMC5taW4uanMiPjwvc2NyaXB0PgogIDxzY3JpcHQgc3JjPSIvanMvanF1ZXJ5LmZhbmN5Ym94Lm1pbi5qcyI+PC9zY3JpcHQ+CiAgPHNjcmlwdCBzcmM9Ii9qcy9qcXVlcnkuaW5wdXRtYXNrLm1pbi5qcz92PTEuMSI+PC9zY3JpcHQ+CiAgPHNjcmlwdCBzcmM9Ii9qcy9qcXVlcnkubWFza2VkaW5wdXQubWluLmpzIj48L3NjcmlwdD4KICA8c2NyaXB0IHNyYz0iL2pzL2RhdGVwaWNrZXIubWluLmpzIj48L3NjcmlwdD4KCiAgPHNjcmlwdCBzcmM9Ii9qcy91c2VyLm1pbi5qcz92PTIwMjYxMDI5MDIiPjwvc2NyaXB0PgogIAoKCjwhLS0gWWFuZGV4Lk1ldHJpa2EgY291bnRlciAtLT4KPHNjcmlwdCB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiID4KICAoZnVuY3Rpb24gKGQsIHcsIGMpIHsKICAgIHcuc3BzUGVuZGluZ01ldHJpa2FHb2FscyA9IHcuc3BzUGVuZGluZ01ldHJpa2FHb2FscyB8fCBbXTsKICAgIHcuc3BzUmVhY2hHb2FsID0gdy5zcHNSZWFjaEdvYWwgfHwgZnVuY3Rpb24oZ29hbCkgewogICAgICBpZiAody55YUNvdW50ZXI4MzMxMTQyOSAmJiB0eXBlb2Ygdy55YUNvdW50ZXI4MzMxMTQyOS5yZWFjaEdvYWwgPT09ICJmdW5jdGlvbiIpIHsKICAgICAgICB0cnkgeyB3LnlhQ291bnRlcjgzMzExNDI5LnJlYWNoR29hbChnb2FsKTsgfSBjYXRjaChlKSB7IH0KICAgICAgICByZXR1cm47CiAgICAgIH0KICAgICAgdy5zcHNQZW5kaW5nTWV0cmlrYUdvYWxzLnB1c2goZ29hbCk7CiAgICB9OwogICAgZnVuY3Rpb24gZmx1c2hNZXRyaWthR29hbHMoKSB7CiAgICAgIHZhciBnb2FscyA9IHcuc3BzUGVuZGluZ01ldHJpa2FHb2FscyB8fCBbXTsKICAgICAgdy5zcHNQZW5kaW5nTWV0cmlrYUdvYWxzID0gW107CiAgICAgIGZvciAodmFyIGkgPSAwOyBpIDwgZ29hbHMubGVuZ3RoOyBpKyspIHsKICAgICAgICB3LnNwc1JlYWNoR29hbChnb2Fsc1tpXSk7CiAgICAgIH0KICAgIH0KICAgICh3W2NdID0gd1tjXSB8fCBbXSkucHVzaChmdW5jdGlvbigpIHsKICAgICAgdHJ5IHsKICAgICAgICB3LnlhQ291bnRlcjgzMzExNDI5ID0gbmV3IFlhLk1ldHJpa2EoewogICAgICAgICAgaWQ6ODMzMTE0MjksCiAgICAgICAgICBjbGlja21hcDp0cnVlLAogICAgICAgICAgdHJhY2tMaW5rczp0cnVlLAogICAgICAgICAgYWNjdXJhdGVUcmFja0JvdW5jZTp0cnVlCiAgICAgICAgfSk7CiAgICAgICAgZmx1c2hNZXRyaWthR29hbHMoKTsKICAgICAgfSBjYXRjaChlKSB7IH0KICAgIH0pOwoKICAgIGZ1bmN0aW9uIGxvYWRNZXRyaWthKCkgewogICAgICB2YXIgbiA9IGQuZ2V0RWxlbWVudHNCeVRhZ05hbWUoInNjcmlwdCIpWzBdLAogICAgICAgIHggPSAiaHR0cHM6Ly9tYy55YW5kZXgucnUvbWV0cmlrYS93YXRjaC5qcyIsCiAgICAgICAgcyA9IGQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7CiAgICAgIGZvciAodmFyIGkgPSAwOyBpIDwgZG9jdW1lbnQuc2NyaXB0cy5sZW5ndGg7IGkrKykgewogICAgICAgIGlmIChkb2N1bWVudC5zY3JpcHRzW2ldLnNyYyA9PT0geCkgeyByZXR1cm47IH0KICAgICAgfQogICAgICBpZiAoIW4gfHwgIW4ucGFyZW50Tm9kZSkgewogICAgICAgIHJldHVybjsKICAgICAgfQogICAgICBzLnR5cGUgPSAidGV4dC9qYXZhc2NyaXB0IjsKICAgICAgcy5hc3luYyA9IHRydWU7CiAgICAgIHMuc3JjID0geDsKICAgICAgbi5wYXJlbnROb2RlLmluc2VydEJlZm9yZShzLCBuKTsKICAgIH0KCiAgICBpZiAoZC5yZWFkeVN0YXRlID09PSAiY29tcGxldGUiKSB7CiAgICAgIHNldFRpbWVvdXQobG9hZE1ldHJpa2EsIDApOwogICAgfSBlbHNlIGlmICh3LmFkZEV2ZW50TGlzdGVuZXIpIHsKICAgICAgdy5hZGRFdmVudExpc3RlbmVyKCJsb2FkIiwgZnVuY3Rpb24oKSB7IHNldFRpbWVvdXQobG9hZE1ldHJpa2EsIDApOyB9LCBmYWxzZSk7CiAgICB9IGVsc2UgewogICAgICBzZXRUaW1lb3V0KGxvYWRNZXRyaWthLCAwKTsKICAgIH0KICB9KShkb2N1bWVudCwgd2luZG93LCAieWFuZGV4X21ldHJpa2FfY2FsbGJhY2tzIik7Cjwvc2NyaXB0Pgo8bm9zY3JpcHQ+PGRpdj48aW1nIHNyYz0iaHR0cHM6Ly9tYy55YW5kZXgucnUvd2F0Y2gvODMzMTE0MjkiIHN0eWxlPSJwb3NpdGlvbjphYnNvbHV0ZTsgbGVmdDotOTk5OXB4OyIgYWx0PSIiIC8+PC9kaXY+PC9ub3NjcmlwdD4KPCEtLSAvWWFuZGV4Lk1ldHJpa2EgY291bnRlciAtLT4KIDwvYm9keT4KPC9odG1sPgo=" alt="QR-код для добровольной поддержки проекта"></a>
+              <p><a href="https://spasibomir.ru/pay/36264" target="_blank" rel="noopener noreferrer">Перейти к донату</a></p>
+              <p class="smallprint">Пожертвование не влияет на доступность или точность расчёта.</p>
+            </div>
+          </div>
+        </div>
+        <div class="legal" role="note"><h3>Условия использования и отказ от гарантий</h3><p>Калькулятор предоставляется на условиях «как есть» без каких-либо гарантий точности и бесперебойной работы. Полученные данные являются справочными. Пользователь самостоятельно проверяет результаты и несет полную ответственность за решения, принятые на их основе.</p></div>
+        <p class="smallprint">Данные расчётов обрабатываются локально в браузере; проект можно сохранить или перенести через JSON. На серверы проекта расчёты не отправляются. Сторонний сайт пожертвований открывается только при переходе по ссылке.</p>
+      </div>
+      <div id="panel-guide" class="tabPanel guide hide"><h2>Как пользоваться</h2><ol>
+      <li>Укажите номер заказа и параметры резки: фактическую толщину пропила, технологическую подрезку с каждого торца.</li>
+      <li>Заполните ведомость деталей. У деталей одной группы должны быть одинаковые профиль и марка стали.</li>
+      <li>Добавьте варианты исходных хлыстов (например, 6000 и 12000 мм), при необходимости складские остатки с ограниченным количеством.</li>
+      <li>Нажмите <b>«Рассчитать раскрой»</b>. В «Сводке» проверьте потребность, коэффициент использования, отходы и закупку.</li>
+      <li>Откройте «Карты раскроя». Видны координаты каждого реза от начала хлыста, длины деталей, последовательность и пригодность остатка. Одинаковые карты можно объединить.</li>
+      <li>В «Сравнении длин» смотрите альтернативные расчёты отдельно для каждого доступного типоразмера.</li>
+      <li>Для вставки ведомости из Excel выделите диапазон и используйте кнопку «Вставить из Excel»: поддерживаются две колонки «Длина / Кол-во» либо полный набор полей. Столбцы должны быть разделены табуляцией.</li>
+      <li>Выберите «Быстрый», «Сбалансированный» или «Углублённый» режим. Во вкладке «Сравнение длин» доступны отдельные сравнения трёх режимов.</li>
+      <li>Откройте <b>«Остатки и склад»</b>: проверьте перечень пригодных отрезков (будущий склад) и отходов, а также расход складских хлыстов.</li>
+      <li>Только после фактической резки нажмите <b>«Провести склад»</b>, подтвердите операцию. Остатки по плану станут складскими позициями для следующих заказов, использованные складские отрезки будут списаны. Проверка физического выхода обязательна.</li>
+      <li>Откройте <b>«Журнал операций»</b> и проверьте списания, приходы и отходы. Два раза провести один и тот же номер заказа нельзя.</li>
+      <li>Сохраните <b>проект JSON</b> после проведения — это переносной архив склада вместе с журналом. При создании следующего заказа используйте <b>«Новый заказ (склад сохранить)»</b>.</li>
+      <li>Выведите рабочие карты на принтер или сохраните Excel-отчёт (включая листы складских движений); проект можно открыть позднее.</li>
+      </ol><h3>Что важно учитывать</h3><p>Расчёт применим к <b>одномерному линейному раскрою</b>. Не учитываются косые запилы, подготовка к сварке, ограничения последовательности станка, нестандартные захваты/зажимы и контроль геометрии — их учитывает технолог до выдачи карт в производство.</p>
+      <p><b>Алгоритм:</b> несколько стратегий эвристической упаковки, ограниченная динамическая оптимизация наполнения отдельного хлыста для целых миллиметров и локальное устранение лишних хлыстов. Глобальный математический минимум не гарантируется. Режимы отличаются глубиной поиска. Сбалансированный включает быстрые попытки, углублённый — оба предыдущих режима; сравнение идёт по заданному приоритету.</p>
+      <p><b>Конвенция пропила:</b> на каждую деталь списывается её длина плюс ширина одного реза; с каждого торца исходного хлыста дополнительно списывается одинаковый припуск. Погрешность длины и максимальный размер захвата не учитываются.</p>
+      <p><b>Склад:</b> Пригодность остатка определяется установленным порогом длины, а не гарантированной пригодностью под любой будущий заказ. Проводка отражает <b>плановые</b> остатки; фактические обмеры перед фиксацией обязательно сверяет ответственный мастер. Закупочные длины — предложения для покупки, а не реальные остатки на складе. Для коллективной работы база/сервер не предусмотрены — один JSON-проект является единственным источником данных.</p>
+      <p><b>Excel-отчёт:</b> это зафиксированный результат расчёта, а не макрос. Для изменения плана пересчитайте проект здесь и выгрузите новый файл. Полностью работает без подключения к интернету.</p>
+      <p><b>Координаты:</b> начало детали отсчитывается после подрезки переднего торца, затем идёт её чистая длина и отдельный пропил. Для каждого изделия консервативно резервируется один пропил. После последнего пропила начинается полезный или непригодный концевой остаток; по правому торцу отдельно учитывается припуск. Реальные ограничения зажима, углов и точности необходимо проверить перед запуском резки.</p>
+      <p><b>Данные:</b> остаются в вашем браузере (автосохранение, если разрешено настройками) и в файлах, которые вы сами экспортируете. Они не отправляются на сервер.</p>
+      </div>
+    </section>
+    <div id="status" class="noprint"></div>
+  </div>
+  <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
+  </div>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+</div>
+<dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
+ <form method="dialog" class="pasteform">
+  <h2 id="pasteTitle">Вставить таблицу Excel</h2>
+  <p class="sub">Скопируйте строки из Excel (Ctrl+C) и вставьте ниже (Ctrl+V). Поддерживаются колонки с заголовками, табуляция и CSV с разделителем «;».</p>
+  <label>Вставляемые строки<textarea id="pasteText" rows="9" placeholder="Длина;Кол-во&#10;1700;10&#10;1200;3"></textarea></label>
+  <div class="gridform"><label>Профиль по умолчанию<input id="pasteMaterial" placeholder="Труба 40×40×3"></label><label>Марка стали по умолчанию<input id="pasteGrade" placeholder="С245"></label><label>Действие<select id="pasteMode"><option value="replace">Заменить текущую таблицу</option><option value="append">Добавить к текущей</option></select></label></div>
+  <p class="smallprint" id="pasteHint">Для двух столбцов укажите материал и марку стали выше. Для полного формата: Позиция / Профиль / Сталь / Длина / Количество / Примечание.</p>
+  <div class="actionrow"><button class="btn primary" value="ok" id="applyPaste" type="button">Импортировать</button><button class="btn" value="cancel">Отмена</button></div>
+ </form>
+</dialog>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const initial=()=>({version:5,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
+let state, result=null, comparisons=[],modeComparisons=[];
+try{const old=localStorage.getItem('cutting_pro_5')||localStorage.getItem('cutting_pro_4')||localStorage.getItem('cutting_pro_3');state=old?Object.assign(initial(),JSON.parse(old)):initial()}catch(e){state=initial()}
+if(!Array.isArray(state.parts)||!Array.isArray(state.stocks)){state=initial()}
+if(!Array.isArray(state.bookedOrders))state.bookedOrders=[];
+if(!Array.isArray(state.journal))state.journal=[];
+state.version=5;
+if(!state.meta)state.meta=initial().meta;
+state.settings={...initial().settings,...(state.settings||{})};
+if(!state.meta.order)state.meta.order='МК-2026-001';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=x=>{if(x===null||x===undefined||String(x).trim()==='')return null;const v=Number(String(x).trim().replace(/\s/g,'').replace(',','.'));return Number.isFinite(v)?v:NaN};
+const nfmt=(x,d=0)=>Number(x||0).toLocaleString('ru-RU',{maximumFractionDigits:d,minimumFractionDigits:d});
+const mf=x=>nfmt(x,1);const key=(m,g)=>JSON.stringify([String(m).trim().toLowerCase(),String(g).trim().toLowerCase()]);
+const clampZero=x=>Math.max(0,Math.abs(x)<0.000001?0:x);
+function putStatus(t,err=false){$('#status').textContent=t;$('#status').style.color=err?'#a33b43':'#516f7f'}
+function persist(){try{localStorage.setItem('cutting_pro_5',JSON.stringify(state))}catch(e){}}
+const orderKey=()=>String(state.meta.order||'').trim().toLocaleLowerCase('ru-RU');
+const alreadyBooked=()=>state.bookedOrders.includes(orderKey());
+function flashBookState(){const b=$('#book');if(b){b.disabled=alreadyBooked()||!result;b.title=alreadyBooked()?'Этот номер заказа уже проведён в журнале':(!result?'Сначала рассчитайте раскрой':'Закрыть заказ по плановым остаткам');b.style.opacity=b.disabled?'.50':'1';}}
+function inputs(){for(const el of $$('[data-meta]')){el.value=state.meta?.[el.dataset.meta]??''}for(const el of $$('[data-setting]')){el.value=state.settings?.[el.dataset.setting]??''}}
+function renderParts(){const body=$('#parts-body');body.innerHTML=state.parts.map(p=>`<tr data-row-id="${p.id}" data-table="parts"><td><input class="pos" data-field="pos" value="${esc(p.pos)}" aria-label="Позиция"></td><td><input class="material" data-field="material" value="${esc(p.material)}" aria-label="Профиль"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}" aria-label="Сталь"></td><td><input class="tdnum" type="number" min="0" step="1" data-field="length" value="${esc(p.length)}"></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}"></td><td><input class="w130" data-field="note" value="${esc(p.note)}"></td><td><button class="btn sm danger" data-remove="parts" aria-label="Удалить деталь">×</button></td></tr>`).join('');}
+function renderStocks(){const body=$('#stock-body');body.innerHTML=state.stocks.map(p=>`<tr data-row-id="${p.id}" data-table="stocks"><td><input class="material" data-field="material" value="${esc(p.material)}"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}"></td><td><input class="tdnum" type="number" min="0" step="1" data-field="length" value="${esc(p.length)}"></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}" placeholder="∞"></td><td><input class="tdnum" type="number" min="0" step="0.01" data-field="price" value="${esc(p.price)}" placeholder="—"></td><td><select class="w130" data-field="kind"><option value="new" ${p.kind==='new'?'selected':''}>Покупка</option><option value="remnant" ${p.kind==='remnant'?'selected':''}>Складской остаток</option></select></td><td><input class="w130" data-field="origin" value="${esc(p.origin||'')}" placeholder="Стеллаж / № заказа"></td><td><button class="btn sm danger" data-remove="stocks" aria-label="Удалить хлыст">×</button></td></tr>`).join('');}
+function renderAll(){inputs();renderParts();renderStocks();if(!result){$('#panel-summary').innerHTML='<div class="empty">Заполните ведомость и нажмите «Рассчитать раскрой».</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderWarehouse(null);renderJournal();renderSidebar(null)}}
+function collect(){const settings=state.settings, parts=[], stocks=[];
+for(const [idx,p] of state.parts.entries()){
+ const length=num(p.length),qty=num(p.qty);if(qty===0||((qty===null)&&(length===0||length===null||String(p.material||'').trim()==='')))continue;
+ if(!String(p.material||'').trim())throw Error(`Деталь ${idx+1}: заполните профиль / сечение.`);
+ if(!Number.isSafeInteger(length)||length<=0)throw Error(`Деталь ${idx+1}: длина должна быть положительным целым числом миллиметров (шаг 1 мм).`);
+ if(!Number.isSafeInteger(qty)||qty<=0)throw Error(`Деталь ${idx+1}: количество должно быть целым положительным числом.`);
+ parts.push({...p,length,qty,material:p.material.trim(),grade:String(p.grade||'').trim()});}
+for(const [idx,p] of state.stocks.entries()){
+ const length=num(p.length),qty=num(p.qty),price=num(p.price);if(!String(p.material||'').trim()&&(length===null||length===0))continue;
+ if(!String(p.material||'').trim())throw Error(`Хлыст ${idx+1}: укажите профиль / сечение.`);
+ if(!Number.isSafeInteger(length)||length<=0)throw Error(`Хлыст ${idx+1}: длина должна быть положительным целым числом миллиметров (шаг 1 мм).`);
+ if(qty!==null&&(!Number.isSafeInteger(qty)||qty<0))throw Error(`Хлыст ${idx+1}: доступное количество должно быть целым неотрицательным числом.`);
+ if(price!==null&&(!Number.isFinite(price)||price<0))throw Error(`Хлыст ${idx+1}: цена должна быть неотрицательной.`);
+ if(p.kind==='remnant'&&qty===null)throw Error(`Складской остаток ${idx+1}: обязательно укажите количество.`);
+ stocks.push({...p,length,qty:qty===null?Infinity:qty,price,kind:p.kind==='remnant'?'remnant':'new',material:p.material.trim(),grade:String(p.grade||'').trim()});}
+if(!parts.length)throw Error('Ведомость деталей пуста.');if(!stocks.length)throw Error('Добавьте хотя бы один исходный хлыст.');
+const total=parts.reduce((a,p)=>a+p.qty,0);if(total>1800)throw Error(`Заявлено ${total} деталей. Для браузерного расчёта допускается не более 1800 штук в одном заказе; разбейте заказ на партии.`);
+const kerf=num(settings.kerf),trim=num(settings.trim),remnantMin=num(settings.remnantMin);
+for(const [name,val] of [['Ширина реза',kerf],['Подрезка торца',trim],['Порог остатка',remnantMin]])if(!Number.isFinite(val)||val<0)throw Error(`${name}: укажите неотрицательное число.`);
+if(!['cost','purchase','waste'].includes(settings.objective))throw Error('Неподдерживаемый вариант оптимизации.');
+const missing=[...new Set(parts.filter(p=>!stocks.some(s=>key(p.material,p.grade)===key(s.material,s.grade))).map(p=>p.material+' / '+p.grade))];
+if(missing.length)throw Error('Не найдены исходные хлысты для: '+missing.join('; '));
+for(const p of parts){const ss=stocks.filter(s=>key(s.material,s.grade)===key(p.material,p.grade)&&s.qty!==0);if(!ss.some(s=>s.length-2*trim>=p.length+kerf-1e-8))throw Error(`Позиция ${p.pos||p.id} (${mf(p.length)} мм) не помещается ни в один доступный хлыст с учётом реза и подрезки.`);}
+return{parts,stocks,kerf,trim,remnantMin,objective:settings.objective,searchMode:['quick','balanced','deep'].includes(settings.searchMode)?settings.searchMode:'balanced'};}
+function rng(seed){let x=seed|0;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296}}
+function pickPattern(pp,remaining,capacity,kerf,strategy,random){let best=null;
+ for(let trial=0;trial<(pp.length<15?7:4);trial++){
+  let ids=[...pp.keys()];if(trial===0)ids.sort((a,b)=>pp[b].length-pp[a].length);else if(trial===1)ids.sort((a,b)=>pp[a].length-pp[b].length);else if(trial===2)ids.sort((a,b)=>(pp[b].length+kerf)*(remaining[b]||0)-(pp[a].length+kerf)*(remaining[a]||0));else{ids.sort((a,b)=>pp[b].length-pp[a].length+(random()-.5)*(0.2+strategy*0.12)*Math.max(pp[a].length,pp[b].length))}
+  const entries=[],usedQty=new Array(pp.length).fill(0);let left=capacity,used=0;
+  for(const j of ids){let k=Math.min(remaining[j],Math.floor((left+1e-7)/(pp[j].length+kerf)));if(k>0){usedQty[j]=k;used+=k*(pp[j].length+kerf);left-=k*(pp[j].length+kerf);for(let q=0;q<k;q++)entries.push(j)}}
+  if(!best||used>best.used+1e-7||(Math.abs(used-best.used)<1e-7&&entries.length>best.entries.length))best={entries,used,left,usedQty};
+ }
+ return best;}
+
+// DP ищет плотное заполнение ОДНОГО хлыста с ограничениями количества.
+// При дробных длинах или крупном объёме автоматически используется эвристика.
+function pickPatternDP(pp,remaining,capacity,kerf){
+ const cap=Math.floor(capacity+1e-8);
+ if(cap<1||cap>16000||pp.length>30||!Number.isInteger(kerf)||!Number.isInteger(capacity))return null;
+ const bundles=[];
+ for(let j=0;j<pp.length;j++){
+  const size=pp[j].length+kerf;
+  if(!Number.isInteger(size)||size<=0)return null;
+  let count=Math.min(remaining[j],Math.floor(cap/size)),power=1;
+  while(count>0){const q=Math.min(power,count);bundles.push({j,q,size:q*size});count-=q;power*=2;}
+ }
+ if(!bundles.length||bundles.length>95)return null;
+ const parent=new Int32Array(cap+1).fill(-1),via=new Int16Array(cap+1);parent[0]=-2;
+ for(let i=0;i<bundles.length;i++){
+  const b=bundles[i];for(let x=cap;x>=b.size;x--){if(parent[x]===-1&&parent[x-b.size]!==-1){parent[x]=x-b.size;via[x]=i;}}
+ }
+ let best=cap;while(best>0&&parent[best]===-1)best--;
+ if(best===0)return null;
+ const usedQty=new Array(pp.length).fill(0),entries=[];
+ let x=best,safety=0;while(x>0){if(++safety>bundles.length)throw Error('Ошибка восстановления DP.');const b=bundles[via[x]];usedQty[b.j]+=b.q;for(let z=0;z<b.q;z++)entries.push(b.j);x=parent[x];}
+ return{entries,used:best,left:capacity-best,usedQty};
+}
+function recalcBar(b,conf){b.pieceLength=b.entries.reduce((s,p)=>s+p.length,0);b.kerf=b.entries.length*conf.kerf;b.trim=conf.trim*2;b.tail=clampZero(b.stock.length-b.trim-b.pieceLength-b.kerf);return b;}
+// Перенос деталей с последнего дорогого/неплотного хлыста на свободные места других.
+// Итог оценивается той же целевой метрикой, что и исходный план.
+function compactBars(input,config){
+ if(input.length>160||input.length<2)return input;
+ let bars=input.map(b=>({...b,entries:[...b.entries]}));
+ for(let pass=0;pass<3;pass++){
+  let changed=false;
+  const indices=[...bars.keys()].sort((a,b)=>{
+   const aa=bars[a],bb=bars[b];return (bb.stock.kind==='new'?bb.stock.length:0)-(aa.stock.kind==='new'?aa.stock.length:0)||bb.tail-aa.tail;
+  });
+  for(const idx of indices){const source=bars[idx],group=key(source.stock.material,source.stock.grade);
+   const targets=bars.map((b,i)=>({b,i})).filter(t=>t.i!==idx&&key(t.b.stock.material,t.b.stock.grade)===group);
+   if(!targets.length)continue;
+   for(const descending of [true,false]){
+    const clone=bars.map(b=>({...b,entries:[...b.entries]}));
+    const move=[...source.entries].sort((a,b)=>descending?b.length-a.length:a.length-b.length);
+    let ok=true;
+    for(const p of move){const alloc=p.length+config.kerf;
+     const fits=targets.filter(t=>clone[t.i].tail+1e-7>=alloc).sort((a,b)=>(clone[a.i].tail-alloc)-(clone[b.i].tail-alloc));
+     if(!fits.length){ok=false;break;}
+     const dest=clone[fits[0].i];dest.entries.push(p);recalcBar(dest,config);
+    }
+    if(ok){clone.splice(idx,1);const orig=summarize(bars,config),next=summarize(clone,config),prices=clone.every(b=>b.stock.kind==='remnant'||b.stock.price!==null);
+     if(better(metric(next,config,prices),metric(orig,config,prices))){bars=clone;changed=true;break;}
+    }
+   }
+   if(changed)break;
+  }
+  if(!changed)break;
+ }
+ return bars;
+}
+
+function rankCandidate(c,config,variant,missingPrices){const{stock,pattern}=c;const used=pattern.used;let paid=stock.kind==='remnant'?0:stock.length;let primary;
+ if(config.objective==='cost'&&!missingPrices)primary=(stock.kind==='remnant'?0:stock.price)/used;
+ else if(config.objective==='waste')primary=(stock.length-used)/used + (stock.kind==='remnant'?-0.16:0);
+ else primary=paid/used + (stock.kind==='remnant'?-0.03:0);
+ const tie=stock.length/used;const noise=(variant>0?((variant%4)-1.5)*0.00001*(stock.length/used):0);
+ return primary+Math.max(0,tie-1)*((variant%3)*.002)+noise;}
+function runGreedy(pp,ss,config,variant,seed,useDP=false){const random=rng(seed),remaining=pp.map(p=>p.qty),usedStock=new Map(),bars=[];let todo=remaining.reduce((a,b)=>a+b,0);
+ const missingPrices=ss.some(s=>s.kind==='new'&&s.price===null);let safety=0;
+ while(todo>0){if(++safety>2000)throw Error('Превышен предел числа хлыстов.');let opts=[];
+  for(const stock of ss){if((usedStock.get(stock.id)||0)>=stock.qty)continue;const cap=stock.length-2*config.trim;
+   if(cap<=0)continue;let pattern=pickPattern(pp,remaining,cap,config.kerf,variant,random);
+   if(useDP){const dp=pickPatternDP(pp,remaining,cap,config.kerf);if(dp&&(!pattern||dp.used>pattern.used+1e-7))pattern=dp;}
+   if(pattern&&pattern.entries.length)opts.push({stock,pattern,score:rankCandidate({stock,pattern},config,variant,missingPrices)});}
+  if(!opts.length)throw Error(`Недостаточно доступных хлыстов для профиля «${pp[0]?.material||'—'}» (нехватка заготовок нужной длины либо ограничен склад).`);
+  opts.sort((a,b)=>a.score-b.score||a.stock.length-b.stock.length);let selected=opts[0];
+  if(variant%4===3&&opts.length>1&&opts[1].score<=opts[0].score*1.07)selected=opts[1];
+  const pattern=selected.pattern;for(let i=0;i<pp.length;i++)remaining[i]-=pattern.usedQty[i];todo-=pattern.entries.length;
+  usedStock.set(selected.stock.id,(usedStock.get(selected.stock.id)||0)+1);
+  bars.push({stock:selected.stock,entries:pattern.entries.map(i=>pp[i]),pieceLength:pattern.entries.reduce((a,i)=>a+pp[i].length,0),kerf:pattern.entries.length*config.kerf,trim:config.trim*2,tail:clampZero(selected.stock.length-2*config.trim-pattern.used)});
+ }
+ return bars;}
+function summarize(bars,config){let pieceCount=0,raw=0,kerf=0,trim=0,stockLength=0,boughtLength=0,newBars=0,remnantsUsed=0,reusable=0,scrap=0,cost=0,priceKnown=true;
+ for(const b of bars){pieceCount+=b.entries.length;raw+=b.pieceLength;kerf+=b.kerf;trim+=b.trim;stockLength+=b.stock.length;if(b.stock.kind==='new'){newBars++;boughtLength+=b.stock.length;if(b.stock.price===null)priceKnown=false;else cost+=b.stock.price;}else remnantsUsed++;if(b.tail>=config.remnantMin&&b.tail>0)reusable+=b.tail;else scrap+=b.tail;}
+ return {pieceCount,raw,kerf,trim,stockLength,boughtLength,newBars,remnantsUsed,reusable,scrap,totalWaste:scrap+kerf+trim,cost:priceKnown?cost:null,tail:reusable+scrap,barCount:bars.length,efficiency:stockLength>0?raw/stockLength:0};}
+function metric(s,config,costPossible){const objective=config.objective;if(objective==='cost'&&costPossible&&s.cost!==null)return[s.cost,s.boughtLength,s.scrap,s.barCount];if(objective==='waste')return[s.scrap,s.boughtLength,s.stockLength,s.barCount];return[s.boughtLength,s.stockLength,s.scrap,s.barCount];}
+function better(a,b){if(!b)return true;for(let i=0;i<a.length;i++){const eps=Math.max(1e-6,Math.abs(b[i])*1e-9);if(a[i]<b[i]-eps)return true;if(a[i]>b[i]+eps)return false;}return false;}
+function solveGroup(pp,ss,config){
+ const count=pp.reduce((a,p)=>a+p.qty,0),mode=config.searchMode||'balanced';
+ const attemptsFor=m=>m==='quick'?(count<=100?7:4):m==='deep'?(count<=100?36:count<=400?16:5):(count<=100?19:count<=400?11:4);
+ // Углубление не должно ухудшать найденное решение: множества кандидатов вложены.
+ const levels=mode==='quick'?['quick']:mode==='deep'?['quick','balanced','deep']:['quick','balanced'];
+ let best=null,bScore=null,lastErr=null;const canPrice=ss.every(s=>s.kind==='remnant'||s.price!==null);
+ for(const level of levels){for(let t=0;t<attemptsFor(level);t++){
+  try{
+   const useDP=level!=='quick'&&count<=180&&(level==='deep'?t%2===0:t%4===0);
+   let bars=runGreedy(pp,ss,config,t,0x43fe2a+t*997+pp.length*31,useDP);
+   if(level!=='quick'&&bars.length<=160)bars=compactBars(bars,config);
+   const sc=metric(summarize(bars,config),config,canPrice);
+   if(better(sc,bScore)){best=bars;bScore=sc;}
+  }catch(e){lastErr=e;}
+ }}
+ if(!best)throw lastErr||Error('Не удалось найти раскрой.');return best;
+}
+function solveAll(config,override=null){const groups=new Map();for(const p of config.parts){const k=key(p.material,p.grade);if(!groups.has(k))groups.set(k,{material:p.material,grade:p.grade,parts:[],stocks:[]});groups.get(k).parts.push(p)}for(const s of config.stocks){const g=groups.get(key(s.material,s.grade));if(g)g.stocks.push(s)}
+ let bars=[];for(const g of groups.values()){let ss=g.stocks;if(override){const filter=override.get(key(g.material,g.grade));if(filter)ss=ss.filter(s=>filter.has(s.id));}
+ if(!ss.length)throw Error(`Нет хлыстов для группы «${g.material} / ${g.grade}».`);const gbars=solveGroup(g.parts,ss,config);bars.push(...gbars.map(b=>({...b,group:g.material+' / '+(g.grade||'не указана')})));}
+ bars.forEach((b,i)=>b.no=i+1);const s=summarize(bars,config);return{bars,stats:s,config};}
+function calcCompare(config){let out=[];const groups=new Map();for(const p of config.parts){let k=key(p.material,p.grade);if(!groups.has(k))groups.set(k,{parts:[],stocks:[]});groups.get(k).parts.push(p);}for(const s of config.stocks){const g=groups.get(key(s.material,s.grade));if(g)g.stocks.push(s);}
+ for(const [k,g] of groups){for(const s of g.stocks){try{if(s.qty===0)throw Error('Нет в наличии');if(g.parts.some(p=>p.length+config.kerf>s.length-2*config.trim+1e-8))throw Error('Есть детали длиннее хлыста');const b=solveGroup(g.parts,[s],config);const st=summarize(b,config);out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,stats:st});}catch(e){out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,error:e.message});}}
+ }
+ return out;}
+function cellMetric(v,d=0){return v===null?'—':nfmt(v,d)}
+function renderSidebar(s){$('#sidebar-stats').innerHTML=s?`<div class="stat"><div class="value">${nfmt(s.barCount)}</div><div class="cap">Всего хлыстов</div></div><div class="stat"><div class="value">${nfmt(s.newBars)}</div><div class="cap">Купить хлыстов</div></div><div class="stat"><div class="value">${nfmt(s.pieceCount)}</div><div class="cap">Деталей</div></div><div class="stat"><div class="value">${nfmt(s.efficiency*100,1)}%</div><div class="cap">Выход годного</div></div><div class="stat wide"><div class="value">${mf(s.boughtLength/1000)} м</div><div class="cap">Закупаемая длина</div></div><div class="stat wide"><div class="value">${s.cost===null?'—':nfmt(s.cost,2)+' '+esc(state.settings.currency||'₽')}</div><div class="cap">Закупка по указанным ценам</div></div>`:'<div class="empty" style="grid-column:span 2">Результаты появятся после расчёта.</div>';}
+function niceTable(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+function renderSummary(r){const s=r.stats,c=r.config;
+ const materialLen=c.parts.reduce((a,p)=>a+p.length*p.qty,0),specs=new Map();for(const b of r.bars){let k=[b.group,b.stock.length,b.stock.kind].join('|');specs.set(k,(specs.get(k)||0)+1)}
+ const specsRows=[...specs].map(([k,n])=>{const [name,l,kind]=k.split('|');return[esc(name),mf(+l),n,kind==='remnant'?'Склад':'Покупка'];});
+ const note=c.objective==='cost'&&c.stocks.some(x=>x.kind==='new'&&x.price===null)?'<div class="warning">Для оптимизации по стоимости не все цены указаны. Применена минимизация закупаемой длины; итоговая стоимость не рассчитывается.</div>':'';
+ $('#panel-summary').innerHTML=`<h2>Результат раскроя <span class="pill">${esc(state.meta.order||'Без номера')}</span> ${alreadyBooked()?'<span class="bookedbadge">СКЛАД ПРОВЕДЁН</span>':'<span class="draftbadge">НЕ ПРОВЕДЁН</span>'}</h2>${note}
+ <div class="gridform" style="margin:12px 0"><div class="stat"><div class="value">${mf(s.raw/1000)} м</div><div class="cap">Чистая длина деталей</div></div><div class="stat"><div class="value">${mf(s.stockLength/1000)} м</div><div class="cap">Материал в раскрое (включая склад)</div></div><div class="stat"><div class="value">${mf(s.kerf/1000)} м</div><div class="cap">Потери на резах</div></div><div class="stat"><div class="value">${mf(s.trim/1000)} м</div><div class="cap">Торцевые припуски</div></div><div class="stat"><div class="value">${mf(s.reusable/1000)} м</div><div class="cap">Возвратные остатки</div></div><div class="stat"><div class="value">${mf(s.scrap/1000)} м</div><div class="cap">Невозвратные концевые отходы</div></div><div class="stat"><div class="value">${mf(s.totalWaste/1000)} м</div><div class="cap">Все технологические потери (отход + резы + торцы)</div></div></div>
+ <h3>Ведомость исходных хлыстов</h3>${niceTable(['Материал / сталь','Длина, мм','Шт.','Тип'],specsRows)}
+ <div class="info" style="margin-top:13px"><b>Проверка баланса:</b> ${mf(s.stockLength)} = ${mf(s.raw)} (детали) + ${mf(s.kerf)} (резы) + ${mf(s.trim)} (торцы) + ${mf(s.tail)} (остатки), мм.<br><b>Выход годного:</b> ${nfmt(s.efficiency*100,1)}%. Складских остатков использовано: ${nfmt(s.remnantsUsed)} шт.</div>
+ <p class="algorithmline">Режим поиска: <b>${esc(c.searchMode)}</b> · Эвристика + DP наполнения (когда применимо). Абсолютный оптимум не гарантируется.</p><p class="note">Невозвратные отходы — концевые остатки короче порога ${mf(c.remnantMin)} мм; пропил и подрезка торцов показаны отдельно. Оптимум эвристический.</p>`;
+ }
+const colorSet=['#1776A8','#1E987C','#A56B23','#7856AA','#BD5D60','#376C9A','#21828E','#6C8B39','#A45D9A','#387C6B'];
+function colorFor(p){let hash=0;for(const c of String(p.pos))hash=(hash*31+c.charCodeAt(0))|0;return colorSet[Math.abs(hash)%colorSet.length];}
+function cutCoordinates(b,config){
+ const out=[];let x=config.trim;
+ for(let i=0;i<b.entries.length;i++){
+  const p=b.entries[i],start=x,end=x+p.length,cutEnd=end+config.kerf;
+  out.push({seq:i+1,pos:p.pos,length:p.length,start,end,cutStart:end,cutEnd});x=cutEnd;
+ }
+ const tailEnd=b.stock.length-config.trim;
+ if(x>tailEnd+0.00001)throw Error('Нарушение геометрического баланса карты №'+b.no);
+ return {cuts:out,tailStart:x,tailEnd,tail:clampZero(tailEnd-x)};
+}
+function mapGroups(r){
+ if(state.settings.groupMaps==='no')return r.bars.map(b=>({bar:b,nos:[b.no]}));
+ const out=[],map=new Map();
+ for(const b of r.bars){const k=JSON.stringify([b.group,b.stock.length,b.stock.kind,b.stock.id,b.entries.map(p=>[p.pos,p.length]),Math.round(b.tail*1000)/1000]);
+  if(map.has(k))map.get(k).nos.push(b.no);else{const g={bar:b,nos:[b.no]};out.push(g);map.set(k,g);}}
+ return out;
+}
+function renderMaps(r){
+ const groups=mapGroups(r),cfg=r.config;
+ let html=`<div class="printOnly"><h1>РАБОЧИЕ КАРТЫ РАСКРОЯ</h1><p>Заказ: ${esc(state.meta.order||'—')} · Цех: ${esc(state.meta.client||'—')} · Дата: ${new Date().toLocaleDateString('ru-RU')} · Исполнитель: ${esc(state.meta.author||'—')}</p><p>На каждый отрезок учтён один пропил ${mf(cfg.kerf)} мм, торцовка ${mf(cfg.trim)} мм с каждого конца.</p></div><h2 class="noprint">Карты раскроя: ${nfmt(groups.length)} схем / ${nfmt(r.bars.length)} хлыстов</h2>`;
+ let last='';for(const group of groups){const b=group.bar,geom=cutCoordinates(b,cfg);
+  if(last!==b.group){last=b.group;html+=`<h3 class="grouphead">${esc(last)}</h3>`;}
+  const segments=[];
+  if(cfg.trim>0)segments.push(`<div class="segment trim" style="flex:${cfg.trim}" title="Торцовка начала ${mf(cfg.trim)} мм"></div>`);
+  for(const p of geom.cuts){const col=colorFor({pos:p.pos});segments.push(`<div class="segment" style="flex:${p.length};background:${col}" title="${esc(p.pos)} | от ${mf(p.start)} до ${mf(p.end)} мм">${p.length/b.stock.length>.065?esc(p.pos)+' '+mf(p.length):p.length/b.stock.length>.035?mf(p.length):''}</div>`);
+   if(cfg.kerf>0)segments.push(`<div class="segment cut" style="flex:${cfg.kerf};min-width:1px" title="Пропил №${p.seq}: от ${mf(p.cutStart)} до ${mf(p.cutEnd)} мм"></div>`);
+  }
+  if(b.tail>0.000001)segments.push(`<div class="segment tail" style="flex:${b.tail}" title="Концевой остаток ${mf(b.tail)} мм">${b.tail/b.stock.length>.06?mf(b.tail):''}</div>`);
+  if(cfg.trim>0)segments.push(`<div class="segment trim" style="flex:${cfg.trim}" title="Торцовка конца ${mf(cfg.trim)} мм"></div>`);
+  const isRe=b.tail>=cfg.remnantMin&&b.tail>0;
+  const coords=niceTable(['Рез №','Позиция','Начало детали, мм','Конец детали, мм','Пропил от, мм','Пропил до, мм'],geom.cuts.map(c=>[c.seq,esc(c.pos),mf(c.start),mf(c.end),mf(c.cutStart),mf(c.cutEnd)]));
+  html+=`<article class="barcard"><div class="barhead"><div>Хлыст №${group.nos.join(', ')} · ${mf(b.stock.length)} мм <span class="pill">${b.stock.kind==='new'?'Покупка':'Со склада'}</span> ${group.nos.length>1?`<span class="repeat">× ${group.nos.length} одинаковых карт</span>`:''}</div><div class="muted">${nfmt(b.entries.length)} деталей / схему</div></div><div class="bar">${segments.join('')}</div><div class="barfoot"><span>Позиции: ${b.entries.map(p=>esc(p.pos)+' '+mf(p.length)).join(' + ')}</span><span>Пропил: ${nfmt(b.entries.length)} × ${mf(cfg.kerf)} мм</span><span>Торцовка: ${mf(b.trim)} мм</span><span class="target">Остаток: ${mf(b.tail)} мм — ${isRe?'полезный':'отход'}</span></div><details class="cutcoords"><summary>Координаты резов и последовательность</summary>${coords}<p class="note">Концевой остаток: ${mf(geom.tailStart)}–${mf(geom.tailEnd)} мм. После него — торцевая подрезка ${mf(cfg.trim)} мм.</p></details></article>`;
+ }
+ const leftovers=r.bars.filter(b=>b.tail>=cfg.remnantMin&&b.tail>0).map(b=>[b.no,esc(b.group),mf(b.tail),'1']);
+ html+='<h3>Возвратные остатки для склада</h3>'+(leftovers.length?niceTable(['Хлыст №','Материал / сталь','Длина, мм','Шт'],leftovers):'<p class="muted">Нет пригодных остатков по установленному порогу.</p>');
+ html+='<p class="smallprint">Координаты вычислены из принятой модели резки. Перед производством проверить длины, захваты, допуски, фактический пропил, технологическую подрезку и требования КМД.</p>';
+ $('#panel-maps').innerHTML=html;
+}
+function exportCoordinatesCSV(){if(!result){calculate();if(!result)return;}
+ const rows=[['Хлыст №','Профиль','Сталь','Исходная длина, мм','Рез №','Позиция','Длина детали, мм','Начало детали, мм','Конец детали, мм','Начало пропила, мм','Конец пропила, мм','Длина остатка, мм','Остаток пригоден']];
+ for(const b of result.bars){const g=cutCoordinates(b,result.config);for(const c of g.cuts)rows.push([b.no,b.stock.material,b.stock.grade,b.stock.length,c.seq,c.pos,c.length,c.start,c.end,c.cutStart,c.cutEnd,b.tail,b.tail>=result.config.remnantMin?'Да':'Нет']);}
+ downloadCSV('Координаты_резов_'+makeName(state.meta.order)+'.csv',rows);
+}
+function plannedMovements(r){
+ const consumed=new Map(),produced=[],scrap=[];
+ if(!r)return {consumed,produced,scrap,after:state.stocks.map(x=>({...x}))};
+ for(const b of r.bars){
+  if(b.stock.kind==='remnant')consumed.set(String(b.stock.id),(consumed.get(String(b.stock.id))||0)+1);
+  if(b.tail>=r.config.remnantMin&&b.tail>0){produced.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:Math.round(b.tail*1000)/1000,qty:1,origin:'Заказ '+(state.meta.order||'—')+', хлыст №'+b.no});}
+  else if(b.tail>0){scrap.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:Math.round(b.tail*1000)/1000,qty:1});}
+ }
+ const after=state.stocks.map(x=>({...x}));
+ for(const [id,qty] of consumed){const row=after.find(x=>String(x.id)===id);if(row){const old=num(row.qty);row.qty=Number.isInteger(old)?old-qty:0;}}
+ for(const p of produced)after.push({...p,id:'preview-'+p.bar,kind:'remnant',price:'',note:'Из расчёта; не проведено'});
+ return {consumed,produced,scrap,after};
+}
+function inventoryRows(stocks){return stocks.filter(x=>x.kind==='remnant').map(x=>[esc(x.material),esc(x.grade||'—'),mf(num(x.length)||0),nfmt(num(x.qty)||0),esc(x.origin||'—')]);}
+function renderWarehouse(r){const target=$('#panel-warehouse');if(!target)return;
+ const mv=plannedMovements(r);const cons=[...mv.consumed].map(([id,qty])=>{const st=(r?r.config.stocks:[]).find(s=>String(s.id)===id);return[esc(st?.material||'?'),esc(st?.grade||'—'),mf(st?.length||0),nfmt(qty),esc(st?.origin||'—')];});
+ const returns=mv.produced.map(x=>[nfmt(x.bar),esc(x.material),esc(x.grade||'—'),mf(x.length),'<span class="goodtag">НА СКЛАД</span>']);
+ const scrap=mv.scrap.map(x=>[nfmt(x.bar),esc(x.material),esc(x.grade||'—'),mf(x.length),'<span class="scraptag">ОТХОД</span>']);
+ const re=mv.produced.reduce((a,x)=>a+x.length,0),sc=mv.scrap.reduce((a,x)=>a+x.length,0);
+ let html='<h2>Складской баланс и статус обрезков</h2>';
+ html+='<p class="sub">Полезность зависит от порога <b>'+(r?mf(r.config.remnantMin):'—')+' мм</b>. Таблица «после» — <b>прогноз до проведения</b>; проведение не выполняется автоматически.</p>';
+ if(r){html+='<div class="gridform" style="margin:13px 0"><div class="stat"><div class="value">'+nfmt(mv.produced.length)+'</div><div class="cap">Пригодных обрезков, шт.</div></div><div class="stat"><div class="value">'+mf(re/1000)+' м</div><div class="cap">Плановый приход на склад</div></div><div class="stat"><div class="value">'+mf(sc/1000)+' м</div><div class="cap">Непригодные концевые отходы</div></div><div class="stat"><div class="value">'+mf(r.stats.totalWaste/1000)+' м</div><div class="cap">Отходы + резы + торцовка</div></div></div>';}
+ html+='<h3>Остатки на складе сейчас</h3>'+(state.stocks.some(x=>x.kind==='remnant')?niceTable(['Профиль','Сталь','Длина, мм','Шт.','Источник / место'],inventoryRows(state.stocks)):'<p class="empty">На складе нет внесённых остатков.</p>');
+ if(r){html+='<h3>Будет списано со склада</h3>'+(cons.length?niceTable(['Профиль','Сталь','Длина, мм','Шт.','Источник'],cons):'<p class="muted">Складские остатки в этом плане не используются.</p>');
+ html+='<h3>Пригодные остатки — плановый приход</h3>'+(returns.length?niceTable(['Хлыст №','Профиль','Сталь','Длина, мм','Статус'],returns):'<p class="muted">Нет пригодных остатков при установленном пороге.</p>');
+ html+='<h3>Непригодные концевые обрезки</h3>'+(scrap.length?niceTable(['Хлыст №','Профиль','Сталь','Длина, мм','Статус'],scrap):'<p class="muted">Концевых обрезков в отход нет.</p>');
+ html+='<h3>'+(alreadyBooked()?'Склад после проведения':'Прогноз склада после подтверждения')+'</h3>'+niceTable(['Профиль','Сталь','Длина, мм','Шт.','Источник'],inventoryRows(alreadyBooked()?state.stocks:mv.after));
+ html+='<div class="warning">До нажатия «Провести склад»  проверьте фактические длины отрезков после резки, маркировку и место хранения. Проводка применяет длины <b>по расчёту</b>. Если фактический остаток отличается, исправьте данные ведомости или внесите исправленный отрезок вручную после проведения.</div>';
+ html+='<div class="actionrow"><button class="btn primary" id="book-panel" '+(alreadyBooked()?'disabled':'')+'>✓ Провести этот заказ по плану</button><button class="btn" id="download-inventory">↓ Склад в CSV</button></div>';
+ } else html+='<p class="note">Выполните расчёт, чтобы увидеть движения склада.</p>';
+ target.innerHTML=html;
+ const b=$('#book-panel');if(b)b.onclick=bookStock;
+ const d=$('#download-inventory');if(d)d.onclick=exportInventory;
+}
+function renderJournal(){const target=$('#panel-journal');if(!target)return;
+ let html='<h2>Журнал проведённых заказов</h2><p class="sub">Журнал хранится вместе со складом в JSON-проекте. Для резервной копии нажмите «Сохранить проект» после каждой операции.</p>';
+ if(!state.journal.length)html+='<div class="empty">Пока нет проведённых операций.</div>';
+ else{const lines=[];for(const j of [...state.journal].reverse()){lines.push([esc(j.time),esc(j.order),nfmt(j.bars),nfmt(j.usedRemnants),nfmt(j.returned),mf(j.returnLength/1000)+' м',nfmt(j.scrapCount),mf(j.scrapLength/1000)+' м']);}
+ html+=niceTable(['Дата / время','Заказ','Хлыстов','Списано со склада','Принято на склад','Полезная длина','Невозвратных','Невозвратная длина'],lines);
+ html+='<h3>Движения по хлыстам</h3>';for(const j of [...state.journal].reverse().slice(0,20)){const body=(j.moves||[]).map(x=>[esc(x.type),esc(x.material),esc(x.grade||'—'),mf(x.length),nfmt(x.qty),esc(x.note||'—')]);html+=`<details><summary>${esc(j.order)} · ${esc(j.time)} — ${nfmt((j.moves||[]).length)} записей</summary>`+niceTable(['Операция','Профиль','Сталь','Длина, мм','Шт.','Основание'],body)+'</details>';}}
+ html+='<div class="actionrow"><button id="download-journal" class="btn">↓ Журнал CSV</button></div>';target.innerHTML=html;$('#download-journal').onclick=exportJournal;
+}
+function stableReportSnapshot(r){return JSON.parse(JSON.stringify(r,(k,v)=>v===Infinity?'__INF__':v));}
+function restoreReportSnapshot(r){if(!r)return null;return JSON.parse(JSON.stringify(r),(k,v)=>v==='__INF__'?Infinity:v);}
+function bookStock(){
+ if(!result){putStatus('Сначала рассчитайте актуальный план.',true);return;}
+ const order=String(state.meta.order||'').trim();if(!order){alert('Для проведения укажите уникальный номер заказа.');return;}
+ if(alreadyBooked()){alert('Заказ «'+order+'» уже проведён. Для следующего заказа используйте новый номер.');return;}
+ const mv=plannedMovements(result);
+ for(const [id,q] of mv.consumed){const st=state.stocks.find(x=>String(x.id)===id);if(!st||st.kind!=='remnant'||(num(st.qty)||0)<q){alert('На складе уже недостаточно позиции '+id+'. Повторите расчёт.');return;}}
+ const question=`Подтвердить проведение заказа «${order}» ПО ПЛАНУ?\n\nСписать складских отрезков: ${[...mv.consumed.values()].reduce((a,b)=>a+b,0)} шт.\nОприходовать полезных остатков: ${mv.produced.length} шт. (${mf(mv.produced.reduce((a,x)=>a+x.length,0))} мм).\nОтразить непригодные обрезки: ${mv.scrap.length} шт.\n\nПосле подтверждения сохраните JSON-проект. Это не фактический акт приёмки материала.`;
+ if(!confirm(question))return;
+ const backup=JSON.parse(JSON.stringify(state.stocks));const moves=[];
+ for(const [id,qty] of mv.consumed){const st=state.stocks.find(x=>String(x.id)===id);st.qty=(num(st.qty)||0)-qty;moves.push({type:'Расход со склада',material:st.material,grade:st.grade,length:num(st.length),qty,note:'Складская позиция '+id});}
+ for(const p of mv.produced){let st=state.stocks.find(x=>x.kind==='remnant'&&key(x.material,x.grade)===key(p.material,p.grade)&&Math.abs((num(x.length)||0)-p.length)<0.00001 && String(x.origin||'')===p.origin);if(st)st.qty=(num(st.qty)||0)+1;else state.stocks.push({id:'R4-'+Date.now().toString(36)+'-'+p.bar+'-'+Math.floor(Math.random()*10000),material:p.material,grade:p.grade,length:p.length,qty:1,price:'',kind:'remnant',origin:p.origin});
+ moves.push({type:'Приход полезного остатка',material:p.material,grade:p.grade,length:p.length,qty:1,note:'Хлыст №'+p.bar});}
+ for(const p of mv.scrap)moves.push({type:'Невозвратный отход',material:p.material,grade:p.grade,length:p.length,qty:1,note:'Хлыст №'+p.bar});
+ moves.push({type:'Потери на резах',material:'Все профили',grade:'',length:Math.round(result.stats.kerf*1000)/1000,qty:1,note:'Сумма длин пропилов'});
+ moves.push({type:'Подрезка торцов',material:'Все профили',grade:'',length:Math.round(result.stats.trim*1000)/1000,qty:1,note:'Сумма торцевых припусков'});
+ const entry={id:'J-'+Date.now(),time:new Date().toLocaleString('ru-RU'),order,orderKey:orderKey(),bars:result.stats.barCount,usedRemnants:[...mv.consumed.values()].reduce((a,b)=>a+b,0),returned:mv.produced.length,returnLength:mv.produced.reduce((a,x)=>a+x.length,0),scrapCount:mv.scrap.length,scrapLength:mv.scrap.reduce((a,x)=>a+x.length,0),moves,stockBefore:backup};
+ state.journal.push(entry);state.bookedOrders.push(orderKey());state.lastBookedReport={orderKey:orderKey(),report:stableReportSnapshot(result)};
+ renderStocks();renderSummary(result);renderMaps(result);renderWarehouse(result);renderJournal();renderSidebar(result.stats);flashBookState();persist();putStatus('Заказ '+order+' проведён. Полезных отрезков принято: '+mv.produced.length+' шт. Сохраните проект JSON для резервной копии.');switchTab('journal');
+}
+function downloadCSV(name,rows){download(name,new Blob(['\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));}
+function exportInventory(){downloadCSV('Склад_остатков_'+makeName(state.meta.order)+'.csv',[['Профиль','Сталь','Длина мм','Количество шт','Источник / место хранения','ID позиции'],...state.stocks.filter(x=>x.kind==='remnant').map(x=>[x.material,x.grade,x.length,x.qty,x.origin||'',x.id])]);}
+function exportJournal(){downloadCSV('Журнал_движений_'+makeName(state.meta.order)+'.csv',[['Заказ','Дата','Операция','Профиль','Сталь','Длина мм','Кол-во','Основание'],...state.journal.flatMap(j=>(j.moves||[]).map(m=>[j.order,j.time,m.type,m.material,m.grade,m.length,m.qty,m.note]))]);}
+function createNextOrder(){if(!confirm('Открыть новый заказ с текущими складскими остатками? Ведомость деталей будет очищена. Сначала сохраните JSON-проект.'))return;const next=prompt('Номер нового заказа (обязательно новый, не проведённый):','МК-2026-002');if(next===null)return;const k=String(next).trim().toLocaleLowerCase('ru-RU');if(!k||state.bookedOrders.includes(k)){alert('Укажите непустой уникальный номер заказа.');return;}state.meta.order=next.trim();state.parts=[];state.lastBookedReport=null;result=null;comparisons=[];modeComparisons=[];renderAll();persist();flashBookState();putStatus('Новый заказ создан. Склад сохранён, ведомость деталей очищена. Добавьте детали и рассчитайте раскрой.');switchTab('guide');}
+function benchmarkModes(){
+ try{const cfg=collect();modeComparisons=[];
+  for(const mode of ['quick','balanced','deep']){try{const r=solveAll({...cfg,searchMode:mode});modeComparisons.push({mode,stats:r.stats});}catch(e){modeComparisons.push({mode,error:e.message});}}
+  renderCompare();switchTab('compare');putStatus('Сравнение режимов рассчитано. Основной раскрой и склад не изменены.');
+ }catch(e){alert('Невозможно сравнить режимы: '+e.message);}
+}
+function renderCompare(){if(!comparisons.length){$('#panel-compare').innerHTML='<div class="empty">Нет данных для сравнения.</div>';return;}
+ const rows=comparisons.map(x=>[esc(x.group),mf(x.stock.length),x.stock.kind==='remnant'?'Склад':'Покупка',x.error?'<span class="bad">—</span>':nfmt(x.stats.barCount),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':nfmt(x.stats.efficiency*100,1)+'%',x.error?'—':mf(x.stats.tail/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2)+' '+esc(state.settings.currency||'₽'),x.error?`<span class="bad">${esc(x.error)}</span>`:'<span class="ok">Рассчитано</span>']);
+ const mr=modeComparisons.map(x=>[x.mode==='quick'?'Быстрый':x.mode==='balanced'?'Сбалансированный':'Углублённый',x.error?'—':nfmt(x.stats.newBars),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':mf(x.stats.totalWaste/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2),x.error?esc(x.error):'Готово']);
+ const modes='<h2>Сравнение алгоритмов</h2><p class="sub">Расчёты независимы. Величина «покупка» показывает длину покупных хлыстов; окончательный выбор делается в параметрах проекта и повторным расчётом.</p><button class="btn" id="benchmark">Сравнить все 3 режима</button>'+(modeComparisons.length?niceTable(['Алгоритм','Купить хлыстов','Купить, м','Невозвратные потери, м','Стоимость','Статус'],mr):'<p class="note">Нажмите кнопку для сравнения быстрых, сбалансированных и углублённых расчётов.</p>');
+ $('#panel-compare').innerHTML=modes+'<h2>Сравнение исходных длин</h2><p class="sub">Каждый вариант считается отдельно — исключительно из хлыстов соответствующей строки склада. Основной план из «Сводки» может сочетать разные длины и складские остатки.</p>'+niceTable(['Материал','Хлыст, мм','Тип','Хлыстов','Купить, м','Выход','Остаток, м','Цена закупки','Статус'],rows)+'<p class="note">В таблице «остаток» включает возвратный и невозвратный концевой остаток, без пропила и подрезок.</p>';$('#benchmark').onclick=benchmarkModes;}
+function calculate(){try{modeComparisons=[];const config=collect();result=solveAll(config);comparisons=calcCompare(config);renderSummary(result);renderMaps(result);renderCompare();renderSidebar(result.stats);renderWarehouse(result);renderJournal();flashBookState();persist();putStatus('Расчёт выполнен: '+nfmt(result.stats.pieceCount)+' деталей, '+nfmt(result.stats.barCount)+' хлыстов.');}catch(e){result=null;comparisons=[];$('#panel-summary').innerHTML='<div class="error">'+esc(e.message)+'</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderSidebar(null);renderWarehouse(null);renderJournal();flashBookState();putStatus('Ошибка входных данных: '+e.message,true)}}
+function switchTab(n){if(!result&&n!=='guide'&&n!=='journal'&&n!=='warehouse'&&n!=='about')calculate();$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));$$('.tabPanel').forEach(p=>p.classList.toggle('hide',p.id!=='panel-'+n));}
+function download(name,blob){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+const makeName=s=>String(s||'заказ').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').slice(0,60);
+function saveProject(){persist();download(makeName(state.meta.order)+'_проект_раскроя.json',new Blob([JSON.stringify({...state,version:5},null,2)],{type:'application/json;charset=utf-8'}));putStatus('Проект сохранён в JSON.');}
+function csvEscape(x){let s=String(x??'');return /[;\n\r"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function exportCSV(){const rows=[['Позиция','Профиль','Сталь','Длина, мм','Количество','Примечание'],...state.parts.map(p=>[p.pos,p.material,p.grade,p.length,p.qty,p.note])];download('Детали_'+makeName(state.meta.order)+'.csv',new Blob(['\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));}
+function parseCSV(text){const lines=[];let row=[],field='',quoted=false;const peek=text.split(/\r?\n/).slice(0,12);const header=peek.find(x=>/позици/i.test(x)&&/длин/i.test(x))||peek.find(x=>/[;,\t]/.test(x))||peek[0]||'';const choices=[';','\t',','];const del=choices.sort((a,b)=>header.split(b).length-header.split(a).length)[0];
+ for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){field+='"';i++}else quoted=!quoted;}else if(ch===del&&!quoted){row.push(field);field='';}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(field);if(row.some(s=>s.trim()))lines.push(row);row=[];field='';}else field+=ch;}
+ row.push(field);if(row.some(s=>s.trim()))lines.push(row);return lines;}
+function importCSV(txt){
+ const rows=parseCSV(txt.replace(/^\ufeff/,''));if(rows.length<2)throw Error('CSV должен содержать строку заголовка и минимум одну деталь.');
+ const normal=x=>String(x||'').trim().toLowerCase().replace(/\s+/g,' ');
+ const headIndex=rows.findIndex(r=>r.some(v=>normal(v).includes('позици'))&&r.some(v=>normal(v).includes('длин'))&&r.some(v=>normal(v).includes('колич')));
+ if(headIndex<0)throw Error('Не найдены заголовки «Позиция», «Длина», «Количество». Сохраните лист ДЕТАЛИ в CSV UTF-8.');
+ const hdr=rows[headIndex].map(normal),find=(a,fallback)=>{const i=hdr.findIndex(x=>a.some(t=>x.includes(t)));return i<0?fallback:i;};
+ const indices={pos:find(['позици'],0),material:find(['профил','сечение','материал'],1),grade:find(['сталь','группа'],2),length:find(['длин'],3),qty:find(['колич','кол-во'],4),note:find(['примеч'],5)};
+ const newParts=[];for(const [i,r] of rows.slice(headIndex+1).entries()){
+  const val=k=>r[indices[k]]||'';
+  if(!val('length').trim()&&!val('qty').trim())continue;
+  newParts.push({id:Date.now()+i,pos:val('pos')||'Д-'+(i+1),material:val('material'),grade:val('grade'),length:val('length'),qty:val('qty'),note:val('note')});
+ }
+ if(!newParts.length)throw Error('В файле не найдено ни одной детали с длиной и количеством.');
+ for(const [i,p] of newParts.entries())if(!Number.isSafeInteger(num(p.length))||num(p.length)<=0)throw Error('CSV, строка '+(i+1)+': длина должна быть целым числом миллиметров.');
+ state.parts=newParts;renderParts();persist();calculate();}
+// Не требующий библиотек генератор Excel .xlsx: ZIP (store) + Office Open XML.
+function xml(s){return esc(s).replace(/\r/g,'&#13;').replace(/\n/g,'&#10;');}
+function colName(n){let s='';while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s;}
+function sheetXML(rows){let out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:'+colName(Math.max(...rows.map(r=>r.length)))+rows.length+'"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/>';
+ const cols=Math.max(...rows.map(r=>r.length));out+='<cols>';for(let c=0;c<cols;c++){let width=12;for(const row of rows){const v=row[c];if(v!==undefined&&v!==null)width=Math.max(width,Math.min(65,String(v).length+2));}out+=`<col min="${c+1}" max="${c+1}" width="${width}" customWidth="1"/>`;}out+='</cols><sheetData>';
+ for(let r=0;r<rows.length;r++){const line=rows[r];out+=`<row r="${r+1}">`;for(let c=0;c<line.length;c++){let v=line[c];if(v===null||v===undefined||v==='')continue;const coord=colName(c+1)+(r+1),style=r===0?1:(typeof v==='number'?2:0);if(typeof v==='number'&&Number.isFinite(v))out+=`<c r="${coord}" s="${style}"><v>${v}</v></c>`;else out+=`<c r="${coord}" t="inlineStr" s="${style}"><is><t xml:space="preserve">${xml(String(v))}</t></is></c>`;}out+='</row>'}return out+'</sheetData><autoFilter ref="A1:'+colName(Math.max(...rows.map(r=>r.length)))+rows.length+'"/><pageMargins left="0.35" right="0.35" top="0.55" bottom="0.55" header="0.2" footer="0.2"/></worksheet>';}
+const crcTable=(()=>{const table=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[n]=c>>>0;}return table})();
+function crc32(data){let crc=0xFFFFFFFF;for(const b of data)crc=crcTable[(crc^b)&255]^(crc>>>8);return(crc^0xFFFFFFFF)>>>0;}
+function zipFiles(entries){const encoder=new TextEncoder(),locals=[],centrals=[];let offset=0;
+ const pack=(size,fn)=>{const buf=new ArrayBuffer(size),v=new DataView(buf);fn(v);return new Uint8Array(buf)};
+ for(const [path,contents] of entries){const name=encoder.encode(path),body=encoder.encode(contents),crc=crc32(body);
+  const local=pack(30+name.length,v=>{v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x0800,true);v.setUint16(8,0,true);v.setUint32(14,crc,true);v.setUint32(18,body.length,true);v.setUint32(22,body.length,true);v.setUint16(26,name.length,true);});local.set(name,30);locals.push(local,body);
+  const central=pack(46+name.length,v=>{v.setUint32(0,0x02014b50,true);v.setUint16(4,20,true);v.setUint16(6,20,true);v.setUint16(8,0x0800,true);v.setUint16(10,0,true);v.setUint32(16,crc,true);v.setUint32(20,body.length,true);v.setUint32(24,body.length,true);v.setUint16(28,name.length,true);v.setUint32(42,offset,true);});central.set(name,46);centrals.push(central);offset+=local.length+body.length;}
+ const centralSize=centrals.reduce((a,b)=>a+b.length,0),end=pack(22,v=>{v.setUint32(0,0x06054b50,true);v.setUint16(8,entries.length,true);v.setUint16(10,entries.length,true);v.setUint32(12,centralSize,true);v.setUint32(16,offset,true);});return new Blob([...locals,...centrals,end],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});}
+function exportXLSX(){if(!result){calculate();if(!result)return;}const r=result,s=r.stats,c=r.config;
+ const sheets=[['Сводка',[
+ ['РАСКРОЙ МЕТАЛЛОПРОКАТА — ОТЧЁТ','Значение','Ед.'],['Заказ',state.meta.order||'—',''],['Цех / заказчик',state.meta.client||'—',''],['Исполнитель',state.meta.author||'—',''],['Дата создания',new Date().toLocaleString('ru-RU'),''],['Ширина реза',c.kerf,'мм'],['Подрезка торца',c.trim,'мм / торец'],['Порог возвратного остатка',c.remnantMin,'мм'],['Количество деталей',s.pieceCount,'шт'],['Деталей, чистая длина',s.raw,'мм'],['Использовано хлыстов',s.barCount,'шт'],['Купить хлыстов',s.newBars,'шт'],['Купить исходного проката',s.boughtLength,'мм'],['Использовано складских остатков',s.remnantsUsed,'шт'],['Суммарная длина хлыстов',s.stockLength,'мм'],['Потери при резке',s.kerf,'мм'],['Подрезка торцов',s.trim,'мм'],['Возвратные остатки',s.reusable,'мм'],['Невозвратные концевые отходы',s.scrap,'мм'],['Всего потерь (отходы + пропил + подрезка)',s.totalWaste,'мм'],['Статус заказа',alreadyBooked()?'Проведён':'Расчётный, не проведён',''],['Выход годного',Math.round(s.efficiency*10000)/100,'%'],['Стоимость новой закупки',s.cost===null?'Не все цены заданы':s.cost,state.settings.currency||'₽'],['Условие','Каждой детали соответствует один рез; обе подрезки на каждый хлыст.',''],['Алгоритм','Многопроходная эвристика; математический оптимум не гарантируется.',''],['Источник','Для перерасчёта откройте HTML-калькулятор и выполните расчёт заново.','']]],
+ ['Детали',[['Позиция','Профиль / сечение','Марка стали','Длина, мм','Количество, шт','Всего, мм','Примечание'],...c.parts.map(p=>[p.pos,p.material,p.grade,p.length,p.qty,p.length*p.qty,p.note])]],
+ ['Исходные хлысты',[['Профиль / сечение','Марка стали','Длина, мм','Количество доступно, шт','Цена за 1 шт','Тип','Источник / место'],...c.stocks.map(p=>[p.material,p.grade,p.length,Number.isFinite(p.qty)?p.qty:'Неограниченно',p.price===null?'':p.price,p.kind==='remnant'?'Складской остаток':'Покупка',p.origin||''])]],
+ ['Карты раскроя',[['Хлыст №','Материал / сечение','Марка стали','Исходная длина, мм','Тип','Позиции / порядок резки','Деталей, шт','Чистый размер, мм','Пропил, мм','Подрезка, мм','Остаток, мм','Возвратный остаток'],...r.bars.map(b=>[b.no,b.stock.material,b.stock.grade,b.stock.length,b.stock.kind==='remnant'?'Склад':'Покупка',b.entries.map(p=>p.pos+' ['+mf(p.length)+']').join(' + '),b.entries.length,b.pieceLength,b.kerf,b.trim,b.tail,b.tail>=c.remnantMin?'Да':'Нет'])]],
+ ['Координаты резов',[['Хлыст №','Профиль','Сталь','Исходная длина, мм','№ реза','Позиция','Чистая длина, мм','Начало детали, мм','Конец детали, мм','Пропил от, мм','Пропил до, мм','Остаток, мм'],...r.bars.flatMap(b=>cutCoordinates(b,c).cuts.map(x=>[b.no,b.stock.material,b.stock.grade,b.stock.length,x.seq,x.pos,x.length,x.start,x.end,x.cutStart,x.cutEnd,b.tail]))]],
+ ['Остатки',[['Хлыст №','Профиль / сечение','Марка стали','Длина остатка, мм','Количество','Статус'],...r.bars.filter(b=>b.tail>0).map(b=>[b.no,b.stock.material,b.stock.grade,b.tail,1,b.tail>=c.remnantMin?'Вернуть на склад':'Отход'])]],
+ ['Сравнение',[['Материал / сечение','Марка стали','Исходный хлыст, мм','Тип','Хлыстов, шт','Закупаемая длина, мм','Выход годного, %','Концевой остаток, мм','Стоимость','Результат'],...comparisons.map(x=>[x.stock.material,x.stock.grade,x.stock.length,x.stock.kind==='remnant'?'Склад':'Покупка',x.error?'':x.stats.barCount,x.error?'':x.stats.boughtLength,x.error?'':Math.round(x.stats.efficiency*10000)/100,x.error?'':x.stats.tail,x.error?'':x.stats.cost===null?'Цена неизвестна':x.stats.cost,x.error||'Рассчитано'])]],
+ ['Склад текущий',[['Профиль','Сталь','Длина, мм','Количество, шт','Источник / место','ID'],...state.stocks.filter(x=>x.kind==='remnant').map(x=>[x.material,x.grade,num(x.length),num(x.qty)||0,x.origin||'',String(x.id)])]],
+ ['Полезные остатки',[['Хлыст №','Профиль','Сталь','Длина, мм','Количество','Статус'],...plannedMovements(r).produced.map(x=>[x.bar,x.material,x.grade,x.length,1,'Пригоден / вернуть на склад'])]],
+ ['Невозвратные отходы',[['Хлыст №','Профиль','Сталь','Длина обрезка, мм','Пропил по заказу, мм','Торцовка по заказу, мм'],...plannedMovements(r).scrap.map((x,i)=>[x.bar,x.material,x.grade,x.length,i===0?s.kerf:0,i===0?s.trim:0])]],
+ ['Склад прогноз',[['Профиль','Сталь','Длина, мм','Количество, шт','Источник / место','Тип'],...(alreadyBooked()?state.stocks:plannedMovements(r).after).filter(x=>x.kind==='remnant').map(x=>[x.material,x.grade,num(x.length),num(x.qty)||0,x.origin||'',String(x.id).startsWith('preview-')?'Плановый приход':'Есть на складе'])]],
+ ['Журнал операций',[['Заказ','Дата','Операция','Профиль','Сталь','Длина, мм','Количество, шт','Основание'],...state.journal.flatMap(j=>(j.moves||[]).map(x=>[j.order,j.time,x.type,x.material,x.grade,x.length,x.qty,x.note]))]]];
+ const entries=[];entries.push(['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')+'</Types>']);
+ entries.push(['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>']);
+ entries.push(['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+sheets.map((x,i)=>`<sheet name="${xml(x[0])}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')+'</sheets></workbook>']);
+ entries.push(['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheets.map((x,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')+`<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`]);
+ entries.push(['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="10"/><name val="Aptos"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="10"/><name val="Aptos"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF175A74"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"/><xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>']);
+ sheets.forEach((s,i)=>entries.push([`xl/worksheets/sheet${i+1}.xml`,sheetXML(s[1])]));
+ download('Раскрой_'+makeName(state.meta.order)+'.xlsx',zipFiles(entries));putStatus('Excel-отчёт сформирован: 12 листов, значения зафиксированы.');}
+function markDirty(){result=null;comparisons=[];modeComparisons=[];renderWarehouse(null);flashBookState();putStatus('Исходные данные изменены — нажмите «Рассчитать раскрой» для обновления карт.')}
+
+let pasteTarget='parts';
+function openPaste(target){pasteTarget=target;$('#pasteTitle').textContent=target==='parts'?'Импорт деталей из Excel':'Импорт исходных хлыстов и складских остатков';
+ $('#pasteText').value='';$('#pasteMode').value='replace';$('#pasteMaterial').value=(target==='parts'?state.parts[0]?.material:state.stocks[0]?.material)||'';
+ $('#pasteGrade').value=(target==='parts'?state.parts[0]?.grade:state.stocks[0]?.grade)||'';
+ $('#pasteHint').textContent=target==='parts'?'Форматы: Длина / Кол-во; либо Позиция / Профиль / Сталь / Длина / Кол-во / Примечание.':'Форматы: Длина / Кол-во; либо Профиль / Сталь / Длина / Кол-во / Цена / Тип / Источник. Тип: «Покупка» или «Склад». Для склада количество обязательно.';
+ $('#pasteDialog').showModal();$('#pasteText').focus();}
+function parsePasteRows(text){return parseCSV(text.replace(/^\ufeff/,'')).filter(r=>r.some(x=>String(x).trim()));}
+function pasteRows(){
+ const rows=parsePasteRows($('#pasteText').value),mat=$('#pasteMaterial').value.trim(),grade=$('#pasteGrade').value.trim();
+ if(!rows.length)throw Error('Вставьте данные в поле ввода.');
+ const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
+ const start=(rows[0].some(c=>/длин|колич|кол-во|позици|профил|марка/i.test(norm(c))))?1:0;
+ let imported=[];
+ for(let idx=start;idx<rows.length;idx++){
+  const r=rows[idx].map(v=>String(v||'').trim());if(!r.some(Boolean))continue;
+  const id=Date.now()+Math.random()+idx/1000;
+  if(pasteTarget==='parts'){
+   let pos,material,steel,length,qty,note;
+   if(r.length<=3){length=r[0];qty=r[1]||'1';pos='Д-'+String(idx-start+1).padStart(2,'0');material=mat;steel=grade;note=r[2]||'';}
+   else {pos=r[0]||'Д-'+String(idx-start+1).padStart(2,'0');material=r[1]||mat;steel=r[2]||grade;length=r[3];qty=r[4]||'1';note=r[5]||'';}
+   if(!material)throw Error('Строка '+(idx+1)+': укажите профиль.');
+   if(!Number.isSafeInteger(num(length))||num(length)<=0||!Number.isSafeInteger(num(qty))||num(qty)<1)throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
+   imported.push({id,pos,material,grade:steel,length,qty,note});
+  }else{
+   let material,steel,length,qty,price,kind,origin;
+   if(r.length<=3){material=mat;steel=grade;length=r[0];qty=r[1]||'';price=r[2]||'';kind='new';origin='';}
+   else{material=r[0]||mat;steel=r[1]||grade;length=r[2];qty=r[3]||'';price=r[4]||'';kind=/склад|остат/i.test(r[5]||'')?'remnant':'new';origin=r[6]||'';}
+   if(!material)throw Error('Строка '+(idx+1)+': укажите профиль.');
+   if(!Number.isSafeInteger(num(length))||num(length)<=0|| (qty!==''&&(!Number.isSafeInteger(num(qty))||num(qty)<0)))throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
+   if(kind==='remnant'&&qty==='')throw Error('Строка '+(idx+1)+': для складского остатка количество обязательно.');
+   imported.push({id,material,grade:steel,length,qty,price,kind,origin});
+  }
+ }
+ if(!imported.length)throw Error('Нет строк для импорта.');
+ if($('#pasteMode').value==='replace'&&!confirm('Заменить существующую таблицу? Складские остатки и доступные закупочные позиции этой таблицы будут перезаписаны. Сохраните резервную копию JSON.'))return;
+ state[pasteTarget]=$('#pasteMode').value==='append'?[...state[pasteTarget],...imported]:imported;
+ if(pasteTarget==='parts')renderParts();else renderStocks();markDirty();persist();$('#pasteDialog').close();putStatus('Импортировано '+imported.length+' строк из Excel. Проверьте таблицу и выполните расчёт.');
+}
+
+function events(){document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
+ document.addEventListener('change',e=>{const t=e.target;if(t.dataset.field||t.dataset.setting){if(t.dataset.field){const row=t.closest('tr[data-row-id]');const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p)p[t.dataset.field]=t.value;}else state.settings[t.dataset.setting]=t.value;persist();}});
+ document.addEventListener('click',e=>{const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab)switchTab(tab.dataset.tab);});
+ $('#solve').onclick=()=>{calculate();switchTab('summary')};$('#addpart').onclick=()=>{state.parts.push({id:Date.now()+Math.random(),pos:'Д-'+String(state.parts.length+1).padStart(2,'0'),material:state.parts.at(-1)?.material||'',grade:state.parts.at(-1)?.grade||'',length:'',qty:1,note:''});renderParts();markDirty();persist();};
+ $('#addstock').onclick=()=>{state.stocks.push({id:Date.now()+Math.random(),material:state.stocks.at(-1)?.material||'',grade:state.stocks.at(-1)?.grade||'',length:'',qty:'',price:'',kind:'new',origin:''});renderStocks();markDirty();persist();};
+ $('#save').onclick=saveProject;$('#load').onclick=()=>$('#file-json').click();$('#file-json').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.parts)||!Array.isArray(data.stocks)||!data.settings)throw Error('Неверный формат JSON проекта.');state={...initial(),meta:{...initial().meta,...data.meta},settings:{...initial().settings,...data.settings},parts:data.parts,stocks:data.stocks,bookedOrders:Array.isArray(data.bookedOrders)?data.bookedOrders:[],journal:Array.isArray(data.journal)?data.journal:[],lastBookedReport:data.lastBookedReport||null};result=null;renderAll();persist();calculate();putStatus('Проект загружен из '+file.name);}catch(ex){alert('Не удалось открыть: '+ex.message)}e.target.value='';};
+ $('#pasteparts').onclick=()=>openPaste('parts');$('#pastestocks').onclick=()=>openPaste('stocks');$('#applyPaste').onclick=()=>{try{pasteRows()}catch(e){alert('Импорт: '+e.message)}};$('#coords').onclick=exportCoordinatesCSV;$('#csv').onclick=exportCSV;$('#importcsv').onclick=()=>$('#file-csv').click();$('#file-csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{importCSV(await f.text());putStatus('Импортированы детали из '+f.name)}catch(ex){alert('Ошибка CSV: '+ex.message)}e.target.value='';};
+ $('#xlsx').onclick=exportXLSX;$('#book').onclick=bookStock;$('#neworder').onclick=createNextOrder;$('#print').onclick=()=>{if(!result)calculate();if(result){switchTab('maps');$$('.cutcoords').forEach(x=>x.open=true);window.print();}};
+ $('#reset').onclick=()=>{if(confirm('ВНИМАНИЕ! Будут удалены текущий склад, журнал операций и детали. Предварительно обязательно сохраните JSON-проект. Сбросить всё на пример?')){state=initial();result=null;renderAll();calculate();switchTab('summary');persist();}};}
+renderAll();events();
+if(state.lastBookedReport&&state.lastBookedReport.orderKey===orderKey()){
+ try{result=restoreReportSnapshot(state.lastBookedReport.report);renderSummary(result);renderMaps(result);renderWarehouse(result);renderJournal();renderSidebar(result.stats);flashBookState();putStatus('Восстановлен проведённый заказ и его исходный расчёт. Для следующего заказа нажмите «Новый заказ (склад сохранить)».');}
+ catch(e){calculate();}
+}else calculate();
+</script>
+</body>
+</html>
