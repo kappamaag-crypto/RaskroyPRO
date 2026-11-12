@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.1.2 — металлоконструкции и склад остатков</title>
+<title>Раскрой PRO 5.2.0 — металлоконструкции и склад остатков</title>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -43,7 +43,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1.2 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.2.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -91,13 +91,14 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <label>Подрезка каждого торца, мм<input type="number" min="0" step="0.1" data-setting="trim"></label>
       <label>Мин. полезный остаток, мм<input type="number" min="0" step="1" data-setting="remnantMin"></label>
       <label>Приоритет оптимизации<select data-setting="objective"><option value="purchase">Минимум закупаемой длины</option><option value="cost">Минимум стоимости</option><option value="waste">Минимум невозвратных отходов</option></select></label>
-      <label>Режим оптимизации<select data-setting="searchMode"><option value="quick">Быстрый</option><option value="balanced">Сбалансированный</option><option value="deep">Углублённый</option></select></label>
-      <div class="mode-note"><b>Режимы:</b> быстрый — базовая эвристика; сбалансированный — расширенный поиск с динамическим заполнением и уплотнением; углублённый — больше попыток. Каждый следующий режим включает результаты предыдущего, поэтому по выбранному критерию не должен быть хуже. Глобальный оптимум не гарантируется.</div>
+      <label>Режим оптимизации<select data-setting="searchMode"><option value="quick">Быстрый</option><option value="balanced">Сбалансированный</option><option value="deep">Углублённый</option><option value="exact">Точный (малые задачи)</option></select></label>
+      <div class="mode-note"><b>Поиск:</b> быстрый — BFD и жадные варианты; сбалансированный — DP, обмены и пересборка; углублённый — Beam Search и генерация схем; точный — ограниченные Branch &amp; Bound / целочисленный подбор карт. Доказательство оптимума отображается только после полного перебора.</div>
+      <label>Приоритет складских остатков<select data-setting="warehousePolicy"><option value="economic">Экономический (по цели)</option><option value="strict">Строгий (склад первым)</option></select></label>
       <label>Группировать одинаковые карты<select data-setting="groupMaps"><option value="yes">Да — одна схема × количество</option><option value="no">Нет — отдельная карта на хлыст</option></select></label>
       <label>Единица валюты<input data-setting="currency" type="text" placeholder="₽" maxlength="8"></label>
       <label>Исполнитель<input data-meta="author" type="text" placeholder="Мастер участка"></label>
     </div>
-    <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Для склада концевые остатки округляются вниз до целого миллиметра, дробная часть относится к отходам. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
+    <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Для склада концевые остатки округляются вниз до целого миллиметра, дробная часть относится к отходам. Строгий приоритет расходует максимально возможное число складских хлыстов, даже если это увеличивает закупку; экономический приоритет сначала минимизирует выбранный показатель. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
     </section>
     <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
       <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
@@ -122,9 +123,9 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
             <ul class="about-list">
               <li><b>Быстрый:</b> несколько вариантов жадного заполнения хлыстов без динамической оптимизации и уплотнения.</li>
               <li><b>Сбалансированный:</b> включает все варианты быстрого режима, расширенные попытки, ограниченную задачу о рюкзаке (DP) для целочисленной сетки размеров (при дробных величинах применяется эвристика) и локальное уплотнение.</li>
-              <li><b>Углублённый:</b> включает предыдущие режимы, дополнительные попытки заполнения и более частое применение DP. Может работать заметно дольше.</li>
+              <li><b>Углублённый:</b> добавляет BFD, Beam Search, обмены деталей (Local Search), Ruin &amp; Recreate, генерацию схем и дополнительные попытки.</li><li><b>Точный:</b> включает углублённый поиск и ограниченный Branch &amp; Bound / целочисленный перебор схем для малых заказов. Если перебор прерван или размер задачи превышает ограничения, доказательство оптимальности не выдаётся. Это <b>не</b> универсальный MILP-решатель.</li>
             </ul>
-            <p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритм эвристический; точный глобальный минимум не гарантируется.</p>
+            <p class="smallprint"><b>Границы точного решения:</b> для одного покупного типоразмера и цели «минимум закупаемой длины» Branch &amp; Bound проверяет до 28 деталей; для смешанных типоразмеров полный целочисленный перебор ограничен 13 деталями, 4 позициями и 3 вариантами заготовок. При достижении лимита времени или узлов результат помечается как недоказанный. Поддерживается точность исходных длин до 0,001 мм.</p><p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритмы в большинстве режимов эвристические; математический минимум гарантируется только при явном статусе «Оптимальность доказана» в точном режиме.</p>
             <h3>Разработчик и обратная связь</h3>
             <p class="contactline">Телефон: <a href="tel:+79829059348">+7 982 905-93-48</a></p>
             <p class="contactline">Электронная почта: <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a></p>
@@ -158,7 +159,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <li>Сохраните <b>проект JSON</b> после проведения — это переносной архив склада вместе с журналом. При создании следующего заказа используйте <b>«Новый заказ (склад сохранить)»</b>.</li>
       <li>Выведите рабочие карты на принтер или сохраните Excel-отчёт (включая листы складских движений); проект можно открыть позднее.</li>
       </ol><h3>Что важно учитывать</h3><p>Расчёт применим к <b>одномерному линейному раскрою</b>. Не учитываются косые запилы, подготовка к сварке, ограничения последовательности станка, нестандартные захваты/зажимы и контроль геометрии — их учитывает технолог до выдачи карт в производство.</p>
-      <p><b>Алгоритм:</b> несколько стратегий эвристической упаковки, ограниченная динамическая оптимизация наполнения отдельного хлыста для целых миллиметров и локальное устранение лишних хлыстов. Глобальный математический минимум не гарантируется. Режимы отличаются глубиной поиска. Сбалансированный включает быстрые попытки, углублённый — оба предыдущих режима; сравнение идёт по заданному приоритету.</p>
+      <p><b>Приоритет склада:</b> экономический режим минимизирует выбранную метрику, строгий режим лексикографически максимизирует число использованных складских хлыстов, затем минимизирует закупку/отходы. Строгий режим может оказаться дороже.</p><p><b>Алгоритм:</b> несколько стратегий эвристической упаковки, ограниченная динамическая оптимизация наполнения отдельного хлыста для целых миллиметров и локальное устранение лишних хлыстов. Глобальный математический минимум не гарантируется. Режимы отличаются глубиной поиска. Сбалансированный включает быстрые попытки, углублённый — оба предыдущих режима, точный — все предыдущие варианты; сравнение идёт по заданному приоритету.</p>
       <p><b>Конвенция пропила:</b> на каждую деталь списывается её длина плюс ширина одного реза; с каждого торца исходного хлыста дополнительно списывается одинаковый припуск. Погрешность длины и максимальный размер захвата не учитываются.</p>
       <p><b>Склад:</b> Пригодность остатка определяется установленным порогом длины, а не гарантированной пригодностью под любой будущий заказ. Проводка отражает <b>плановые</b> остатки; фактические обмеры перед фиксацией обязательно сверяет ответственный мастер. Закупочные длины — предложения для покупки, а не реальные остатки на складе. Для коллективной работы база/сервер не предусмотрены — один JSON-проект является единственным источником данных.</p>
       <p><b>Excel-отчёт:</b> это зафиксированный результат расчёта, а не макрос. Для изменения плана пересчитайте проект здесь и выгрузите новый файл. Полностью работает без подключения к интернету.</p>
@@ -170,7 +171,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1.2</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.2.0</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
@@ -185,13 +186,13 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 <script>
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const initial=()=>({version:5,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
+const initial=()=>({version:6,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',warehousePolicy:'economic',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
 let state, result=null, comparisons=[],modeComparisons=[];
 try{const old=localStorage.getItem('cutting_pro_5')||localStorage.getItem('cutting_pro_4')||localStorage.getItem('cutting_pro_3');state=old?Object.assign(initial(),JSON.parse(old)):initial()}catch(e){state=initial()}
 if(!Array.isArray(state.parts)||!Array.isArray(state.stocks)){state=initial()}
 if(!Array.isArray(state.bookedOrders))state.bookedOrders=[];
 if(!Array.isArray(state.journal))state.journal=[];
-state.version=5;
+state.version=6;
 if(!state.meta)state.meta=initial().meta;
 state.settings={...initial().settings,...(state.settings||{})};
 if(!state.meta.order)state.meta.order='МК-2026-001';
@@ -236,7 +237,7 @@ if(!['cost','purchase','waste'].includes(settings.objective))throw Error('Неп
 const missing=[...new Set(parts.filter(p=>!stocks.some(s=>key(p.material,p.grade)===key(s.material,s.grade))).map(p=>p.material+' / '+p.grade))];
 if(missing.length)throw Error('Не найдены исходные хлысты для: '+missing.join('; '));
 for(const p of parts){const ss=stocks.filter(s=>key(s.material,s.grade)===key(p.material,p.grade)&&s.qty!==0);if(!ss.some(s=>s.length-2*trim>=p.length+kerf-1e-8))throw Error(`Позиция ${p.pos||p.id} (${mf(p.length)} мм) не помещается ни в один доступный хлыст с учётом реза и подрезки.`);}
-return{parts,stocks,kerf,trim,remnantMin,objective:settings.objective,searchMode:['quick','balanced','deep'].includes(settings.searchMode)?settings.searchMode:'balanced'};}
+return{parts,stocks,kerf,trim,remnantMin,objective:settings.objective,searchMode:['quick','balanced','deep','exact'].includes(settings.searchMode)?settings.searchMode:'balanced',warehousePolicy:settings.warehousePolicy==='strict'?'strict':'economic'};}
 function rng(seed){let x=seed|0;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296}}
 function pickPattern(pp,remaining,capacity,kerf,strategy,random){let best=null;
  for(let trial=0;trial<(pp.length<15?7:4);trial++){
@@ -325,34 +326,374 @@ function runGreedy(pp,ss,config,variant,seed,useDP=false){const random=rng(seed)
   bars.push({stock:selected.stock,entries:pattern.entries.map(i=>pp[i]),pieceLength:pattern.entries.reduce((a,i)=>a+pp[i].length,0),kerf:pattern.entries.length*config.kerf,trim:config.trim*2,tail:clampZero(selected.stock.length-2*config.trim-pattern.used)});
  }
  return bars;}
+// v5.2 — strategy ensemble. Every candidate is validated and scored against the same objective.
 function summarize(bars,config){let pieceCount=0,raw=0,kerf=0,trim=0,stockLength=0,boughtLength=0,newBars=0,remnantsUsed=0,reusable=0,scrap=0,cost=0,priceKnown=true;
  for(const b of bars){pieceCount+=b.entries.length;raw+=b.pieceLength;kerf+=b.kerf;trim+=b.trim;stockLength+=b.stock.length;if(b.stock.kind==='new'){newBars++;boughtLength+=b.stock.length;if(b.stock.price===null)priceKnown=false;else cost+=b.stock.price;}else remnantsUsed++;if(b.tail>=config.remnantMin&&b.tail>0)reusable+=b.tail;else scrap+=b.tail;}
  return {pieceCount,raw,kerf,trim,stockLength,boughtLength,newBars,remnantsUsed,reusable,scrap,totalWaste:scrap+kerf+trim,cost:priceKnown?cost:null,tail:reusable+scrap,barCount:bars.length,efficiency:stockLength>0?raw/stockLength:0};}
-function metric(s,config,costPossible){const objective=config.objective;if(objective==='cost'&&costPossible&&s.cost!==null)return[s.cost,s.boughtLength,s.scrap,s.barCount];if(objective==='waste')return[s.scrap,s.boughtLength,s.stockLength,s.barCount];return[s.boughtLength,s.stockLength,s.scrap,s.barCount];}
+function metric(s,config,costPossible){
+ const objective=config.objective;let economic;
+ if(objective==='cost'&&costPossible&&s.cost!==null)economic=[s.cost,s.boughtLength,s.scrap,s.barCount];
+ else if(objective==='waste')economic=[s.scrap,s.boughtLength,s.stockLength,s.barCount];
+ else economic=[s.boughtLength,s.stockLength,s.scrap,s.barCount];
+ // Strict mode has a deliberately different lexicographic target: consume the
+ // largest possible count of existing physical warehouse bars before saving money.
+ return config.warehousePolicy==='strict'?[-s.remnantsUsed,...economic]:economic;
+}
 function better(a,b){if(!b)return true;for(let i=0;i<a.length;i++){const eps=Math.max(1e-6,Math.abs(b[i])*1e-9);if(a[i]<b[i]-eps)return true;if(a[i]>b[i]+eps)return false;}return false;}
+function makeBar(stock,entries,config){return recalcBar({stock,entries:[...entries]},config);}
+function cloneBars(bars){return bars.map(b=>({...b,entries:[...b.entries]}));}
+function evaluate(bars,config,costPossible){return metric(summarize(bars,config),config,costPossible);}
+function costKnown(ss){return ss.every(s=>s.kind==='remnant'||s.price!==null);}
+function strictStockFirst(stock,config){return config.warehousePolicy==='strict'&&stock.kind==='remnant';}
+
+// Local Search / Swap: relocate one part or exchange two parts, retaining only
+// strictly better plans. This also permits cancelling the source bar when empty.
+function localSearchSwap(input,config,costPossible,passes=2){
+ if(input.length>36||input.length<2)return input;
+ let bars=cloneBars(input),best=evaluate(bars,config,costPossible);
+ for(let pass=0;pass<passes;pass++){
+  let changed=false,tries=0;
+  outer:for(let i=0;i<bars.length;i++)for(let j=0;j<bars.length;j++){
+   if(i===j)continue;
+   const from=bars[i],to=bars[j];
+   for(let a=0;a<from.entries.length;a++){
+    if(++tries>16000)break outer;
+    const p=from.entries[a],required=p.length+config.kerf;
+    if(to.tail+1e-7>=required){
+     const trial=cloneBars(bars);trial[i].entries.splice(a,1);trial[j].entries.push(p);recalcBar(trial[j],config);
+     if(trial[i].entries.length)recalcBar(trial[i],config);else trial.splice(i,1);
+     const sc=evaluate(trial,config,costPossible);
+     if(better(sc,best)){bars=trial;best=sc;changed=true;break outer;}
+    }
+    for(let b=0;b<to.entries.length;b++){
+     if(++tries>16000)break outer;
+     const q=to.entries[b],d=q.length-p.length;
+     if(from.tail+1e-7<d||to.tail+1e-7< -d)continue;
+     const trial=cloneBars(bars);trial[i].entries[a]=q;trial[j].entries[b]=p;
+     recalcBar(trial[i],config);recalcBar(trial[j],config);
+     const sc=evaluate(trial,config,costPossible);
+     if(better(sc,best)){bars=trial;best=sc;changed=true;break outer;}
+    }
+   }
+  }
+  if(!changed)break;
+ }
+ return bars;
+}
+
+// Existing complete-bar compaction, followed by one-to-one local swaps.
+function compactBars(input,config){
+ if(input.length>160||input.length<2)return input;
+ let bars=cloneBars(input);
+ for(let pass=0;pass<3;pass++){
+  let changed=false;
+  const indices=[...bars.keys()].sort((a,b)=>{const aa=bars[a],bb=bars[b];return (bb.stock.kind==='new'?bb.stock.length:0)-(aa.stock.kind==='new'?aa.stock.length:0)||bb.tail-aa.tail;});
+  for(const idx of indices){const source=bars[idx],group=key(source.stock.material,source.stock.grade);
+   const targets=bars.map((b,i)=>({b,i})).filter(t=>t.i!==idx&&key(t.b.stock.material,t.b.stock.grade)===group);
+   if(!targets.length)continue;
+   for(const descending of [true,false]){
+    const trial=cloneBars(bars),move=[...source.entries].sort((a,b)=>descending?b.length-a.length:a.length-b.length);
+    let ok=true;
+    for(const p of move){const alloc=p.length+config.kerf;
+     const fits=targets.filter(t=>trial[t.i].tail+1e-7>=alloc).sort((a,b)=>(trial[a.i].tail-alloc)-(trial[b.i].tail-alloc));
+     if(!fits.length){ok=false;break;}
+     trial[fits[0].i].entries.push(p);recalcBar(trial[fits[0].i],config);
+    }
+    if(ok){trial.splice(idx,1);const prices=trial.every(b=>b.stock.kind==='remnant'||b.stock.price!==null);
+     if(better(evaluate(trial,config,prices),evaluate(bars,config,prices))){bars=trial;changed=true;break;}}
+   }
+   if(changed)break;
+  }
+  if(!changed)break;
+ }
+ return bars;
+}
+
+function rankCandidate(c,config,variant,missingPrices){const{stock,pattern}=c,used=pattern.used;let paid=stock.kind==='remnant'?0:stock.length;let primary;
+ if(config.objective==='cost'&&!missingPrices)primary=(stock.kind==='remnant'?0:stock.price)/used;
+ else if(config.objective==='waste')primary=(stock.length-used)/used+(stock.kind==='remnant'?-0.16:0);
+ else primary=paid/used+(stock.kind==='remnant'?-0.03:0);
+ const tie=stock.length/used,noise=(variant>0?((variant%4)-1.5)*0.00001*(stock.length/used):0);
+ if(strictStockFirst(stock,config))return -100+Math.min(99,tie)*0.01;
+ if(config.warehousePolicy==='strict'&&stock.kind==='new')return Math.max(0,primary);
+ return primary+Math.max(0,tie-1)*((variant%3)*.002)+noise;}
+function runGreedy(pp,ss,config,variant,seed,useDP=false){const random=rng(seed),remaining=pp.map(p=>p.qty),usedStock=new Map(),bars=[];let todo=remaining.reduce((a,b)=>a+b,0);
+ const missingPrices=ss.some(s=>s.kind==='new'&&s.price===null);let safety=0;
+ while(todo>0){if(++safety>2000)throw Error('Превышен предел числа хлыстов.');let opts=[];
+  for(const stock of ss){if((usedStock.get(stock.id)||0)>=stock.qty)continue;const cap=stock.length-2*config.trim;
+   if(cap<=0)continue;let pattern=pickPattern(pp,remaining,cap,config.kerf,variant,random);
+   if(useDP){const dp=pickPatternDP(pp,remaining,cap,config.kerf);if(dp&&(!pattern||dp.used>pattern.used+1e-7))pattern=dp;}
+   if(pattern&&pattern.entries.length)opts.push({stock,pattern,score:rankCandidate({stock,pattern},config,variant,missingPrices)});}
+  if(!opts.length)throw Error(`Недостаточно доступных хлыстов для профиля «${pp[0]?.material||'—'}» (нехватка заготовок нужной длины либо ограничен склад).`);
+  opts.sort((a,b)=>a.score-b.score||a.stock.length-b.stock.length);let selected=opts[0];
+  if(variant%4===3&&opts.length>1&&opts[1].score<=opts[0].score*1.07)selected=opts[1];
+  const pattern=selected.pattern;for(let i=0;i<pp.length;i++)remaining[i]-=pattern.usedQty[i];todo-=pattern.entries.length;
+  usedStock.set(selected.stock.id,(usedStock.get(selected.stock.id)||0)+1);
+  bars.push(makeBar(selected.stock,pattern.entries.map(i=>pp[i]),config));
+ }
+ return bars;}
+
+// A strict-policy construction that spends physical remnants one-by-one where
+// possible, before buying full bars for remaining pieces. This is a candidate,
+// not an unconditional override: available new-bar quotas must still be valid.
+function runStrictRemnants(pp,ss,config){
+ if(config.warehousePolicy!=='strict')return null;
+ const remnants=ss.filter(s=>s.kind==='remnant'&&s.qty>0).sort((a,b)=>a.length-b.length);
+ const purchases=ss.filter(s=>s.kind==='new'&&s.qty>0);
+ if(!remnants.length)return null;
+ const remaining=pp.map(p=>p.qty),bars=[];
+ for(const stock of remnants){
+  const qty=Math.min(stock.qty,remaining.reduce((a,b)=>a+b,0));
+  for(let j=0;j<qty;j++){
+   const candidates=pp.map((p,i)=>({p,i})).filter(x=>remaining[x.i]>0&&x.p.length+config.kerf<=stock.length-2*config.trim+1e-7)
+    .sort((a,b)=>b.p.length-a.p.length);
+   if(!candidates.length)break;
+   const pick=candidates[0];remaining[pick.i]--;bars.push(makeBar(stock,[pick.p],config));
+  }
+ }
+ const rest=pp.map((p,i)=>({...p,qty:remaining[i]})).filter(p=>p.qty>0);
+ if(rest.length){if(!purchases.length)return null;
+  const others=runGreedy(rest,purchases,config,0,0x143b14,true);bars.push(...others);
+ }
+ return bars;
+}
+
+// BFD: sort every required piece descending, best-fit within already-open bars,
+// then open a new purchasable or stored bar if necessary.
+function runBFD(pp,ss,config,variant=0){
+ const total=pp.reduce((s,p)=>s+p.qty,0);if(total>650)return null;
+ const pieces=pp.flatMap(p=>Array(p.qty).fill(p)).sort((a,b)=>b.length-a.length||String(a.id).localeCompare(String(b.id)));
+ const bars=[],used=new Map(),missingPrices=ss.some(s=>s.kind==='new'&&s.price===null);
+ for(const p of pieces){const required=p.length+config.kerf;
+  let fits=bars.map((bar,i)=>({bar,i})).filter(x=>x.bar.tail+1e-7>=required);
+  if(fits.length){fits.sort((a,b)=>{
+    if(config.warehousePolicy==='strict'&&a.bar.stock.kind!==b.bar.stock.kind)return a.bar.stock.kind==='remnant'?-1:1;
+    return (a.bar.tail-required)-(b.bar.tail-required);
+   });bars[fits[0].i].entries.push(p);recalcBar(bars[fits[0].i],config);continue;}
+  const choices=ss.filter(stock=>(used.get(stock.id)||0)<stock.qty&&stock.length-2*config.trim>=required-1e-7)
+   .map(stock=>({stock,score:rankCandidate({stock,pattern:{used:required}},config,variant,missingPrices)}));
+  if(!choices.length)throw Error('Недостаточно заготовок для BFD');
+  choices.sort((a,b)=>a.score-b.score||a.stock.length-b.stock.length);
+  const stock=choices[0].stock;used.set(stock.id,(used.get(stock.id)||0)+1);bars.push(makeBar(stock,[p],config));
+ }
+ return bars;
+}
+
+// Candidate patterns: greedy, constrained-DP, seeded fills; later used by Beam.
+function generatePatterns(pp,remaining,capacity,kerf,limit=14){
+ const patterns=[],seen=new Set();
+ function add(ids){if(!ids||!ids.length)return;const usedQty=new Array(pp.length).fill(0);let used=0;
+  for(const j of ids){usedQty[j]++;used+=pp[j].length+kerf;if(usedQty[j]>remaining[j])return;}
+  if(used>capacity+1e-7)return;
+  const k=usedQty.join(',');if(seen.has(k))return;seen.add(k);
+  patterns.push({entries:[...ids],usedQty,used,left:capacity-used});
+ }
+ const rnd=rng(0x54a31+pp.length*937);
+ for(let trial=0;trial<7;trial++){const p=pickPattern(pp,remaining,capacity,kerf,trial,rnd);if(p)add(p.entries);}
+ const dp=pickPatternDP(pp,remaining,capacity,kerf);if(dp)add(dp.entries);
+ const indexes=[...pp.keys()].filter(i=>remaining[i]>0);
+ for(const j of indexes){
+  const req=pp[j].length+kerf;if(req>capacity+1e-7)continue;
+  add([j]);
+  for(const ascending of [true,false]){
+   let left=capacity-req,ids=[j],rest=indexes.filter(i=>i!==j).sort((a,b)=>ascending?pp[a].length-pp[b].length:pp[b].length-pp[a].length);
+   for(const k of rest){const q=Math.min(remaining[k],Math.floor((left+1e-7)/(pp[k].length+kerf)));
+    for(let z=0;z<q;z++){ids.push(k);left-=pp[k].length+kerf;}}
+   add(ids);
+  }
+ }
+ patterns.sort((a,b)=>b.used-a.used||b.entries.length-a.entries.length);
+ return patterns.slice(0,limit);
+}
+
+// Beam Search on bounded small/medium instances. Keeps several partial plans
+// instead of a single greedy route; each expansion uses generated patterns.
+function runBeam(pp,ss,config,width=5){
+ const total=pp.reduce((s,p)=>s+p.qty,0);if(total>36||pp.length>9||ss.length>8)return null;
+ const start={remaining:pp.map(p=>p.qty),used:new Array(ss.length).fill(0),bars:[],left:total};
+ let frontier=[start],best=null,seen=new Set(),expansions=0;const pricePossible=costKnown(ss);
+ function score(state){const s=summarize(state.bars,config),progress=total-state.left;
+  // Heuristic ordering only, not a certificate: minimize purchased stock while
+  // rewarding progress and (in strict mode) use of physical remnants.
+  return (config.warehousePolicy==='strict'?-s.remnantsUsed*1e8:0)+s.boughtLength*100+state.left*8000+s.scrap*.01-progress*10;
+ }
+ for(let depth=0;depth<total&&frontier.length;depth++){
+  const next=[];
+  for(const node of frontier){
+   if(node.left===0){if(!best||better(evaluate(node.bars,config,pricePossible),evaluate(best,config,pricePossible)))best=node.bars;continue;}
+   for(let k=0;k<ss.length;k++){const stock=ss[k];if(node.used[k]>=stock.qty)continue;
+    const cap=stock.length-2*config.trim;if(cap<=0)continue;
+    for(const pattern of generatePatterns(pp,node.remaining,cap,config.kerf,Math.max(4,width))){
+     if(++expansions>3500)break;
+     const remaining=node.remaining.map((r,i)=>r-pattern.usedQty[i]),left=node.left-pattern.entries.length;
+     const used=[...node.used];used[k]++;
+     const bars=[...node.bars,makeBar(stock,pattern.entries.map(i=>pp[i]),config)];
+     const child={remaining,used,bars,left};
+     if(left===0){if(!best||better(evaluate(bars,config,pricePossible),evaluate(best,config,pricePossible)))best=bars;continue;}
+     const signature=remaining.join(',')+'|'+used.join(',');
+     if(seen.has(signature))continue;seen.add(signature);next.push(child);
+    }
+    if(expansions>3500)break;
+   }
+  }
+  next.sort((a,b)=>score(a)-score(b));frontier=next.slice(0,width);
+  if(expansions>3500)break;
+ }
+ return best;
+}
+
+// Ruin & Recreate: remove a small subset of bars and repack the same parts,
+// while respecting stock quotas consumed by the untouched remainder.
+function ruinRecreate(input,pp,ss,config,attempts=12,seed=12345){
+ if(input.length<2||input.length>45)return input;
+ let best=cloneBars(input),bestScore=evaluate(best,config,costKnown(ss));const rnd=rng(seed);
+ for(let turn=0;turn<attempts;turn++){
+  const count=Math.min(best.length,2+Math.floor(rnd()*Math.min(3,best.length-1)));
+  const indexes=new Set();while(indexes.size<count)indexes.add(Math.floor(rnd()*best.length));
+  const chosen=best.filter((_,i)=>indexes.has(i)),keep=best.filter((_,i)=>!indexes.has(i));
+  const counts=new Map();for(const b of chosen)for(const p of b.entries)counts.set(p.id,(counts.get(p.id)||0)+1);
+  const subset=pp.map(p=>({...p,qty:counts.get(p.id)||0})).filter(p=>p.qty>0);
+  const used=new Map();for(const b of keep)used.set(b.stock.id,(used.get(b.stock.id)||0)+1);
+  const available=ss.map(s=>({...s,qty:Number.isFinite(s.qty)?Math.max(0,s.qty-(used.get(s.id)||0)):Infinity})).filter(s=>s.qty>0);
+  if(!available.length)continue;
+  for(const method of [0,1]){
+   try{const repack=method===0?runGreedy(subset,available,config,turn+3,0x991ba+turn*101,true):runBFD(subset,available,config,turn);
+    if(!repack)continue;const trial=[...keep,...repack];
+    const score=evaluate(trial,config,costKnown(ss));if(better(score,bestScore)){best=trial;bestScore=score;}
+   }catch(e){/* a selected subset may be impossible with this packing order */}
+  }
+ }
+ return best;
+}
+
+// Exact 1D bin-packing B&B. Proof is valid only for ONE purchasing stock
+// specification, no warehouse remnants and the minimum purchased length goal.
+function exactUniformBnB(pp,ss,config,incumbent){
+ const total=pp.reduce((a,p)=>a+p.qty,0);
+ if(ss.length!==1||ss[0].kind!=='new'||config.objective!=='purchase'||total>28)return null;
+ const stock=ss[0],scale=1000;
+ if([stock.length,config.kerf,config.trim,...pp.map(p=>p.length)].some(x=>Math.abs(x*scale-Math.round(x*scale))>1e-7))return null;
+ const cap=Math.round((stock.length-2*config.trim)*scale);
+ const pieces=pp.flatMap(p=>Array(p.qty).fill(p)).sort((a,b)=>b.length-a.length);
+ const sizes=pieces.map(p=>Math.round((p.length+config.kerf)*scale));
+ if(!Number.isSafeInteger(cap)||sizes.some(v=>!Number.isSafeInteger(v)||v<=0||v>cap))return null;
+ const lower=Math.ceil(sizes.reduce((a,b)=>a+b,0)/cap),maxBars=incumbent.length;
+ let best=cloneBars(incumbent),nodes=0,aborted=false;
+ const start=Date.now(),limit=900,nodeLimit=240000;
+ for(let k=lower;k<best.length;k++){
+  const occupied=new Array(k).fill(0),groups=Array.from({length:k},()=>[]);
+  let solution=null;
+  function dfs(i){if(++nodes>nodeLimit||Date.now()-start>limit){aborted=true;return false;}
+   if(i===pieces.length){solution=groups.filter(g=>g.length).map(g=>makeBar(stock,g,config));return true;}
+   const len=sizes[i],seen=new Set();
+   for(let b=0;b<k;b++){
+    if(occupied[b]+len>cap)continue;
+    if(seen.has(occupied[b]))continue;seen.add(occupied[b]);
+    const wasEmpty=occupied[b]===0;occupied[b]+=len;groups[b].push(pieces[i]);
+    if(dfs(i+1))return true;
+    occupied[b]-=len;groups[b].pop();if(aborted)return false;if(wasEmpty)break;
+   }
+   return false;
+  }
+  if(dfs(0)&&solution){best=solution;}
+  if(aborted)break;
+ }
+ return{bars:best,proven:!aborted,reason:aborted?'Лимит времени/узлов Branch & Bound; найден лучший план, но оптимальность не доказана.':'Доказан минимум закупаемой длины для одного типоразмера хлыста.',nodes,method:'Branch & Bound (uniform)'};
+}
+
+// Exact pattern-based integer optimization (specialized cutting-stock IP),
+// not a general-purpose MILP engine. Enumerates ALL bounded patterns for small
+// jobs, then solves integer multiplicities by complete branch-and-bound DFS.
+function exactIntegerPatterns(pp,ss,config,incumbent){
+ const total=pp.reduce((s,p)=>s+p.qty,0);
+ if(total>13||pp.length>4||ss.length>3)return null;
+ const scale=1000,limitPatterns=540;
+ if([config.kerf,config.trim,...pp.map(p=>p.length),...ss.map(s=>s.length)].some(x=>Math.abs(x*scale-Math.round(x*scale))>1e-7))return null;
+ const options=[];let aborted=false,nodes=0;
+ const started=Date.now(),maxTime=950,maxNodes=100000;
+ for(let k=0;k<ss.length;k++){
+  const stock=ss[k],cap=Math.round((stock.length-2*config.trim)*scale),sizes=pp.map(p=>Math.round((p.length+config.kerf)*scale));
+  if(!Number.isSafeInteger(cap)||sizes.some(x=>!Number.isSafeInteger(x)))return null;
+  const counts=new Array(pp.length).fill(0);
+  function enumPattern(i,free,count){
+   if(options.length>limitPatterns||Date.now()-started>maxTime){aborted=true;return;}
+   if(i===pp.length){if(count>0)options.push({k,counts:[...counts]});return;}
+   const max=Math.min(pp[i].qty,Math.floor(free/sizes[i]));
+   for(let q=0;q<=max;q++){counts[i]=q;enumPattern(i+1,free-q*sizes[i],count+q);if(aborted)return;}
+   counts[i]=0;
+  }
+  enumPattern(0,cap,0);
+  if(aborted)break;
+ }
+ if(aborted)return{bars:incumbent,proven:false,reason:'Слишком много схем для полного целочисленного перебора.',nodes,method:'Integer patterns'};
+ const optionsByPart=pp.map((_,j)=>options.filter(x=>x.counts[j]>0).sort((a,b)=>b.counts.reduce((s,n)=>s+n,0)-a.counts.reduce((s,n)=>s+n,0)));
+ const remaining=pp.map(p=>p.qty),used=new Array(ss.length).fill(0),bars=[];
+ let best=cloneBars(incumbent),bestScore=evaluate(best,config,costKnown(ss));
+ function dfs(left){
+  if(++nodes>maxNodes||Date.now()-started>maxTime){aborted=true;return;}
+  if(left===0){const sc=evaluate(bars,config,costKnown(ss));if(better(sc,bestScore)){best=cloneBars(bars);bestScore=sc;}return;}
+  const chosen=remaining.findIndex(n=>n>0);if(chosen<0)return;
+  for(const option of optionsByPart[chosen]){
+   if(aborted)return;
+   const k=option.k;if(used[k]>=ss[k].qty)continue;
+   if(option.counts.some((q,j)=>q>remaining[j]))continue;
+   used[k]++;for(let j=0;j<pp.length;j++)remaining[j]-=option.counts[j];
+   const entries=pp.flatMap((p,j)=>Array(option.counts[j]).fill(p));
+   bars.push(makeBar(ss[k],entries,config));
+   dfs(left-entries.length);
+   bars.pop();for(let j=0;j<pp.length;j++)remaining[j]+=option.counts[j];used[k]--;
+  }
+ }
+ dfs(total);
+ return{bars:best,proven:!aborted,reason:aborted?'Лимит времени/узлов целочисленного перебора; оптимальность не доказана.':'Оптимальность доказана полным перебором целочисленных комбинаций схем.',nodes,method:'Integer patterns'};
+}
+
 function solveGroup(pp,ss,config){
  const count=pp.reduce((a,p)=>a+p.qty,0),mode=config.searchMode||'balanced';
- const attemptsFor=m=>m==='quick'?(count<=100?7:4):m==='deep'?(count<=100?36:count<=400?16:5):(count<=100?19:count<=400?11:4);
- // Углубление не должно ухудшать найденное решение: множества кандидатов вложены.
- const levels=mode==='quick'?['quick']:mode==='deep'?['quick','balanced','deep']:['quick','balanced'];
- let best=null,bScore=null,lastErr=null;const canPrice=ss.every(s=>s.kind==='remnant'||s.price!==null);
+ const attemptsFor=m=>m==='quick'?(count<=100?7:4):m==='deep'?(count<=100?30:count<=400?14:5):(count<=100?16:count<=400?9:4);
+ const levels=mode==='quick'?['quick']:mode==='balanced'?['quick','balanced']:['quick','balanced','deep'];
+ let best=null,bScore=null,lastErr=null,exactInfo=null;const canPrice=costKnown(ss);
+ function candidate(bars){if(!bars||!bars.length)return;const sc=evaluate(bars,config,canPrice);if(better(sc,bScore)){best=cloneBars(bars);bScore=sc;}}
+ // Baseline candidates guarantee later modes cannot discard a better previous result.
  for(const level of levels){for(let t=0;t<attemptsFor(level);t++){
   try{
    const useDP=level!=='quick'&&count<=180&&(level==='deep'?t%2===0:t%4===0);
    let bars=runGreedy(pp,ss,config,t,0x43fe2a+t*997+pp.length*31,useDP);
    if(level!=='quick'&&bars.length<=160)bars=compactBars(bars,config);
-   const sc=metric(summarize(bars,config),config,canPrice);
-   if(better(sc,bScore)){best=bars;bScore=sc;}
+   candidate(bars);
   }catch(e){lastErr=e;}
  }}
- if(!best)throw lastErr||Error('Не удалось найти раскрой.');return best;
+ if(!best)throw lastErr||Error('Не удалось найти допустимый раскрой.');
+ // Best Fit Decreasing contributes a distinct baseline on every search level.
+ try{candidate(runBFD(pp,ss,config,0));}catch(e){}
+ if(config.warehousePolicy==='strict'){try{candidate(runStrictRemnants(pp,ss,config));}catch(e){}}
+ if(mode!=='quick'){
+  if(best.length<=36){candidate(localSearchSwap(best,config,canPrice,mode==='balanced'?2:4));}
+  const rr=ruinRecreate(best,pp,ss,config,mode==='balanced'?10:24,0x6104f+count*23);candidate(rr);
+  candidate(compactBars(best,config));
+ }
+ if(mode==='deep'||mode==='exact'){
+  try{candidate(runBeam(pp,ss,config,mode==='exact'?10:7));}catch(e){}
+  candidate(ruinRecreate(best,pp,ss,config,32,0x1fac9));
+  if(best.length<=36)candidate(localSearchSwap(best,config,canPrice,4));
+ }
+ if(mode==='exact'){
+  // Proof scope is explicit and data dependent; large inputs get no certificate.
+  let exact=exactUniformBnB(pp,ss,config,best);
+  if(!exact)exact=exactIntegerPatterns(pp,ss,config,best);
+  if(exact){candidate(exact.bars);exactInfo={proven:exact.proven,reason:exact.reason,nodes:exact.nodes,method:exact.method};}
+  else exactInfo={proven:false,reason:'Задача превышает ограничения точного решателя; использованы эвристики.',nodes:0,method:'heuristics only'};
+ }
+ if(exactInfo)best.exactInfo=exactInfo;
+ return best;
 }
+
 function solveAll(config,override=null){const groups=new Map();for(const p of config.parts){const k=key(p.material,p.grade);if(!groups.has(k))groups.set(k,{material:p.material,grade:p.grade,parts:[],stocks:[]});groups.get(k).parts.push(p)}for(const s of config.stocks){const g=groups.get(key(s.material,s.grade));if(g)g.stocks.push(s)}
- let bars=[];for(const g of groups.values()){let ss=g.stocks;if(override){const filter=override.get(key(g.material,g.grade));if(filter)ss=ss.filter(s=>filter.has(s.id));}
- if(!ss.length)throw Error(`Нет хлыстов для группы «${g.material} / ${g.grade}».`);const gbars=solveGroup(g.parts,ss,config);bars.push(...gbars.map(b=>({...b,group:g.material+' / '+(g.grade||'не указана')})));}
- bars.forEach((b,i)=>b.no=i+1);const s=summarize(bars,config);return{bars,stats:s,config};}
+ let bars=[],proofs=[];for(const g of groups.values()){let ss=g.stocks;if(override){const filter=override.get(key(g.material,g.grade));if(filter)ss=ss.filter(s=>filter.has(s.id));}
+ if(!ss.length)throw Error(`Нет хлыстов для группы «${g.material} / ${g.grade}».`);const gbars=solveGroup(g.parts,ss,config);if(gbars.exactInfo)proofs.push({group:g.material+' / '+(g.grade||'не указана'),...gbars.exactInfo});bars.push(...gbars.map(b=>({...b,group:g.material+' / '+(g.grade||'не указана')})));}
+ bars.forEach((b,i)=>b.no=i+1);const s=summarize(bars,config);return{bars,stats:s,config,proofs};}
 function calcCompare(config){let out=[];const groups=new Map();for(const p of config.parts){let k=key(p.material,p.grade);if(!groups.has(k))groups.set(k,{parts:[],stocks:[]});groups.get(k).parts.push(p);}for(const s of config.stocks){const g=groups.get(key(s.material,s.grade));if(g)g.stocks.push(s);}
- for(const [k,g] of groups){for(const s of g.stocks){try{if(s.qty===0)throw Error('Нет в наличии');if(g.parts.some(p=>p.length+config.kerf>s.length-2*config.trim+1e-8))throw Error('Есть детали длиннее хлыста');const b=solveGroup(g.parts,[s],config);const st=summarize(b,config);out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,stats:st});}catch(e){out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,error:e.message});}}
+ for(const [k,g] of groups){for(const s of g.stocks){try{if(s.qty===0)throw Error('Нет в наличии');if(g.parts.some(p=>p.length+config.kerf>s.length-2*config.trim+1e-8))throw Error('Есть детали длиннее хлыста');const b=solveGroup(g.parts,[s],{...config,searchMode:config.searchMode==='exact'?'balanced':config.searchMode});const st=summarize(b,config);out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,stats:st});}catch(e){out.push({group:g.parts[0].material+' / '+(g.parts[0].grade||'—'),stock:s,error:e.message});}}
  }
  return out;}
 function cellMetric(v,d=0){return v===null?'—':nfmt(v,d)}
@@ -366,7 +707,7 @@ function renderSummary(r){const s=r.stats,c=r.config;
  <div class="gridform" style="margin:12px 0"><div class="stat"><div class="value">${mf(s.raw/1000)} м</div><div class="cap">Чистая длина деталей</div></div><div class="stat"><div class="value">${mf(s.stockLength/1000)} м</div><div class="cap">Материал в раскрое (включая склад)</div></div><div class="stat"><div class="value">${mf(s.kerf/1000)} м</div><div class="cap">Потери на резах</div></div><div class="stat"><div class="value">${mf(s.trim/1000)} м</div><div class="cap">Торцевые припуски</div></div><div class="stat"><div class="value">${mf(s.reusable/1000)} м</div><div class="cap">Возвратные остатки</div></div><div class="stat"><div class="value">${mf(s.scrap/1000)} м</div><div class="cap">Невозвратные концевые отходы</div></div><div class="stat"><div class="value">${mf(s.totalWaste/1000)} м</div><div class="cap">Все технологические потери (отход + резы + торцы)</div></div></div>
  <h3>Ведомость исходных хлыстов</h3>${niceTable(['Материал / сталь','Длина, мм','Шт.','Тип'],specsRows)}
  <div class="info" style="margin-top:13px"><b>Проверка баланса:</b> ${mf(s.stockLength)} = ${mf(s.raw)} (детали) + ${mf(s.kerf)} (резы) + ${mf(s.trim)} (торцы) + ${mf(s.tail)} (остатки), мм.<br><b>Выход годного:</b> ${nfmt(s.efficiency*100,1)}%. Складских остатков использовано: ${nfmt(s.remnantsUsed)} шт.</div>
- <p class="algorithmline">Режим поиска: <b>${esc(c.searchMode)}</b> · Эвристика + DP наполнения (когда применимо). Абсолютный оптимум не гарантируется.</p><p class="note">Невозвратные отходы — концевые остатки короче порога ${mf(c.remnantMin)} мм; пропил и подрезка торцов показаны отдельно. Оптимум эвристический.</p>`;
+ <p class="algorithmline"><b>Режим:</b> ${esc(c.searchMode)} · <b>Приоритет склада:</b> ${c.warehousePolicy==='strict'?'строгий (максимум складских хлыстов)':'экономический'} · Методы: BFD, DP, Local Search / Swap, Ruin &amp; Recreate, Beam Search и ограниченная целочисленная оптимизация (по режиму).</p><p class="algorithmline"><b>Статус точной оптимизации:</b> ${r.proofs?.length?r.proofs.map(p=>esc(p.group)+': '+(p.proven?'<span class="ok">Оптимальность доказана</span>':'<span class="warning-inline">'+esc(p.reason||'Оптимальность не доказана')+'</span>')).join('; '):'Точный решатель не запускался. Найдено эвристическое решение.'}</p><p class="note">Невозвратные отходы — концевые остатки короче порога ${mf(c.remnantMin)} мм; пропил и подрезка торцов показаны отдельно. ${r.proofs?.length&&r.proofs.every(p=>p.proven)?'Для указанных групп математический оптимум по выбранной цели доказан.':'Глобальный математический оптимум не доказан.'}</p>`;
  }
 const colorSet=['#1776A8','#1E987C','#A56B23','#7856AA','#BD5D60','#376C9A','#21828E','#6C8B39','#A45D9A','#387C6B'];
 function colorFor(p){let hash=0;for(const c of String(p.pos))hash=(hash*31+c.charCodeAt(0))|0;return colorSet[Math.abs(hash)%colorSet.length];}
@@ -485,20 +826,20 @@ function exportJournal(){downloadCSV('Журнал_движений_'+makeName(s
 function createNextOrder(){if(!confirm('Открыть новый заказ с текущими складскими остатками? Ведомость деталей будет очищена. Сначала сохраните JSON-проект.'))return;const next=prompt('Номер нового заказа (обязательно новый, не проведённый):','МК-2026-002');if(next===null)return;const k=String(next).trim().toLocaleLowerCase('ru-RU');if(!k||state.bookedOrders.includes(k)){alert('Укажите непустой уникальный номер заказа.');return;}state.meta.order=next.trim();state.parts=[];state.lastBookedReport=null;result=null;comparisons=[];modeComparisons=[];renderAll();persist();flashBookState();putStatus('Новый заказ создан. Склад сохранён, ведомость деталей очищена. Добавьте детали и рассчитайте раскрой.');switchTab('guide');}
 function benchmarkModes(){
  try{const cfg=collect();modeComparisons=[];
-  for(const mode of ['quick','balanced','deep']){try{const r=solveAll({...cfg,searchMode:mode});modeComparisons.push({mode,stats:r.stats});}catch(e){modeComparisons.push({mode,error:e.message});}}
+  for(const mode of ['quick','balanced','deep','exact']){try{const r=solveAll({...cfg,searchMode:mode});modeComparisons.push({mode,stats:r.stats,proofs:r.proofs});}catch(e){modeComparisons.push({mode,error:e.message});}}
   renderCompare();switchTab('compare');putStatus('Сравнение режимов рассчитано. Основной раскрой и склад не изменены.');
  }catch(e){alert('Невозможно сравнить режимы: '+e.message);}
 }
 function renderCompare(){if(!comparisons.length){$('#panel-compare').innerHTML='<div class="empty">Нет данных для сравнения.</div>';return;}
  const rows=comparisons.map(x=>[esc(x.group),mf(x.stock.length),x.stock.kind==='remnant'?'Склад':'Покупка',x.error?'<span class="bad">—</span>':nfmt(x.stats.barCount),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':nfmt(x.stats.efficiency*100,1)+'%',x.error?'—':mf(x.stats.tail/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2)+' '+esc(state.settings.currency||'₽'),x.error?`<span class="bad">${esc(x.error)}</span>`:'<span class="ok">Рассчитано</span>']);
- const mr=modeComparisons.map(x=>[x.mode==='quick'?'Быстрый':x.mode==='balanced'?'Сбалансированный':'Углублённый',x.error?'—':nfmt(x.stats.newBars),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':mf(x.stats.totalWaste/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2),x.error?esc(x.error):'Готово']);
- const modes='<h2>Сравнение алгоритмов</h2><p class="sub">Расчёты независимы. Величина «покупка» показывает длину покупных хлыстов; окончательный выбор делается в параметрах проекта и повторным расчётом.</p><button class="btn" id="benchmark">Сравнить все 3 режима</button>'+(modeComparisons.length?niceTable(['Алгоритм','Купить хлыстов','Купить, м','Невозвратные потери, м','Стоимость','Статус'],mr):'<p class="note">Нажмите кнопку для сравнения быстрых, сбалансированных и углублённых расчётов.</p>');
- $('#panel-compare').innerHTML=modes+'<h2>Сравнение исходных длин</h2><p class="sub">Каждый вариант считается отдельно — исключительно из хлыстов соответствующей строки склада. Основной план из «Сводки» может сочетать разные длины и складские остатки.</p>'+niceTable(['Материал','Хлыст, мм','Тип','Хлыстов','Купить, м','Выход','Остаток, м','Цена закупки','Статус'],rows)+'<p class="note">В таблице «остаток» включает возвратный и невозвратный концевой остаток, без пропила и подрезок.</p>';$('#benchmark').onclick=benchmarkModes;}
+ const mr=modeComparisons.map(x=>[x.mode==='quick'?'Быстрый':x.mode==='balanced'?'Сбалансированный':x.mode==='deep'?'Углублённый':'Точный',x.error?'—':nfmt(x.stats.newBars),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':mf(x.stats.totalWaste/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2),x.error?esc(x.error):(x.mode==='exact'?(x.proofs?.length&&x.proofs.every(p=>p.proven)?'Оптимум доказан':'Не доказан'):'Готово')]);
+ const modes='<h2>Сравнение алгоритмов</h2><p class="sub">Расчёты независимы. Величина «покупка» показывает длину покупных хлыстов; окончательный выбор делается в параметрах проекта и повторным расчётом.</p><button class="btn" id="benchmark">Сравнить все 4 режима</button>'+(modeComparisons.length?niceTable(['Алгоритм','Купить хлыстов','Купить, м','Невозвратные потери, м','Стоимость','Статус'],mr):'<p class="note">Нажмите кнопку для сравнения быстрых, сбалансированных, углублённых и точных расчётов.</p>');
+ $('#panel-compare').innerHTML=modes+'<h2>Сравнение исходных длин</h2><p class="sub">Каждый вариант считается отдельно (в «Точном» режиме — сбалансированным алгоритмом для быстрого сравнения) — исключительно из хлыстов соответствующей строки склада. Основной план из «Сводки» может сочетать разные длины и складские остатки.</p>'+niceTable(['Материал','Хлыст, мм','Тип','Хлыстов','Купить, м','Выход','Остаток, м','Цена закупки','Статус'],rows)+'<p class="note">В таблице «остаток» включает возвратный и невозвратный концевой остаток, без пропила и подрезок.</p>';$('#benchmark').onclick=benchmarkModes;}
 function calculate(){try{modeComparisons=[];const config=collect();result=solveAll(config);comparisons=calcCompare(config);renderSummary(result);renderMaps(result);renderCompare();renderSidebar(result.stats);renderWarehouse(result);renderJournal();flashBookState();persist();putStatus('Расчёт выполнен: '+nfmt(result.stats.pieceCount)+' деталей, '+nfmt(result.stats.barCount)+' хлыстов.');}catch(e){result=null;comparisons=[];$('#panel-summary').innerHTML='<div class="error">'+esc(e.message)+'</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderSidebar(null);renderWarehouse(null);renderJournal();flashBookState();putStatus('Ошибка входных данных: '+e.message,true)}}
 function switchTab(n){if(!result&&n!=='guide'&&n!=='journal'&&n!=='warehouse'&&n!=='about')calculate();$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));$$('.tabPanel').forEach(p=>p.classList.toggle('hide',p.id!=='panel-'+n));}
 function download(name,blob){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
 const makeName=s=>String(s||'заказ').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').slice(0,60);
-function saveProject(){persist();download(makeName(state.meta.order)+'_проект_раскроя.json',new Blob([JSON.stringify({...state,version:5},null,2)],{type:'application/json;charset=utf-8'}));putStatus('Проект сохранён в JSON.');}
+function saveProject(){persist();download(makeName(state.meta.order)+'_проект_раскроя.json',new Blob([JSON.stringify({...state,version:6},null,2)],{type:'application/json;charset=utf-8'}));putStatus('Проект сохранён в JSON.');}
 function csvEscape(x){let s=String(x??'');return /[;\n\r"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
 function exportCSV(){const rows=[['Позиция','Профиль','Сталь','Длина, мм','Количество','Примечание'],...state.parts.map(p=>[p.pos,p.material,p.grade,p.length,p.qty,p.note])];download('Детали_'+makeName(state.meta.order)+'.csv',new Blob(['\ufeff'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));}
 function parseCSV(text){const lines=[];let row=[],field='',quoted=false;const peek=text.split(/\r?\n/).slice(0,12);const header=peek.find(x=>/позици/i.test(x)&&/длин/i.test(x))||peek.find(x=>/[;,\t]/.test(x))||peek[0]||'';const choices=[';','\t',','];const del=choices.sort((a,b)=>header.split(b).length-header.split(a).length)[0];
@@ -535,7 +876,7 @@ function zipFiles(entries){const encoder=new TextEncoder(),locals=[],centrals=[]
  const centralSize=centrals.reduce((a,b)=>a+b.length,0),end=pack(22,v=>{v.setUint32(0,0x06054b50,true);v.setUint16(8,entries.length,true);v.setUint16(10,entries.length,true);v.setUint32(12,centralSize,true);v.setUint32(16,offset,true);});return new Blob([...locals,...centrals,end],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});}
 function exportXLSX(){if(!result){calculate();if(!result)return;}const r=result,s=r.stats,c=r.config;
  const sheets=[['Сводка',[
- ['РАСКРОЙ МЕТАЛЛОПРОКАТА — ОТЧЁТ','Значение','Ед.'],['Заказ',state.meta.order||'—',''],['Цех / заказчик',state.meta.client||'—',''],['Исполнитель',state.meta.author||'—',''],['Дата создания',new Date().toLocaleString('ru-RU'),''],['Ширина реза',c.kerf,'мм'],['Подрезка торца',c.trim,'мм / торец'],['Порог возвратного остатка',c.remnantMin,'мм'],['Количество деталей',s.pieceCount,'шт'],['Деталей, чистая длина',s.raw,'мм'],['Использовано хлыстов',s.barCount,'шт'],['Купить хлыстов',s.newBars,'шт'],['Купить исходного проката',s.boughtLength,'мм'],['Использовано складских остатков',s.remnantsUsed,'шт'],['Суммарная длина хлыстов',s.stockLength,'мм'],['Потери при резке',s.kerf,'мм'],['Подрезка торцов',s.trim,'мм'],['Возвратные остатки',s.reusable,'мм'],['Невозвратные концевые отходы',s.scrap,'мм'],['Всего потерь (отходы + пропил + подрезка)',s.totalWaste,'мм'],['Статус заказа',alreadyBooked()?'Проведён':'Расчётный, не проведён',''],['Выход годного',Math.round(s.efficiency*10000)/100,'%'],['Стоимость новой закупки',s.cost===null?'Не все цены заданы':s.cost,state.settings.currency||'₽'],['Условие','Каждой детали соответствует один рез; обе подрезки на каждый хлыст.',''],['Алгоритм','Многопроходная эвристика; математический оптимум не гарантируется.',''],['Источник','Для перерасчёта откройте HTML-калькулятор и выполните расчёт заново.','']]],
+ ['РАСКРОЙ МЕТАЛЛОПРОКАТА — ОТЧЁТ','Значение','Ед.'],['Заказ',state.meta.order||'—',''],['Цех / заказчик',state.meta.client||'—',''],['Исполнитель',state.meta.author||'—',''],['Дата создания',new Date().toLocaleString('ru-RU'),''],['Ширина реза',c.kerf,'мм'],['Подрезка торца',c.trim,'мм / торец'],['Порог возвратного остатка',c.remnantMin,'мм'],['Политика склада',c.warehousePolicy==='strict'?'Строгая':'Экономическая',''],['Точный оптимум',r.proofs?.length&&r.proofs.every(p=>p.proven)?'Доказан':r.proofs?.length?'Не доказан':'Не проверялся',''],['Количество деталей',s.pieceCount,'шт'],['Деталей, чистая длина',s.raw,'мм'],['Использовано хлыстов',s.barCount,'шт'],['Купить хлыстов',s.newBars,'шт'],['Купить исходного проката',s.boughtLength,'мм'],['Использовано складских остатков',s.remnantsUsed,'шт'],['Суммарная длина хлыстов',s.stockLength,'мм'],['Потери при резке',s.kerf,'мм'],['Подрезка торцов',s.trim,'мм'],['Возвратные остатки',s.reusable,'мм'],['Невозвратные концевые отходы',s.scrap,'мм'],['Всего потерь (отходы + пропил + подрезка)',s.totalWaste,'мм'],['Статус заказа',alreadyBooked()?'Проведён':'Расчётный, не проведён',''],['Выход годного',Math.round(s.efficiency*10000)/100,'%'],['Стоимость новой закупки',s.cost===null?'Не все цены заданы':s.cost,state.settings.currency||'₽'],['Условие','Каждой детали соответствует один рез; обе подрезки на каждый хлыст.',''],['Алгоритм','Многопроходная эвристика; математический оптимум не гарантируется.',''],['Источник','Для перерасчёта откройте HTML-калькулятор и выполните расчёт заново.','']]],
  ['Детали',[['Позиция','Профиль / сечение','Марка стали','Длина, мм','Количество, шт','Всего, мм','Примечание'],...c.parts.map(p=>[p.pos,p.material,p.grade,p.length,p.qty,p.length*p.qty,p.note])]],
  ['Исходные хлысты',[['Профиль / сечение','Марка стали','Длина, мм','Количество доступно, шт','Цена за 1 шт','Тип','Источник / место'],...c.stocks.map(p=>[p.material,p.grade,p.length,Number.isFinite(p.qty)?p.qty:'Неограниченно',p.price===null?'':p.price,p.kind==='remnant'?'Складской остаток':'Покупка',p.origin||''])]],
  ['Карты раскроя',[['Хлыст №','Материал / сечение','Марка стали','Исходная длина, мм','Тип','Позиции / порядок резки','Деталей, шт','Чистый размер, мм','Пропил, мм','Подрезка, мм','Остаток, мм','Возвратный остаток'],...r.bars.map(b=>[b.no,b.stock.material,b.stock.grade,b.stock.length,b.stock.kind==='remnant'?'Склад':'Покупка',b.entries.map(p=>p.pos+' ['+mf(p.length)+']').join(' + '),b.entries.length,b.pieceLength,b.kerf,b.trim,b.tail,b.tail>=c.remnantMin?'Да':'Нет'])]],
