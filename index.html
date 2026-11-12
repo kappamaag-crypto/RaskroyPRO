@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.1.1 — металлоконструкции и склад остатков</title>
+<title>Раскрой PRO 5.1.2 — металлоконструкции и склад остатков</title>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -35,7 +35,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1.1 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.1.2 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -93,7 +93,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
     </section>
     <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
       <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
-      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: целые миллиметры, шаг 1 мм</span></div>
+      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: можно дробные мм (до 0,001); шаг стрелок 1 мм</span></div>
     </section>
     <section class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
       <div class="tablewrap"><table><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th></th></tr></thead><tbody id="stock-body"></tbody></table></div>
@@ -113,7 +113,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
             <h3>Как устроены режимы оптимизации</h3>
             <ul class="about-list">
               <li><b>Быстрый:</b> несколько вариантов жадного заполнения хлыстов без динамической оптимизации и уплотнения.</li>
-              <li><b>Сбалансированный:</b> включает все варианты быстрого режима, расширенные попытки, ограниченную задачу о рюкзаке (DP) для целых миллиметров и локальное уплотнение.</li>
+              <li><b>Сбалансированный:</b> включает все варианты быстрого режима, расширенные попытки, ограниченную задачу о рюкзаке (DP) для целочисленной сетки размеров (при дробных величинах применяется эвристика) и локальное уплотнение.</li>
               <li><b>Углублённый:</b> включает предыдущие режимы, дополнительные попытки заполнения и более частое применение DP. Может работать заметно дольше.</li>
             </ul>
             <p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритм эвристический; точный глобальный минимум не гарантируется.</p>
@@ -162,7 +162,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.1.2</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
@@ -190,7 +190,10 @@ if(!state.meta.order)state.meta.order='МК-2026-001';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=x=>{if(x===null||x===undefined||String(x).trim()==='')return null;const v=Number(String(x).trim().replace(/\s/g,'').replace(',','.'));return Number.isFinite(v)?v:NaN};
 const nfmt=(x,d=0)=>Number(x||0).toLocaleString('ru-RU',{maximumFractionDigits:d,minimumFractionDigits:d});
-const mf=x=>nfmt(x,1);const key=(m,g)=>JSON.stringify([String(m).trim().toLowerCase(),String(g).trim().toLowerCase()]);
+// Длины деталей и хлыстов можно вводить с точностью до 0,001 мм.
+// Шаг стрелок в поле ввода остаётся 1 мм. Количество изделий — только целое.
+const validLength=v=>Number.isFinite(v)&&v>0&&Number.isSafeInteger(Math.round(v*1000))&&Math.abs(v*1000-Math.round(v*1000))<1e-6;
+const mf=x=>Number(x||0).toLocaleString('ru-RU',{maximumFractionDigits:3});const key=(m,g)=>JSON.stringify([String(m).trim().toLowerCase(),String(g).trim().toLowerCase()]);
 const clampZero=x=>Math.max(0,Math.abs(x)<0.000001?0:x);
 function putStatus(t,err=false){$('#status').textContent=t;$('#status').style.color=err?'#a33b43':'#516f7f'}
 function persist(){try{localStorage.setItem('cutting_pro_5',JSON.stringify(state))}catch(e){}}
@@ -205,13 +208,13 @@ function collect(){const settings=state.settings, parts=[], stocks=[];
 for(const [idx,p] of state.parts.entries()){
  const length=num(p.length),qty=num(p.qty);if(qty===0||((qty===null)&&(length===0||length===null||String(p.material||'').trim()==='')))continue;
  if(!String(p.material||'').trim())throw Error(`Деталь ${idx+1}: заполните профиль / сечение.`);
- if(!Number.isSafeInteger(length)||length<=0)throw Error(`Деталь ${idx+1}: длина должна быть положительным целым числом миллиметров (шаг 1 мм).`);
+ if(!validLength(length))throw Error(`Деталь ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг стрелок 1 мм).`);
  if(!Number.isSafeInteger(qty)||qty<=0)throw Error(`Деталь ${idx+1}: количество должно быть целым положительным числом.`);
  parts.push({...p,length,qty,material:p.material.trim(),grade:String(p.grade||'').trim()});}
 for(const [idx,p] of state.stocks.entries()){
  const length=num(p.length),qty=num(p.qty),price=num(p.price);if(!String(p.material||'').trim()&&(length===null||length===0))continue;
  if(!String(p.material||'').trim())throw Error(`Хлыст ${idx+1}: укажите профиль / сечение.`);
- if(!Number.isSafeInteger(length)||length<=0)throw Error(`Хлыст ${idx+1}: длина должна быть положительным целым числом миллиметров (шаг 1 мм).`);
+ if(!validLength(length))throw Error(`Хлыст ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг стрелок 1 мм).`);
  if(qty!==null&&(!Number.isSafeInteger(qty)||qty<0))throw Error(`Хлыст ${idx+1}: доступное количество должно быть целым неотрицательным числом.`);
  if(price!==null&&(!Number.isFinite(price)||price<0))throw Error(`Хлыст ${idx+1}: цена должна быть неотрицательной.`);
  if(p.kind==='remnant'&&qty===null)throw Error(`Складской остаток ${idx+1}: обязательно укажите количество.`);
@@ -506,7 +509,7 @@ function importCSV(txt){
   newParts.push({id:Date.now()+i,pos:val('pos')||'Д-'+(i+1),material:val('material'),grade:val('grade'),length:val('length'),qty:val('qty'),note:val('note')});
  }
  if(!newParts.length)throw Error('В файле не найдено ни одной детали с длиной и количеством.');
- for(const [i,p] of newParts.entries())if(!Number.isSafeInteger(num(p.length))||num(p.length)<=0)throw Error('CSV, строка '+(i+1)+': длина должна быть целым числом миллиметров.');
+ for(const [i,p] of newParts.entries())if(!validLength(num(p.length)))throw Error('CSV, строка '+(i+1)+': длина должна быть положительной (до 3 знаков после запятой).');
  state.parts=newParts;renderParts();persist();calculate();}
 // Не требующий библиотек генератор Excel .xlsx: ZIP (store) + Office Open XML.
 function xml(s){return esc(s).replace(/\r/g,'&#13;').replace(/\n/g,'&#10;');}
@@ -566,14 +569,14 @@ function pasteRows(){
    if(r.length<=3){length=r[0];qty=r[1]||'1';pos='Д-'+String(idx-start+1).padStart(2,'0');material=mat;steel=grade;note=r[2]||'';}
    else {pos=r[0]||'Д-'+String(idx-start+1).padStart(2,'0');material=r[1]||mat;steel=r[2]||grade;length=r[3];qty=r[4]||'1';note=r[5]||'';}
    if(!material)throw Error('Строка '+(idx+1)+': укажите профиль.');
-   if(!Number.isSafeInteger(num(length))||num(length)<=0||!Number.isSafeInteger(num(qty))||num(qty)<1)throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
+   if(!validLength(num(length))||!Number.isSafeInteger(num(qty))||num(qty)<1)throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
    imported.push({id,pos,material,grade:steel,length,qty,note});
   }else{
    let material,steel,length,qty,price,kind,origin;
    if(r.length<=3){material=mat;steel=grade;length=r[0];qty=r[1]||'';price=r[2]||'';kind='new';origin='';}
    else{material=r[0]||mat;steel=r[1]||grade;length=r[2];qty=r[3]||'';price=r[4]||'';kind=/склад|остат/i.test(r[5]||'')?'remnant':'new';origin=r[6]||'';}
    if(!material)throw Error('Строка '+(idx+1)+': укажите профиль.');
-   if(!Number.isSafeInteger(num(length))||num(length)<=0|| (qty!==''&&(!Number.isSafeInteger(num(qty))||num(qty)<0)))throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
+   if(!validLength(num(length))|| (qty!==''&&(!Number.isSafeInteger(num(qty))||num(qty)<0)))throw Error('Строка '+(idx+1)+': некорректная длина или количество.');
    if(kind==='remnant'&&qty==='')throw Error('Строка '+(idx+1)+': для складского остатка количество обязательно.');
    imported.push({id,material,grade:steel,length,qty,price,kind,origin});
   }
