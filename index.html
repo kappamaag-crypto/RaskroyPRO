@@ -89,7 +89,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <label>Единица валюты<input data-setting="currency" type="text" placeholder="₽" maxlength="8"></label>
       <label>Исполнитель<input data-meta="author" type="text" placeholder="Мастер участка"></label>
     </div>
-    <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
+    <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Для склада концевые остатки округляются вниз до целого миллиметра, дробная часть относится к отходам. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
     </section>
     <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
       <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
@@ -145,7 +145,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <li>Для вставки ведомости из Excel выделите диапазон и используйте кнопку «Вставить из Excel»: поддерживаются две колонки «Длина / Кол-во» либо полный набор полей. Столбцы должны быть разделены табуляцией.</li>
       <li>Выберите «Быстрый», «Сбалансированный» или «Углублённый» режим. Во вкладке «Сравнение длин» доступны отдельные сравнения трёх режимов.</li>
       <li>Откройте <b>«Остатки и склад»</b>: проверьте перечень пригодных отрезков (будущий склад) и отходов, а также расход складских хлыстов.</li>
-      <li>Только после фактической резки нажмите <b>«Провести склад»</b>, подтвердите операцию. Остатки по плану станут складскими позициями для следующих заказов, использованные складские отрезки будут списаны. Проверка физического выхода обязательна.</li>
+      <li>Только после фактической резки нажмите <b>«Провести склад»</b>, подтвердите операцию. Остатки по плану (с округлением вниз до 1 мм) станут складскими позициями для следующих заказов, использованные складские отрезки будут списаны. Проверка физического выхода обязательна.</li>
       <li>Откройте <b>«Журнал операций»</b> и проверьте списания, приходы и отходы. Два раза провести один и тот же номер заказа нельзя.</li>
       <li>Сохраните <b>проект JSON</b> после проведения — это переносной архив склада вместе с журналом. При создании следующего заказа используйте <b>«Новый заказ (склад сохранить)»</b>.</li>
       <li>Выведите рабочие карты на принтер или сохраните Excel-отчёт (включая листы складских движений); проект можно открыть позднее.</li>
@@ -220,6 +220,7 @@ if(!parts.length)throw Error('Ведомость деталей пуста.');if
 const total=parts.reduce((a,p)=>a+p.qty,0);if(total>1800)throw Error(`Заявлено ${total} деталей. Для браузерного расчёта допускается не более 1800 штук в одном заказе; разбейте заказ на партии.`);
 const kerf=num(settings.kerf),trim=num(settings.trim),remnantMin=num(settings.remnantMin);
 for(const [name,val] of [['Ширина реза',kerf],['Подрезка торца',trim],['Порог остатка',remnantMin]])if(!Number.isFinite(val)||val<0)throw Error(`${name}: укажите неотрицательное число.`);
+if(!Number.isSafeInteger(remnantMin))throw Error('Порог остатка: укажите целое число миллиметров (шаг 1 мм).');
 if(!['cost','purchase','waste'].includes(settings.objective))throw Error('Неподдерживаемый вариант оптимизации.');
 const missing=[...new Set(parts.filter(p=>!stocks.some(s=>key(p.material,p.grade)===key(s.material,s.grade))).map(p=>p.material+' / '+p.grade))];
 if(missing.length)throw Error('Не найдены исходные хлысты для: '+missing.join('; '));
@@ -406,7 +407,10 @@ function plannedMovements(r){
  if(!r)return {consumed,produced,scrap,after:state.stocks.map(x=>({...x}))};
  for(const b of r.bars){
   if(b.stock.kind==='remnant')consumed.set(String(b.stock.id),(consumed.get(String(b.stock.id))||0)+1);
-  if(b.tail>=r.config.remnantMin&&b.tail>0){produced.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:Math.round(b.tail*1000)/1000,qty:1,origin:'Заказ '+(state.meta.order||'—')+', хлыст №'+b.no});}
+  // В склад поступают только целые миллиметры. Дробная часть хвоста — невозвратный остаток.
+  const whole=Math.floor(b.tail+1e-7),fraction=Math.round((b.tail-whole)*1000)/1000;
+  if(whole>=r.config.remnantMin&&whole>0){produced.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:whole,qty:1,origin:'Заказ '+(state.meta.order||'—')+', хлыст №'+b.no});
+   if(fraction>0)scrap.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:fraction,qty:1,note:'Округление до 1 мм'});}
   else if(b.tail>0){scrap.push({bar:b.no,material:b.stock.material,grade:b.stock.grade,length:Math.round(b.tail*1000)/1000,qty:1});}
  }
  const after=state.stocks.map(x=>({...x}));
