@@ -14,6 +14,14 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 @media(max-width:640px){.shell{padding:12px 9px 50px}header{padding:17px 13px}header h1{font-size:22px}.panel{padding:13px}.gridform{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.toolbar{gap:6px}.toolbar .sp{display:none}.btn{padding:8px 10px;font-size:12px}.bar{height:40px}}
 @media print{body{background:#fff;color:#000;font-size:11px}header,.toolbar,.side,.tabs,.inputpanel,.noprint,.footerbar{display:none!important}.shell{padding:0;max-width:none}.layout{display:block}.panel{box-shadow:none;border:0;padding:0;margin:0}.printOnly{display:block}.tabPanel{display:none!important}#panel-maps{display:block!important}.barcard{border:1px solid #bbb;padding:9px;break-inside:avoid}.bar{height:32px;print-color-adjust:exact;-webkit-print-color-adjust:exact}.barfoot{font-size:10px}.printPage{page-break-after:always}}
 
+
+/* Locale-safe decimal length: text input accepts both comma and dot, +/- change by 1 mm. */
+.length-stepper{display:flex;align-items:center;gap:3px;min-width:155px}
+.length-stepper .tdnum{width:92px;min-width:70px;flex:1;text-align:right}
+.length-stepper .len-step{border:1px solid #c7d6e2;background:#f6fafc;border-radius:5px;cursor:pointer;font-weight:700;color:#235369;width:26px;min-width:26px;height:33px;padding:0;line-height:1;font-size:15px}
+.length-stepper .len-step:hover{background:#e5f4f1;border-color:#8fbeb3}
+.length-stepper .len-step:focus-visible{outline:2px solid #159e9e;outline-offset:1px}
+
 /* Раскрой PRO 5.1: упорядоченная панель и информационные разделы */
 .toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px;align-items:stretch}
 .toolbar-group{min-width:0;border:1px solid var(--line);background:white;border-radius:12px;padding:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
@@ -93,7 +101,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
     </section>
     <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
       <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
-      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: можно дробные мм (до 0,001); шаг стрелок 1 мм</span></div>
+      <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: дробные мм до 0,001; кнопки ± и клавиши ↑/↓ — шаг 1 мм</span></div>
     </section>
     <section class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
       <div class="tablewrap"><table><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th></th></tr></thead><tbody id="stock-body"></tbody></table></div>
@@ -201,20 +209,20 @@ const orderKey=()=>String(state.meta.order||'').trim().toLocaleLowerCase('ru-RU'
 const alreadyBooked=()=>state.bookedOrders.includes(orderKey());
 function flashBookState(){const b=$('#book');if(b){b.disabled=alreadyBooked()||!result;b.title=alreadyBooked()?'Этот номер заказа уже проведён в журнале':(!result?'Сначала рассчитайте раскрой':'Закрыть заказ по плановым остаткам');b.style.opacity=b.disabled?'.50':'1';}}
 function inputs(){for(const el of $$('[data-meta]')){el.value=state.meta?.[el.dataset.meta]??''}for(const el of $$('[data-setting]')){el.value=state.settings?.[el.dataset.setting]??''}}
-function renderParts(){const body=$('#parts-body');body.innerHTML=state.parts.map(p=>`<tr data-row-id="${p.id}" data-table="parts"><td><input class="pos" data-field="pos" value="${esc(p.pos)}" aria-label="Позиция"></td><td><input class="material" data-field="material" value="${esc(p.material)}" aria-label="Профиль"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}" aria-label="Сталь"></td><td><input class="tdnum" type="number" min="0" step="1" data-field="length" value="${esc(p.length)}"></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}"></td><td><input class="w130" data-field="note" value="${esc(p.note)}"></td><td><button class="btn sm danger" data-remove="parts" aria-label="Удалить деталь">×</button></td></tr>`).join('');}
-function renderStocks(){const body=$('#stock-body');body.innerHTML=state.stocks.map(p=>`<tr data-row-id="${p.id}" data-table="stocks"><td><input class="material" data-field="material" value="${esc(p.material)}"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}"></td><td><input class="tdnum" type="number" min="0" step="1" data-field="length" value="${esc(p.length)}"></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}" placeholder="∞"></td><td><input class="tdnum" type="number" min="0" step="0.01" data-field="price" value="${esc(p.price)}" placeholder="—"></td><td><select class="w130" data-field="kind"><option value="new" ${p.kind==='new'?'selected':''}>Покупка</option><option value="remnant" ${p.kind==='remnant'?'selected':''}>Складской остаток</option></select></td><td><input class="w130" data-field="origin" value="${esc(p.origin||'')}" placeholder="Стеллаж / № заказа"></td><td><button class="btn sm danger" data-remove="stocks" aria-label="Удалить хлыст">×</button></td></tr>`).join('');}
+function renderParts(){const body=$('#parts-body');body.innerHTML=state.parts.map(p=>`<tr data-row-id="${p.id}" data-table="parts"><td><input class="pos" data-field="pos" value="${esc(p.pos)}" aria-label="Позиция"></td><td><input class="material" data-field="material" value="${esc(p.material)}" aria-label="Профиль"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}" aria-label="Сталь"></td><td><span class="length-stepper"><button class="len-step" type="button" data-step-length="-1" aria-label="Уменьшить длину на 1 мм">−</button><input class="tdnum" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-field="length" aria-label="Длина в миллиметрах" value="${esc(p.length)}"><button class="len-step" type="button" data-step-length="1" aria-label="Увеличить длину на 1 мм">+</button></span></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}"></td><td><input class="w130" data-field="note" value="${esc(p.note)}"></td><td><button class="btn sm danger" data-remove="parts" aria-label="Удалить деталь">×</button></td></tr>`).join('');}
+function renderStocks(){const body=$('#stock-body');body.innerHTML=state.stocks.map(p=>`<tr data-row-id="${p.id}" data-table="stocks"><td><input class="material" data-field="material" value="${esc(p.material)}"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}"></td><td><span class="length-stepper"><button class="len-step" type="button" data-step-length="-1" aria-label="Уменьшить длину на 1 мм">−</button><input class="tdnum" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-field="length" aria-label="Длина в миллиметрах" value="${esc(p.length)}"><button class="len-step" type="button" data-step-length="1" aria-label="Увеличить длину на 1 мм">+</button></span></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}" placeholder="∞"></td><td><input class="tdnum" type="number" min="0" step="0.01" data-field="price" value="${esc(p.price)}" placeholder="—"></td><td><select class="w130" data-field="kind"><option value="new" ${p.kind==='new'?'selected':''}>Покупка</option><option value="remnant" ${p.kind==='remnant'?'selected':''}>Складской остаток</option></select></td><td><input class="w130" data-field="origin" value="${esc(p.origin||'')}" placeholder="Стеллаж / № заказа"></td><td><button class="btn sm danger" data-remove="stocks" aria-label="Удалить хлыст">×</button></td></tr>`).join('');}
 function renderAll(){inputs();renderParts();renderStocks();if(!result){$('#panel-summary').innerHTML='<div class="empty">Заполните ведомость и нажмите «Рассчитать раскрой».</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderWarehouse(null);renderJournal();renderSidebar(null)}}
 function collect(){const settings=state.settings, parts=[], stocks=[];
 for(const [idx,p] of state.parts.entries()){
  const length=num(p.length),qty=num(p.qty);if(qty===0||((qty===null)&&(length===0||length===null||String(p.material||'').trim()==='')))continue;
  if(!String(p.material||'').trim())throw Error(`Деталь ${idx+1}: заполните профиль / сечение.`);
- if(!validLength(length))throw Error(`Деталь ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг стрелок 1 мм).`);
+ if(!validLength(length))throw Error(`Деталь ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг кнопок ± и клавиш ↑/↓ — 1 мм).`);
  if(!Number.isSafeInteger(qty)||qty<=0)throw Error(`Деталь ${idx+1}: количество должно быть целым положительным числом.`);
  parts.push({...p,length,qty,material:p.material.trim(),grade:String(p.grade||'').trim()});}
 for(const [idx,p] of state.stocks.entries()){
  const length=num(p.length),qty=num(p.qty),price=num(p.price);if(!String(p.material||'').trim()&&(length===null||length===0))continue;
  if(!String(p.material||'').trim())throw Error(`Хлыст ${idx+1}: укажите профиль / сечение.`);
- if(!validLength(length))throw Error(`Хлыст ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг стрелок 1 мм).`);
+ if(!validLength(length))throw Error(`Хлыст ${idx+1}: длина должна быть положительной, допускается до 3 знаков после запятой (шаг кнопок ± и клавиш ↑/↓ — 1 мм).`);
  if(qty!==null&&(!Number.isSafeInteger(qty)||qty<0))throw Error(`Хлыст ${idx+1}: доступное количество должно быть целым неотрицательным числом.`);
  if(price!==null&&(!Number.isFinite(price)||price<0))throw Error(`Хлыст ${idx+1}: цена должна быть неотрицательной.`);
  if(p.kind==='remnant'&&qty===null)throw Error(`Складской остаток ${idx+1}: обязательно укажите количество.`);
@@ -587,9 +595,25 @@ function pasteRows(){
  if(pasteTarget==='parts')renderParts();else renderStocks();markDirty();persist();$('#pasteDialog').close();putStatus('Импортировано '+imported.length+' строк из Excel. Проверьте таблицу и выполните расчёт.');
 }
 
-function events(){document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
+function adjustLength(el,delta){
+ const old=num(el.value),base=Number.isFinite(old)?old:0;
+ const next=Math.round((base+delta)*1000)/1000;
+ if(next<0)return;
+ el.value=String(next).replace('.',',');
+ el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function events(){
+ document.addEventListener('keydown',e=>{
+  if(e.target.matches('input[data-field="length"]')&&(e.key==='ArrowUp'||e.key==='ArrowDown')){
+   e.preventDefault();adjustLength(e.target,e.key==='ArrowUp'?1:-1);
+  }
+ });
+ document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
  document.addEventListener('change',e=>{const t=e.target;if(t.dataset.field||t.dataset.setting){if(t.dataset.field){const row=t.closest('tr[data-row-id]');const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p)p[t.dataset.field]=t.value;}else state.settings[t.dataset.setting]=t.value;persist();}});
- document.addEventListener('click',e=>{const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
+ document.addEventListener('click',e=>{
+  const step=e.target.closest('[data-step-length]');
+  if(step){const el=step.closest('tr[data-row-id]')?.querySelector('input[data-field="length"]');if(el)adjustLength(el,Number(step.dataset.stepLength));return;}
+  const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
    switchTab(tab.dataset.tab);
    // Buttons in the top toolbar/footer control sections far below the fold.
    // Bring the selected content into view, while keeping normal tab navigation unchanged.
