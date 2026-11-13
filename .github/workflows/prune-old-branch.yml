@@ -1,0 +1,30 @@
+name: Remove obsolete branch (one time)
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  remove-backup:
+    if: github.repository == 'kappamaag-crypto/RaskroyPRO'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete only backup/v5.2.0-pre-storage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          url="https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/backup/v5.2.0-pre-storage"
+          status=$(curl --silent --show-error --output /tmp/response.txt --write-out '%{http_code}' \
+            --request DELETE \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "$url")
+          if [[ "$status" == 204 || "$status" == 404 ]]; then
+            echo "Obsolete branch deleted or already absent"
+          else
+            cat /tmp/response.txt
+            echo "Failed to delete branch: HTTP $status"
+            exit 1
+          fi
