@@ -3,8 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.3.1 — металлоконструкции и склад остатков</title>
+<meta name="description" content="Бесплатный онлайн-калькулятор раскроя металлопроката: профильные трубы, уголок, швеллер, двутавр. Оптимизация резки, карты, учёт пропила и складских остатков.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#132f43">
+<link rel="canonical" href="https://raskroy.spk-effa.ru/">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Раскрой PRO">
+<meta property="og:url" content="https://raskroy.spk-effa.ru/">
+<meta property="og:title" content="Раскрой PRO — онлайн-калькулятор раскроя металлопроката">
+<meta property="og:description" content="Бесплатный онлайн-калькулятор раскроя металлопроката: профильные трубы, уголок, швеллер, двутавр. Оптимизация резки, карты, учёт пропила и складских остатков.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Раскрой PRO — онлайн-калькулятор раскроя металлопроката">
+<meta name="twitter:description" content="Бесплатный онлайн-калькулятор раскроя металлопроката: профильные трубы, уголок, швеллер, двутавр. Оптимизация резки, карты, учёт пропила и складских остатков.">
+<title>Раскрой PRO — онлайн-калькулятор раскроя металлопроката</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Раскрой PRO — онлайн-калькулятор раскроя металлопроката","url":"https://raskroy.spk-effa.ru/","description":"Бесплатный онлайн-калькулятор раскроя металлопроката: профильные трубы, уголок, швеллер, двутавр. Оптимизация резки, карты, учёт пропила и складских остатков.","applicationCategory":"BusinessApplication","operatingSystem":"Любая операционная система с современным браузером","inLanguage":"ru-RU","isAccessibleForFree":true,"softwareVersion":"5.3.2","offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"},"featureList":["Оптимизация линейного раскроя металлопроката","Карты раскроя и координаты резов","Учет пропила и подрезки торцов","Учет пригодных и непригодных остатков","Экспорт отчетов в Excel и CSV","Локальное сохранение проектов"]}</script>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -50,7 +66,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 .backup-stats strong{color:#20615c}
 @media print{#storage-banner{display:none!important}}
 
-/* v5.3.1: keep stock controls and delete action inside the card on desktop. */
+/* v5.3.2: keep stock controls and delete action inside the card on desktop. */
 .stock-table{table-layout:fixed;width:100%;min-width:840px}
 .stock-table th,.stock-table td{padding:7px 4px}
 .stock-table th{white-space:normal;line-height:1.24;font-size:11px}
@@ -68,7 +84,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.3.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат · и других длинномерных материалов</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.3.2 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат · и других длинномерных материалов</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -218,7 +234,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.3.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.3.2</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
