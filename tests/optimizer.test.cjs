@@ -77,3 +77,28 @@ test('all deeper modes preserve or improve metric across deterministic inputs',(
   }
  }
 });
+
+
+test('local search moves a detail to another bar and releases its source bar',()=>{
+ const cfg=base([[400,1],[600,1]],[[1000,2,'new',50]],{kerf:0,trim:0,remnantMin:350});
+ const stock=cfg.stocks[0],p400=cfg.parts[0],p600=cfg.parts[1];
+ const bars=[{stock,entries:[p400],pieceLength:400,kerf:0,trim:0,tail:600},{stock,entries:[p600],pieceLength:600,kerf:0,trim:0,tail:400}];
+ context.swapBars=bars;context.swapConfig=cfg;
+ const result=vm.runInContext('localSearchSwap(swapBars,swapConfig,true,4)',context);
+ assert.equal(result.length,1,'single-bar plan must result after relocation');
+ assert.equal(result[0].tail,0);
+ assert.equal(result[0].entries.length,2);
+});
+
+test('local search exchanges two pieces to reduce unusable end pieces',()=>{
+ const cfg=base([[700,1],[400,1]],[[1000,1,'new',60],[800,1,'new',40]],{kerf:0,trim:0,remnantMin:350,objective:'waste'});
+ const [s1000,s800]=cfg.stocks,[p700,p400]=cfg.parts;
+ const bars=[{stock:s1000,entries:[p700],pieceLength:700,kerf:0,trim:0,tail:300},{stock:s800,entries:[p400],pieceLength:400,kerf:0,trim:0,tail:400}];
+ context.swapBars=bars;context.swapConfig=cfg;
+ const result=vm.runInContext('localSearchSwap(swapBars,swapConfig,true,4)',context);
+ assert.equal(result.length,2);
+ assert.equal(result[0].entries[0].length,400);
+ assert.equal(result[1].entries[0].length,700);
+ assert.equal(result[0].tail,600);
+ assert.equal(result[1].tail,100);
+});
