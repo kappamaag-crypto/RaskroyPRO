@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Раскрой PRO — автономный калькулятор линейного раскроя металлопроката с оптимизацией, координатами резов и учётом складских остатков.">
-<title>Раскрой PRO 5.3.0 — металлоконструкции и склад остатков</title>
+<title>Раскрой PRO 5.3.1 — металлоконструкции и склад остатков</title>
 <style>
 :root{--bg:#f4f7fa;--panel:#fff;--ink:#1b2938;--muted:#65778c;--line:#dee6ee;--blue:#145d86;--blue2:#e9f3f9;--green:#0f7a61;--amber:#9a5d10;--red:#b1353e;--shadow:0 4px 18px #1b293809}
 *{box-sizing:border-box}body{margin:0;font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
@@ -49,10 +49,26 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 .backup-stats{font-size:12px;color:#526b7e;line-height:1.6}
 .backup-stats strong{color:#20615c}
 @media print{#storage-banner{display:none!important}}
+
+/* v5.3.1: keep stock controls and delete action inside the card on desktop. */
+.stock-table{table-layout:fixed;width:100%;min-width:840px}
+.stock-table th,.stock-table td{padding:7px 4px}
+.stock-table th{white-space:normal;line-height:1.24;font-size:11px}
+.stock-table td input,.stock-table td select,.stock-table td .material,.stock-table td .grade,.stock-table td .w130,.stock-table td .tdnum,.stock-table td .qty{width:100%;min-width:0;font-size:12px}
+.stock-table .length-stepper{width:100%;min-width:0;gap:2px}
+.stock-table .length-stepper .tdnum{width:calc(100% - 52px);min-width:0;flex:1}
+.stock-table .length-stepper .len-step{width:23px;min-width:23px}
+.stock-table th:last-child,.stock-table td:last-child{position:sticky;right:0;z-index:2;text-align:center;background:#fff;box-shadow:-6px 0 9px -8px #617b90}
+.stock-table th:last-child{background:#edf3f8;z-index:3;font-size:10px}
+.stock-table td:last-child .btn{min-width:29px;padding:5px 7px}
+.algorithm-help{background:#edf7f8;border:1px solid #cee5e9;border-radius:8px;padding:10px 13px;margin:11px 0 14px;color:#3b5d68}
+.algorithm-help summary{cursor:pointer;color:#205b6c;font-weight:700}
+.algorithm-help p{margin:10px 0 0;line-height:1.55;font-size:12px}
+@media(max-width:900px){.stock-table{min-width:800px}}
 </style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОФЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.3.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
+<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Раскрой PRO <span style="font-weight:400;color:#a8cfce">5.3.0 / металлоконструкции</span></h1><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат</p></header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
@@ -103,12 +119,18 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <label>Мин. полезный остаток, мм<input type="number" min="0" step="1" data-setting="remnantMin"></label>
       <label>Приоритет оптимизации<select data-setting="objective"><option value="purchase">Минимум закупаемой длины</option><option value="cost">Минимум стоимости</option><option value="waste">Минимум невозвратных отходов</option></select></label>
       <label>Режим оптимизации<select data-setting="searchMode"><option value="quick">Быстрый</option><option value="balanced">Сбалансированный</option><option value="deep">Углублённый</option><option value="exact">Точный (малые задачи)</option></select></label>
-      <div class="mode-note"><b>Поиск:</b> быстрый — BFD и жадные варианты; сбалансированный — DP, обмены и пересборка; углублённый — Beam Search и генерация схем; точный — ограниченные Branch &amp; Bound / целочисленный подбор карт. Доказательство оптимума отображается только после полного перебора.</div>
+      
       <label>Приоритет складских остатков<select data-setting="warehousePolicy"><option value="economic">Экономический (по цели)</option><option value="strict">Строгий (склад первым)</option></select></label>
       <label>Группировать одинаковые карты<select data-setting="groupMaps"><option value="yes">Да — одна схема × количество</option><option value="no">Нет — отдельная карта на хлыст</option></select></label>
       <label>Единица валюты<input data-setting="currency" type="text" placeholder="₽" maxlength="8"></label>
       <label>Исполнитель<input data-meta="author" type="text" placeholder="Мастер участка"></label>
     </div>
+    <details class="algorithm-help"><summary>Как программа выбирает схему раскроя</summary>
+      <p><b>Быстрый</b> — составляет несколько схем, сначала размещая длинные детали и заполняя свободное место.</p>
+      <p><b>Сбалансированный</b> — дополнительно проверяет сочетания деталей, переносит их между хлыстами и пытается уменьшить расход материала.</p>
+      <p><b>Углублённый</b> — сравнивает больше вариантов и частично пересобирает уже найденные схемы. Переносы и обмены запускаются автоматически для планов не более чем из 36 хлыстов; изменения принимаются только при улучшении выбранного показателя.</p>
+      <p><b>Точный</b> — для небольших заказов проверяет все допустимые варианты в установленных пределах. Если проверка завершена полностью, программа отмечает, что оптимальный результат доказан. Иначе показывает лучший найденный план без такой гарантии.</p>
+    </details>
     <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Для склада концевые остатки округляются вниз до целого миллиметра, дробная часть относится к отходам. Строгий приоритет расходует максимально возможное число складских хлыстов, даже если это увеличивает закупку; экономический приоритет сначала минимизирует выбранный показатель. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
     </section>
     <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
@@ -116,7 +138,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: дробные мм до 0,001; кнопки ± и клавиши ↑/↓ — шаг 1 мм</span></div>
     </section>
     <section class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
-      <div class="tablewrap"><table><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th></th></tr></thead><tbody id="stock-body"></tbody></table></div>
+      <div class="tablewrap stock-table-wrap"><table class="stock-table"><colgroup><col style="width:17%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:9%"><col style="width:14%"><col style="width:17%"><col style="width:5%"></colgroup><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th>Удалить</th></tr></thead><tbody id="stock-body"></tbody></table></div>
       <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addstock">+ Добавить длину / остаток</button><button class="btn sm" id="pastestocks">▦ Вставить из Excel</button></div><span class="muted smtext">При оформлении раскроя складские остатки списываются, а пригодные хвосты добавляются как новые складские позиции. Закупочные варианты не списываются.</span></div>
     </section>
     <section class="panel"><div class="tabs noprint"><button class="tab active" data-tab="summary">Сводка</button><button class="tab" data-tab="maps">Карты раскроя</button><button class="tab" data-tab="compare">Сравнение длин</button><button class="tab" data-tab="warehouse">Остатки и склад</button><button class="tab" data-tab="journal">Журнал операций</button><button class="tab" data-tab="backups">Резервные копии</button><button class="tab" data-tab="guide">Инструкция</button><button class="tab" data-tab="about">О программе</button></div>
@@ -146,14 +168,14 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
             <h3>Как устроены режимы оптимизации</h3>
             <ul class="about-list">
               <li><b>Быстрый:</b> несколько вариантов жадного заполнения хлыстов без динамической оптимизации и уплотнения.</li>
-              <li><b>Сбалансированный:</b> включает все варианты быстрого режима, расширенные попытки, ограниченную задачу о рюкзаке (DP) для целочисленной сетки размеров (при дробных величинах применяется эвристика) и локальное уплотнение.</li>
-              <li><b>Углублённый:</b> добавляет BFD, Beam Search, обмены деталей (Local Search), Ruin &amp; Recreate, генерацию схем и дополнительные попытки.</li><li><b>Точный:</b> включает углублённый поиск и ограниченный Branch &amp; Bound / целочисленный перебор схем для малых заказов. Если перебор прерван или размер задачи превышает ограничения, доказательство оптимальности не выдаётся. Это <b>не</b> универсальный MILP-решатель.</li>
+              <li><b>Сбалансированный:</b> расширяет поиск, подбирает сочетания размеров, переносит детали и уплотняет раскрой. Дробные миллиметры поддерживаются, но не во всех способах подбора.</li>
+              <li><b>Углублённый:</b> рассматривает больше раскладок, обменивает детали между хлыстами и пересобирает часть схем. Улучшение принимается, только если найденный план лучше по выбранному показателю.</li><li><b>Точный:</b> для небольших задач последовательно проверяет возможные схемы. Если все варианты проверены, программа подтверждает оптимальность. При превышении ограничений расчёт остаётся приближённым.</li>
             </ul>
-            <p class="smallprint"><b>Границы точного решения:</b> для одного покупного типоразмера и цели «минимум закупаемой длины» Branch &amp; Bound проверяет до 28 деталей; для смешанных типоразмеров полный целочисленный перебор ограничен 13 деталями, 4 позициями и 3 вариантами заготовок. При достижении лимита времени или узлов результат помечается как недоказанный. Поддерживается точность исходных длин до 0,001 мм.</p><p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритмы в большинстве режимов эвристические; математический минимум гарантируется только при явном статусе «Оптимальность доказана» в точном режиме.</p>
+            <p class="smallprint"><b>Границы точного решения:</b> для одного покупного типоразмера и цели «минимум закупаемой длины» точный поиск проверяет до 28 деталей; для смешанных типоразмеров полный целочисленный перебор ограничен 13 деталями, 4 позициями и 3 вариантами заготовок. При достижении лимита времени или узлов результат помечается как недоказанный. Поддерживается точность исходных длин до 0,001 мм.</p><p class="smallprint">Оценка вариантов выполняется по выбранному приоритету: закупаемая длина, стоимость (если цены заполнены) или невозвратные отходы. Алгоритмы в большинстве режимов эвристические; математический минимум гарантируется только при явном статусе «Оптимальность доказана» в точном режиме.</p>
             <h3>Разработчик и обратная связь</h3>
             <p class="contactline">Телефон: <a href="tel:+79829059348">+7 982 905-93-48</a></p>
             <p class="contactline">Электронная почта: <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a></p>
-            <p>Исходный код и обновления: <a href="https://github.com/kappamaag-crypto/RaskroyPRO" target="_blank" rel="noopener noreferrer">GitHub · RaskroyPRO</a>.</p>
+            <p>Предложения и сообщения об ошибках можно отправлять на электронную почту разработчика.</p>
           </div>
           <div class="aboutside">
             <div class="donation">
@@ -196,7 +218,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   </div>
   <aside class="side"><div class="panel sticky"><div class="righthead">Оперативная сводка</div><div class="stats" id="sidebar-stats" style="margin-top:13px"></div><div class="sidefoot"><span class="pill">Локально • без макросов</span><p>Программа открывается в браузере на Windows, macOS, Linux и телефоне. Excel нужен только для выгрузки отчёта.</p></div></div></aside>
   </div>
-  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.3.0</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
+  <footer class="appfooter noprint"><div><b>Раскрой PRO 5.3.1</b> · <a href="mailto:evv@spkeffa.ru">evv@spkeffa.ru</a> · <a href="tel:+79829059348">+7 982 905-93-48</a></div><p>Результаты справочные; перед резкой проверьте длины, пропилы, допуски и схему станка. <button type="button" class="linklike" data-tab="about">Подробнее об условиях и авторе</button>.</p></footer>
 </div>
 <dialog id="pasteDialog" aria-label="Импорт таблицы из Excel">
  <form method="dialog" class="pasteform">
@@ -642,7 +664,7 @@ function exactUniformBnB(pp,ss,config,incumbent){
   if(dfs(0)&&solution){best=solution;}
   if(aborted)break;
  }
- return{bars:best,proven:!aborted,reason:aborted?'Лимит времени/узлов Branch & Bound; найден лучший план, но оптимальность не доказана.':'Доказан минимум закупаемой длины для одного типоразмера хлыста.',nodes,method:'Branch & Bound (uniform)'};
+ return{bars:best,proven:!aborted,reason:aborted?'Превышен лимит времени или числа проверенных вариантов; лучший найденный план не имеет доказанного оптимума.':'Доказан минимум закупаемой длины для одного типоразмера хлыста.',nodes,method:'Branch & Bound (uniform)'};
 }
 
 // Exact pattern-based integer optimization (specialized cutting-stock IP),
@@ -751,7 +773,7 @@ function renderSummary(r){const s=r.stats,c=r.config;
  <div class="gridform" style="margin:12px 0"><div class="stat"><div class="value">${mf(s.raw/1000)} м</div><div class="cap">Чистая длина деталей</div></div><div class="stat"><div class="value">${mf(s.stockLength/1000)} м</div><div class="cap">Материал в раскрое (включая склад)</div></div><div class="stat"><div class="value">${mf(s.kerf/1000)} м</div><div class="cap">Потери на резах</div></div><div class="stat"><div class="value">${mf(s.trim/1000)} м</div><div class="cap">Торцевые припуски</div></div><div class="stat"><div class="value">${mf(s.reusable/1000)} м</div><div class="cap">Возвратные остатки</div></div><div class="stat"><div class="value">${mf(s.scrap/1000)} м</div><div class="cap">Невозвратные концевые отходы</div></div><div class="stat"><div class="value">${mf(s.totalWaste/1000)} м</div><div class="cap">Все технологические потери (отход + резы + торцы)</div></div></div>
  <h3>Ведомость исходных хлыстов</h3>${niceTable(['Материал / сталь','Длина, мм','Шт.','Тип'],specsRows)}
  <div class="info" style="margin-top:13px"><b>Проверка баланса:</b> ${mf(s.stockLength)} = ${mf(s.raw)} (детали) + ${mf(s.kerf)} (резы) + ${mf(s.trim)} (торцы) + ${mf(s.tail)} (остатки), мм.<br><b>Выход годного:</b> ${nfmt(s.efficiency*100,1)}%. Складских остатков использовано: ${nfmt(s.remnantsUsed)} шт.</div>
- <p class="algorithmline"><b>Режим:</b> ${esc(c.searchMode)} · <b>Приоритет склада:</b> ${c.warehousePolicy==='strict'?'строгий (максимум складских хлыстов)':'экономический'} · Методы: BFD, DP, Local Search / Swap, Ruin &amp; Recreate, Beam Search и ограниченная целочисленная оптимизация (по режиму).</p><p class="algorithmline"><b>Статус точной оптимизации:</b> ${r.proofs?.length?r.proofs.map(p=>esc(p.group)+': '+(p.proven?'<span class="ok">Оптимальность доказана</span>':'<span class="warning-inline">'+esc(p.reason||'Оптимальность не доказана')+'</span>')).join('; '):'Точный решатель не запускался. Найдено эвристическое решение.'}</p><p class="note">Невозвратные отходы — концевые остатки короче порога ${mf(c.remnantMin)} мм; пропил и подрезка торцов показаны отдельно. ${r.proofs?.length&&r.proofs.every(p=>p.proven)?'Для указанных групп математический оптимум по выбранной цели доказан.':'Глобальный математический оптимум не доказан.'}</p>`;
+ <p class="algorithmline"><b>Режим:</b> ${esc(({quick:"Быстрый",balanced:"Сбалансированный",deep:"Углублённый",exact:"Точный"})[c.searchMode]||c.searchMode)} · <b>Приоритет склада:</b> ${c.warehousePolicy==='strict'?'строгий (максимум складских хлыстов)':'экономический'}. Выбранный режим определяет глубину проверки схем и использование перестановок деталей.</p><p class="algorithmline"><b>Статус точной оптимизации:</b> ${r.proofs?.length?r.proofs.map(p=>esc(p.group)+': '+(p.proven?'<span class="ok">Оптимальность доказана</span>':'<span class="warning-inline">'+esc(p.reason||'Оптимальность не доказана')+'</span>')).join('; '):'Точный решатель не запускался. Найдено эвристическое решение.'}</p><p class="note">Невозвратные отходы — концевые остатки короче порога ${mf(c.remnantMin)} мм; пропил и подрезка торцов показаны отдельно. ${r.proofs?.length&&r.proofs.every(p=>p.proven)?'Для указанных групп математический оптимум по выбранной цели доказан.':'Глобальный математический оптимум не доказан.'}</p>`;
  }
 const colorSet=['#1776A8','#1E987C','#A56B23','#7856AA','#BD5D60','#376C9A','#21828E','#6C8B39','#A45D9A','#387C6B'];
 function colorFor(p){let hash=0;for(const c of String(p.pos))hash=(hash*31+c.charCodeAt(0))|0;return colorSet[Math.abs(hash)%colorSet.length];}
