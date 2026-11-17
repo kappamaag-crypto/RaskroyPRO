@@ -1,0 +1,69 @@
+/* Раскрой PRO: единая дизайн-система для публичных SEO-страниц и блока на калькуляторе.
+   Без внешних шрифтов, JS, аналитики и влияния на расчётный интерфейс. */
+:root{
+  --seo-navy:#132f43;
+  --seo-ink:#1b2938;
+  --seo-muted:#65778c;
+  --seo-blue:#145d86;
+  --seo-green:#20a68c;
+  --seo-bg:#f4f7fa;
+  --seo-border:#dee6ee;
+  --seo-shadow:0 4px 18px #1b293809;
+}
+.seo-page{margin:0;background:var(--seo-bg);color:var(--seo-ink);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.seo-page *{box-sizing:border-box}
+.seo-page a,.seo-overview a{color:var(--seo-blue);text-decoration:none}
+.seo-page a:hover,.seo-overview a:hover{text-decoration:underline}
+.seo-page a:focus-visible,.seo-overview a:focus-visible{outline:3px solid var(--seo-green);outline-offset:3px}
+.seo-page .seo-header{background:var(--seo-navy);border-bottom:4px solid var(--seo-green);color:#fff}
+.seo-page .seo-header-inner{max-width:1380px;margin:auto;padding:22px 18px 25px}
+.seo-page .seo-brand{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.seo-page .seo-brand-name{color:white;font-size:18px;font-weight:800;letter-spacing:-.45px}
+.seo-page .seo-brand-name:hover{color:white}
+.seo-page .seo-kicker{margin:25px 0 6px;color:#72d5bf;letter-spacing:1.2px;font-size:11px;font-weight:800;text-transform:uppercase}
+.seo-page .seo-header h1{font-size:clamp(23px,3.5vw,30px);line-height:1.24;letter-spacing:-.6px;margin:0;max-width:1020px}
+.seo-page .seo-lead{color:#bfd1df;font-size:15px;max-width:850px;margin:12px 0 0}
+.seo-page .seo-shell{max-width:1380px;margin:0 auto;padding:18px 18px 48px}
+.seo-page .seo-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.seo-page .seo-nav a,.seo-page .seo-button,.seo-overview .seo-link{
+  display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;
+  border-radius:8px;border:1px solid #c7d6e2;background:white;
+  color:#18384e;font-size:13px;font-weight:700;line-height:1.4;transition:background .15s,border-color .15s
+}
+.seo-page .seo-nav a:hover,.seo-overview .seo-link:hover{background:#eff5f9;border-color:#9db9c9;text-decoration:none}
+.seo-page .seo-nav a[aria-current="page"]{background:#d9eee8;border-color:#acd8cb;color:#135a4e}
+.seo-page .seo-nav a:first-child,.seo-page .seo-button.primary{background:#126b79;border-color:#126b79;color:#fff}
+.seo-page .seo-nav a:first-child:hover,.seo-page .seo-button.primary:hover{background:#0b5663;color:#fff;text-decoration:none}
+.seo-page .seo-layout{display:grid;grid-template-columns:minmax(0,1fr) 305px;gap:18px;align-items:start}
+.seo-page .seo-main{min-width:0}
+.seo-page .seo-panel{background:#fff;border:1px solid var(--seo-border);box-shadow:var(--seo-shadow);border-radius:12px;padding:19px;margin:0 0 16px}
+.seo-page .seo-step{counter-increment:seo-step}
+.seo-page .seo-main{counter-reset:seo-step}
+.seo-page .seo-step h2{margin:0 0 10px;color:#1b465f;font-size:17px;line-height:1.35}
+.seo-page .seo-step h2::before{content:counter(seo-step,decimal-leading-zero) " · ";color:#18836f;font-variant-numeric:tabular-nums}
+.seo-page .seo-step p{margin:0;color:#42586b;font-size:14px;line-height:1.7}
+.seo-page .seo-side{position:sticky;top:12px}
+.seo-page .seo-side h2{font-size:14px;text-transform:uppercase;letter-spacing:.07em;color:#527184;margin:0 0 11px}
+.seo-page .seo-side p{margin:0 0 14px;font-size:13px;color:#587082}
+.seo-page .seo-side-links{display:flex;flex-direction:column;gap:8px}
+.seo-page .seo-side-links a{padding:8px 10px;border-radius:7px;background:#f1f6f9;color:#18384e;font-size:13px}
+.seo-page .seo-side-links a:hover{background:#e9f3f9;text-decoration:none}
+.seo-page .seo-action-panel{border-left:4px solid #18836f}
+.seo-page .seo-action-panel h2{margin:0 0 9px;font-size:18px;color:#1b465f}
+.seo-page .seo-action-panel p{margin:0 0 15px;color:#587082}
+.seo-page .seo-button.primary{display:inline-flex}
+.seo-page .seo-note{border:1px solid #cae7e1;background:#f0faf7;border-radius:8px;padding:12px 14px;font-size:13px;color:#245c51;margin-top:12px}
+.seo-page .seo-footer{border-top:1px solid var(--seo-border);max-width:1344px;margin:0 auto;padding:18px 0 30px;color:#738497;font-size:12px}
+.seo-page .seo-footer a{font-weight:700}
+.seo-overview{max-width:1344px;margin:0 auto 26px!important;padding:20px!important;box-shadow:var(--seo-shadow)}
+.seo-overview .seo-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#18836f;margin:0 0 8px}
+.seo-overview h2{font-size:20px;line-height:1.35;color:#1b465f;margin:0 0 12px}
+.seo-overview p{font-size:14px;line-height:1.6;color:#42586b;margin:0 0 12px}
+.seo-overview .seo-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+.seo-overview .seo-link{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;min-width:0;min-height:83px}
+.seo-overview .seo-link strong{color:#1b465f;font-size:13px}
+.seo-overview .seo-link span{font-size:12px;line-height:1.45;color:#65778c;font-weight:400}
+.seo-overview .seo-link:hover strong{color:#126b79}
+@media(max-width:1050px){.seo-page .seo-layout{grid-template-columns:1fr}.seo-page .seo-side{position:static}.seo-overview .seo-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.seo-page .seo-header-inner{padding:18px 13px}.seo-page .seo-shell{padding:12px 9px 35px}.seo-page .seo-panel{padding:14px}.seo-page .seo-nav{gap:6px}.seo-page .seo-nav a{font-size:12px;padding:8px 10px}.seo-page .seo-header h1{font-size:23px}.seo-page .seo-footer{margin:0 10px;padding-bottom:25px}.seo-overview{margin:0 9px 22px!important;padding:14px!important}.seo-overview .seo-links{grid-template-columns:1fr}.seo-overview .seo-link{min-height:63px}}
+@media print{.seo-page .seo-nav,.seo-page .seo-side,.seo-page .seo-footer,.seo-page .seo-action-panel{display:none}.seo-page .seo-header{background:white;color:black;border:0}.seo-page .seo-header h1{color:black}.seo-page .seo-lead,.seo-page .seo-kicker{color:#333}.seo-page .seo-shell{padding:0}.seo-page .seo-layout{display:block}.seo-page .seo-panel{box-shadow:none;border:0;border-bottom:1px solid #ccc;border-radius:0;padding:10px 0}.seo-overview{display:none}}
