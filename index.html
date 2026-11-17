@@ -82,6 +82,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 .algorithm-help p{margin:10px 0 0;line-height:1.55;font-size:12px}
 @media(max-width:900px){.stock-table{min-width:800px}}
 </style>
+<link rel="stylesheet" href="/css/seo-pages.css">
 </head>
 <body>
 <header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Онлайн-калькулятор раскроя металлопроката — Раскрой PRO</h1><p class="smallprint" style="color:#bfd1df">Версия 5.3.2 · металлоконструкции</p><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат · и других длинномерных материалов</p></header>
@@ -1231,6 +1232,17 @@ if(state.lastBookedReport&&state.lastBookedReport.orderKey===orderKey()){
  catch(e){calculate();}
 }else calculate();
 </script>
-<section aria-labelledby="seo-about-heading" style="max-width:1380px;margin:0 auto 24px;padding:20px;background:#fff;border:1px solid #dee6ee;border-radius:12px"><h2 id="seo-about-heading">Бесплатный калькулятор раскроя металлопроката онлайн</h2><p>Раскрой PRO помогает составлять карты линейного раскроя профильных труб, уголка, швеллера, двутавра и другого длинномерного проката. Учитываются ширина пропила, подрезка торцов, доступные длины хлыстов и минимальный размер полезного остатка. Можно сравнивать схемы, сохранять проект локально и экспортировать отчёты Excel и CSV.</p><p>Результат зависит от выбранной цели оптимизации и исходных данных; перед передачей карт в цех необходимо проверить размеры, технологические припуски и ограничения оборудования.</p><nav aria-label="Информация о раскрое"><a href="/instrukciya.html">Пошаговая инструкция</a> · <a href="/primer-raskroya.html">Пример раскроя с пропилом</a> · <a href="/algoritmy.html">Алгоритмы оптимизации</a> · <a href="/uchet-ostatkov.html">Учёт полезных остатков</a></nav></section>
+<section class="panel seo-overview" aria-labelledby="seo-about-heading">
+  <p class="seo-eyebrow">СПРАВКА И ВОЗМОЖНОСТИ</p>
+  <h2 id="seo-about-heading">Бесплатный калькулятор раскроя металлопроката онлайн</h2>
+  <p>Раскрой PRO помогает составлять карты линейного раскроя профильных труб, уголка, швеллера, двутавра и другого длинномерного проката. Учитываются ширина пропила, подрезка торцов, доступные длины хлыстов и минимальный размер полезного остатка. Можно сравнивать схемы, сохранять проект локально и экспортировать отчёты Excel и CSV.</p>
+  <p>Результат зависит от выбранной цели оптимизации и исходных данных; перед передачей карт в цех необходимо проверить размеры, технологические припуски и ограничения оборудования.</p>
+  <nav class="seo-links" aria-label="Справочные материалы о раскрое">
+    <a class="seo-link" href="/instrukciya.html"><strong>Пошаговая инструкция</strong><span>От исходных данных до готовых карт раскроя</span></a>
+    <a class="seo-link" href="/primer-raskroya.html"><strong>Пример раскроя с пропилом</strong><span>Баланс длины, количество резов и остаток</span></a>
+    <a class="seo-link" href="/algoritmy.html"><strong>Алгоритмы оптимизации</strong><span>Быстрый, сбалансированный, углублённый и точный</span></a>
+    <a class="seo-link" href="/uchet-ostatkov.html"><strong>Учёт полезных остатков</strong><span>Склад, проведение заказов и резервные копии</span></a>
+  </nav>
+</section>
 </body>
 </html>
