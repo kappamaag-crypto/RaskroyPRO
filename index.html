@@ -6,6 +6,7 @@
 <meta name="description" content="Бесплатный онлайн-калькулятор раскроя металлопроката: профильные трубы, уголок, швеллер, двутавр. Оптимизация резки, карты, учёт пропила и складских остатков.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#132f43">
+<link rel="stylesheet" href="/css/kompas-import.css">
 <link rel="canonical" href="https://raskroy.spk-effa.ru/">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -118,13 +119,14 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       <div class="toolbar-title">Импорт и информация</div>
       <div class="toolbar-buttons">
         <button class="btn" id="importcsv">↑ Импорт деталей CSV</button>
+        <button class="btn" id="importkompas" type="button">↑ Импорт ведомости КОМПАС-3D (.xls/.xlsx)</button>
         <button class="btn" data-tab="guide">? Инструкция</button>
         <button class="btn" data-tab="about">ⓘ О программе и авторе</button>
       </div>
     </div>
   </nav>
   <div id="storage-banner" class="backup-banner noprint hide" role="alert"></div>
-  <input type="file" id="file-json" accept="application/json,.json" hidden><input type="file" id="file-csv" accept="text/csv,.csv,.txt" hidden>
+  <input type="file" id="file-json" accept="application/json,.json" hidden><input type="file" id="file-csv" accept="text/csv,.csv,.txt" hidden><input type="file" id="file-kompas" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
   <div class="layout">
   <div class="main">
     <section class="panel inputpanel"><h2>01 · Проект и параметры резки</h2>
@@ -247,6 +249,23 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
   <div class="actionrow"><button class="btn primary" value="ok" id="applyPaste" type="button">Импортировать</button><button class="btn" value="cancel">Отмена</button></div>
  </form>
 </dialog>
+<dialog id="kompas-dialog" class="kompas-dialog" aria-label="Импорт ведомости КОМПАС-3D">
+ <form method="dialog">
+  <h2>Импорт ведомости КОМПАС-3D</h2>
+  <p class="sub">Распознавание профиля, марки стали, длины L (мм) и количества из .xls/.xlsx. Все позиции можно проверить и исправить перед импортом.</p>
+  <p id="kompas-status" role="status" aria-live="polite"></p>
+  <div class="kompas-settings">
+   <label>Лист Excel<select id="kompas-sheet"></select></label>
+   <label>Действие<select id="kompas-mode"><option value="replace">Заменить текущую ведомость деталей</option><option value="append">Добавить к текущей ведомости</option></select></label>
+  </div>
+  <div id="kompas-rows" class="kompas-tablewrap" role="region" aria-label="Предпросмотр найденных деталей" tabindex="0"></div>
+  <p id="kompas-summary" role="status" aria-live="polite"></p>
+  <p class="kompas-safety">Строки, требующие проверки, не выбираются автоматически; позиции без линейного профиля исключаются. Сверьте количество, длины и марку стали с ведомостью. Данные файла обрабатываются в браузере. Для первого открытия Excel загружается библиотека SheetJS, после чего дальнейшая обработка локальная.</p>
+  <div class="kompas-actions"><button class="btn primary" type="button" id="kompas-apply">Перенести выбранные детали</button><button class="btn" value="cancel">Отмена</button></div>
+ </form>
+</dialog>
+<script src="/js/kompas-import.js"></script>
+<script src="/js/kompas-ui.js"></script>
 <script>
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1220,6 +1239,24 @@ function events(){
   }catch(ex){alert('Не удалось открыть: '+ex.message)}finally{e.target.value='';}
  };
  $('#pasteparts').onclick=()=>openPaste('parts');$('#pastestocks').onclick=()=>openPaste('stocks');$('#applyPaste').onclick=async()=>{try{await pasteRows()}catch(e){alert('Импорт: '+e.message)}};$('#coords').onclick=exportCoordinatesCSV;$('#csv').onclick=exportCSV;$('#importcsv').onclick=()=>$('#file-csv').click();$('#file-csv').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importCSV(await f.text());putStatus('Импортированы детали из '+f.name)}catch(ex){alert('Ошибка CSV: '+ex.message)}e.target.value='';};
+ $('#importkompas').onclick=()=>$('#file-kompas').click();
+ $('#file-kompas').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+   await KompasImportUI.open(f,async(imported,mode,source)=>{
+    if(mode==='replace'&&!confirm('Заменить текущую ведомость деталей строками из '+source+'? Сначала будет сохранена защитная копия проекта.'))return false;
+    if(startupLoadError){if(!await archiveUnreadableBeforeImport())return false;}
+    else if(!await requiredSafetySnapshot('Перед импортом ведомости КОМПАС: '+source))return false;
+    const parts=imported.map((p,i)=>({id:Date.now()+i/1000,pos:p.pos,material:p.material,grade:p.grade,length:p.length,qty:p.qty,note:p.note}));
+    state.parts=mode==='append'?[...state.parts,...parts]:parts;
+    renderParts();markDirty();persist();
+    await saveBackup('После импорта ведомости КОМПАС: '+source,true).catch(reportBackupFailure);
+    putStatus('Импортированы детали КОМПАС: '+parts.length+' позиций. Проверьте соответствие профилей и стали исходным хлыстам, затем выполните расчёт.');
+    return true;
+   });
+  }catch(ex){alert('Импорт КОМПАС-3D: '+ex.message);}
+  finally{e.target.value='';}
+ };
  $('#xlsx').onclick=exportXLSX;$('#book').onclick=bookStock;$('#neworder').onclick=createNextOrder;$('#print').onclick=()=>{if(!result)calculate();if(result){switchTab('maps');$$('.cutcoords').forEach(x=>x.open=true);window.print();}};
  $('#reset').onclick=async()=>{if(confirm('Сбросить все данные на пример? Перед сбросом создаётся защитная копия проекта, склада и журнала.')){if(!await requiredSafetySnapshot('Перед полным сбросом'))return;installProject(initial());await saveBackup('После сброса на пример',true).catch(reportBackupFailure);switchTab('summary');}};
  $('#snapshot-now').onclick=async()=>{try{await saveBackup('Ручная копия',true);await renderBackups();putStatus('Резервная копия создана.')}catch(e){reportBackupFailure(e);}};
