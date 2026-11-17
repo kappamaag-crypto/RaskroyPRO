@@ -68,7 +68,8 @@
   function parseRows(rows, sheetName) {
     if (!Array.isArray(rows)) throw new TypeError('Ожидалась таблица строк.');
     const hdr = headerAt(rows), list = [];
-    for (let i = hdr.i + 1; i < rows.length && list.length < 1500; i++) {
+    for (let i = hdr.i + 1; i < rows.length; i++) {
+      if (list.length >= 1500) throw new Error('Найдено более 1500 позиций. Разделите ведомость на несколько файлов.');
       const cells = (Array.isArray(rows[i]) ? rows[i] : []).map(text);
       if (!cells.some(Boolean)) continue;
       if (cells.some(x => /^\s*(?:итого|всего|общая масса|раздел|продолжение таблицы)\b/i.test(x)) && !cells.some(x => PROFILE.test(x))) continue;
