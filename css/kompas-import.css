@@ -1,0 +1,29 @@
+/* KOMPAS-3D: редактируемый предпросмотр перед переносом ведомости */
+.kompas-dialog{border:1px solid #cbdce8;border-radius:14px;padding:0;width:min(1150px,calc(100vw - 20px));max-width:1150px;max-height:92vh;color:#1b2938;background:#fff;box-shadow:0 14px 50px #0b243650}
+.kompas-dialog::backdrop{background:#071b2caa}
+.kompas-dialog form{padding:20px;display:flex;flex-direction:column;gap:11px;max-height:92vh}
+.kompas-dialog h2{margin:0;color:#1b465f;font-size:20px}
+.kompas-dialog .kompas-settings{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.kompas-dialog .kompas-settings label{min-width:200px;flex:1}
+.kompas-dialog .kompas-settings select{margin-top:4px}
+.kompas-dialog .kompas-tablewrap{overflow:auto;border:1px solid #d7e1e9;border-radius:9px;max-height:48vh;min-height:80px}
+.kompas-dialog table{width:100%;min-width:930px;white-space:normal;font-size:12px}
+.kompas-dialog th{position:sticky;top:0;z-index:1;background:#e9f3f9;padding:9px 7px}
+.kompas-dialog td{padding:6px;vertical-align:middle}
+.kompas-dialog td:nth-child(1){width:55px;text-align:center}
+.kompas-dialog td:nth-child(2){width:52px;text-align:center}
+.kompas-dialog td:nth-child(3){width:105px}
+.kompas-dialog td:nth-child(4){min-width:245px}
+.kompas-dialog td:nth-child(5){width:160px}
+.kompas-dialog td:nth-child(6),.kompas-dialog td:nth-child(7){width:90px}
+.kompas-dialog td:nth-child(8){min-width:145px;color:#6a7381}
+.kompas-dialog td input[type=text]{width:100%;min-width:75px;font-size:12px;padding:7px 6px}
+.kompas-dialog td input[type=checkbox]{width:18px;height:18px;accent-color:#126b79;cursor:pointer}
+.kompas-dialog tr.kompas-review td{background:#fff8e8}
+.kompas-dialog tr.kompas-skip td{color:#818e9b;background:#f3f5f7}
+.kompas-dialog tr.kompas-skip input{opacity:.6}
+.kompas-dialog #kompas-summary{font-weight:600;color:#126b79;line-height:1.5}
+.kompas-dialog #kompas-status{color:#42586b;font-size:13px}
+.kompas-dialog .kompas-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;flex-shrink:0}
+.kompas-dialog .kompas-safety{font-size:12px;color:#65778c;line-height:1.5}
+@media(max-width:680px){.kompas-dialog form{padding:12px;gap:9px}.kompas-dialog .kompas-settings{flex-direction:column;align-items:stretch}.kompas-dialog .kompas-settings label{min-width:0;width:100%}.kompas-dialog .kompas-tablewrap{max-height:43vh}.kompas-dialog .kompas-actions button{flex:1}}
