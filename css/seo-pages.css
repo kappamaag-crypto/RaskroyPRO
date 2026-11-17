@@ -67,3 +67,32 @@
 @media(max-width:1050px){.seo-page .seo-layout{grid-template-columns:1fr}.seo-page .seo-side{position:static}.seo-overview .seo-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.seo-page .seo-header-inner{padding:18px 13px}.seo-page .seo-shell{padding:12px 9px 35px}.seo-page .seo-panel{padding:14px}.seo-page .seo-nav{gap:6px}.seo-page .seo-nav a{font-size:12px;padding:8px 10px}.seo-page .seo-header h1{font-size:23px}.seo-page .seo-footer{margin:0 10px;padding-bottom:25px}.seo-overview{margin:0 9px 22px!important;padding:14px!important}.seo-overview .seo-links{grid-template-columns:1fr}.seo-overview .seo-link{min-height:63px}}
 @media print{.seo-page .seo-nav,.seo-page .seo-side,.seo-page .seo-footer,.seo-page .seo-action-panel{display:none}.seo-page .seo-header{background:white;color:black;border:0}.seo-page .seo-header h1{color:black}.seo-page .seo-lead,.seo-page .seo-kicker{color:#333}.seo-page .seo-shell{padding:0}.seo-page .seo-layout{display:block}.seo-page .seo-panel{box-shadow:none;border:0;border-bottom:1px solid #ccc;border-radius:0;padding:10px 0}.seo-overview{display:none}}
+
+/* Полное руководство: оглавление, таблицы и примеры, без влияния на калькулятор */
+.seo-page .guide-intro h2{font-size:19px;margin:0 0 7px;color:#1b465f}
+.seo-page .guide-intro p{font-size:14px;color:#587082;margin:0 0 14px;line-height:1.65}
+.seo-page .guide-toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.seo-page .guide-toc a{display:flex;align-items:center;gap:9px;border:1px solid #dce6ee;border-radius:8px;background:#f5f9fb;padding:9px 10px;color:#1b465f;font-size:13px;line-height:1.4;font-weight:650}
+.seo-page .guide-toc a:hover{background:#e9f3f9;text-decoration:none;border-color:#bfd2df}
+.seo-page .guide-toc span{min-width:25px;font-weight:800;color:#137763;font-variant-numeric:tabular-nums}
+.seo-page .seo-step[id]{scroll-margin-top:14px}
+.seo-page .seo-step h2{margin-bottom:12px}
+.seo-page .seo-step p,.seo-page .seo-step ol,.seo-page .seo-step ul{font-size:14px;line-height:1.7;color:#42586b}
+.seo-page .seo-step p{margin:0 0 12px}
+.seo-page .seo-step p:last-child{margin-bottom:0}
+.seo-page .seo-step ol,.seo-page .seo-step ul{margin:4px 0 14px;padding-left:23px}
+.seo-page .seo-step li{margin:0 0 7px;padding-left:2px}
+.seo-page .seo-step li:last-child{margin-bottom:0}
+.seo-page .seo-step a{text-decoration:underline;text-underline-offset:2px}
+.seo-page .seo-step .seo-note{margin:13px 0}
+.seo-page .guide-table-wrap{max-width:100%;overflow-x:auto;border:1px solid #dce6ee;border-radius:9px;margin:12px 0 16px}
+.seo-page .guide-table{width:100%;border-collapse:collapse;font-size:13px;min-width:490px;line-height:1.55}
+.seo-page .guide-table th{text-align:left;font-weight:700;color:#244d62;background:#ecf3f8;padding:10px 12px;vertical-align:top}
+.seo-page .guide-table td{border-top:1px solid #e5edf3;padding:10px 12px;vertical-align:top;color:#42586b}
+.seo-page .guide-table tbody tr:nth-child(even){background:#fbfdff}
+.seo-page .guide-table td:first-child{font-weight:650;color:#244d62;width:31%}
+.seo-page .guide-code{background:#102e42;color:#f1f6f9;border-radius:9px;padding:13px 15px;margin:12px 0 16px;overflow-x:auto;white-space:pre;font-size:12px;line-height:1.55}
+.seo-page .guide-formula{background:#edf8f4;border:1px solid #c3e6dc;border-radius:9px;padding:12px 14px;line-height:1.6;margin:13px 0;color:#155b4c}
+.seo-page code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.93em}
+@media(max-width:680px){.seo-page .guide-toc{grid-template-columns:1fr}.seo-page .guide-toc a{padding:9px 10px}.seo-page .guide-table{min-width:480px;font-size:12px}.seo-page .guide-table th,.seo-page .guide-table td{padding:8px 9px}.seo-page .seo-step ol,.seo-page .seo-step ul{padding-left:21px}}
+@media print{.seo-page .guide-intro{display:none}.seo-page .guide-table-wrap{overflow:visible}.seo-page .guide-table{min-width:0}.seo-page .guide-code{white-space:pre-wrap;background:#eee;color:#111}}
