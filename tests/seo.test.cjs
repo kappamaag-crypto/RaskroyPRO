@@ -66,3 +66,27 @@ test('internal links on all SEO pages resolve to files',()=>{
     }
   }
 });
+
+test('SEO pages share the same Raskroy PRO visual system',()=>{
+  const css=fs.readFileSync(path.join(root,'css','seo-pages.css'),'utf8');
+  const pages=['instrukciya.html','primer-raskroya.html','algoritmy.html','uchet-ostatkov.html'];
+  assert.ok(html.includes('<link rel="stylesheet" href="/css/seo-pages.css">'));
+  assert.match(html,/<section class="panel seo-overview"/);
+  assert.match(html,/<nav class="seo-links" aria-label="Справочные материалы о раскрое">/);
+  assert.equal((html.match(/class="seo-link"/g)||[]).length,4);
+  assert.match(css,/\.seo-overview \.(?:seo-links)/);
+  assert.match(css,/@media\(max-width:640px\)/);
+  assert.match(css,/\.seo-page \.seo-layout/);
+  for(const filename of pages){
+    const page=fs.readFileSync(path.join(root,filename),'utf8');
+    assert.match(page,/<body class="seo-page">/);
+    assert.match(page,/<link rel="stylesheet" href="\/css\/seo-pages\.css">/);
+    assert.match(page,/<header class="seo-header">/);
+    assert.match(page,/<nav class="seo-nav" aria-label="Информационные разделы">/);
+    assert.match(page,/aria-current="page"/);
+    assert.match(page,/class="seo-panel seo-step"/);
+    assert.match(page,/class="seo-panel seo-action-panel"/);
+    assert.equal((page.match(/<h1\b/g)||[]).length,1,filename);
+    assert.doesNotMatch(page,/<style>/,filename);
+  }
+});
