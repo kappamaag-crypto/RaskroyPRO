@@ -88,11 +88,13 @@
       var XLSX=await reader();
       status.textContent='Чтение ведомости '+file.name+'...';
       var workbook=XLSX.read(new Uint8Array(await file.arrayBuffer()),{type:'array',cellDates:false,cellFormula:false});
-      var sheets=workbook.SheetNames.slice(0,30).map(function(name){
+      if(workbook.SheetNames.length>30)throw new Error('В книге больше 30 листов; разделите ведомость на несколько файлов.');
+      var sheets=workbook.SheetNames.map(function(name){
         return {name:name,rows:XLSX.utils.sheet_to_json(workbook.Sheets[name],{header:1,raw:false,blankrows:false,defval:''})};
       });
       var scan=root.KompasImport.selectSheet(sheets);
       var all=scan.sheets;
+      if(!scan.best.ready && !scan.best.review)throw new Error('В книге не найдены строки линейного металлопроката. Проверьте, что экспортировали спецификацию КОМПАС, а не чертёж.');
       for(var i=0;i<all.length;i++){
         var opt=node('option',{text:all[i].name+' ('+all[i].ready+' распознано, '+all[i].review+' проверить)'},sheetEl);
         opt.value=String(i);
