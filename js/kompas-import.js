@@ -29,17 +29,17 @@
     return m ? Number(m[1].replace(',', '.')) : NaN;
   }
   function stripLength(s) {
-    return text(s).replace(/(?:\s*[@\/;,-]?\s*(?:L|ℓ|длина|дл\.?)(?:\s*профиля)?\s*[:=]\s*\d+(?:[,.]\d+)?\s*(?:мм|mm)?)+\s*$/gi, '').replace(/[\s\/;,]+$/g, '').trim();
+    return text(s).replace(/(?:\s*[@\/;,-]*\s*(?:L|ℓ|длина|дл\.?)(?:\s*профиля)?\s*[:=]\s*\d+(?:[,.]\d+)?\s*(?:мм|mm)?)+\s*$/gi, '').replace(/[\s\/;,]+$/g, '').trim();
   }
   function parseProfile(full, gradeCell) {
     let combined = stripLength(full);
     let grade = text(gradeCell);
-    const separated = combined.match(/^(.*?)\s*\/\s*((?:Ст\s*\d+\s*(?:пс|сп|кп)?|С\s*\d{3}|09Г2С|10ХСНД|[0-9]{2}Х[0-9A-ЯЁ-]*)\b.*)$/i);
-    if (separated) {
+    const separated = combined.match(/^(.*?)\s*\/\s*(.+)$/);
+    if (separated && /^(?:Ст\s*\d+\s*(?:пс|сп|кп)?|С\s*\d{3}|09Г2С|10ХСНД|[0-9]{2}Х[0-9A-ЯЁ-]*)(?=\s|$)/i.test(separated[2])) {
       combined = separated[1].trim();
       if (!grade) grade = separated[2].trim();
     } else {
-      const tail = combined.match(/^(.*?)\s+((?:Ст\s*\d+\s*(?:пс|сп|кп)?|С\s*\d{3}|09Г2С|10ХСНД)\b(?:\s+ГОСТ\s*[\d-]+)?)$/i);
+      const tail = combined.match(/^(.*?)\s+((?:Ст\s*\d+\s*(?:пс|сп|кп)?|С\s*\d{3}|09Г2С|10ХСНД)(?:\s+ГОСТ\s*[\d-]+)?)$/i);
       if (tail) {
         combined = tail[1].trim();
         if (!grade) grade = tail[2].trim();
