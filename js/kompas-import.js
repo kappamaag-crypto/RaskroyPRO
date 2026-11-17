@@ -32,7 +32,7 @@
     return text(s).replace(/(?:\s*[@\/;,-]*\s*(?:L|ℓ|длина|дл\.?)(?:\s*профиля)?\s*[:=]\s*\d+(?:[,.]\d+)?\s*(?:мм|mm)?)+\s*$/gi, '').replace(/[\s\/;,]+$/g, '').trim();
   }
   function parseProfile(full, gradeCell) {
-    let combined = stripLength(full);
+    let combined = stripLength(full).replace(/^профиль\s*[@\/]+\s*/i, '').replace(/^металлопрокат\s*[@\/]+\s*/i, '');
     let grade = text(gradeCell);
     const separated = combined.match(/^(.*?)\s*\/\s*(.+)$/);
     if (separated && /^(?:Ст\s*\d+\s*(?:пс|сп|кп)?|С\s*\d{3}|09Г2С|10ХСНД|[0-9]{2}Х[0-9A-ЯЁ-]*)(?=\s|$)/i.test(separated[2])) {
