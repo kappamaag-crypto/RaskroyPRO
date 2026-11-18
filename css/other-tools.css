@@ -1,0 +1,14 @@
+/* Related tools on the About tab. Add more cards to .other-tools-grid as needed. */
+.other-tools{margin-top:24px}
+.other-tools>h3{margin:0 0 12px;color:#1b465f;font-size:17px}
+.other-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.other-tools-card{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 22px;border:1px solid var(--line);border-radius:12px;background:#f8fbfd;box-shadow:var(--shadow)}
+.other-tools-copy{min-width:0}
+.other-tools-label{margin:0 0 6px;color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
+.other-tools-copy h4{margin:0 0 7px;color:#1b465f;font-size:18px}
+.other-tools-copy p:last-child{margin:0;line-height:1.55;color:var(--ink)}
+.other-tools-action{display:flex;flex:none;flex-direction:column;align-items:center;gap:7px}
+.other-tools-action .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:auto;min-height:42px;text-align:center;text-decoration:none;white-space:nowrap}
+.other-tools-action small{color:var(--muted);font-size:11px;text-align:center}
+.other-tools-action .btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+@media(max-width:760px){.other-tools-card{align-items:stretch;flex-direction:column;padding:17px}.other-tools-action{align-items:stretch}.other-tools-action .btn{width:100%;white-space:normal}}
