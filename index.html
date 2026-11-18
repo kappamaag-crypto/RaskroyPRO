@@ -123,6 +123,7 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
         <button class="btn" id="importkompas" type="button">↑ Импорт ведомости КОМПАС-3D (.xls/.xlsx)</button>
         <button class="btn" data-tab="guide">? Инструкция</button>
         <button class="btn" data-tab="about">ⓘ О программе и авторе</button>
+        <button class="btn" data-tab="about" data-scroll-target="other-tools-title">Другие калькуляторы и программы</button>
       </div>
     </div>
   </nav>
@@ -1246,7 +1247,7 @@ function events(){
    // Buttons in the top toolbar/footer control sections far below the fold.
    // Bring the selected content into view, while keeping normal tab navigation unchanged.
    if(tab.closest('.toolbar')||tab.closest('.appfooter')){
-    const panel=document.getElementById('panel-'+tab.dataset.tab);
+    const panel=document.getElementById(tab.dataset.scrollTarget||'panel-'+tab.dataset.tab);
     if(panel){panel.scrollIntoView({behavior:'auto',block:'start'});}
    }
   }});
