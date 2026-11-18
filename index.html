@@ -84,6 +84,14 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
 .algorithm-help p{margin:10px 0 0;line-height:1.55;font-size:12px}
 @media(max-width:900px){.stock-table{min-width:800px}}
 </style>
+<style>
+/* Validation feedback lives next to the actions so its cause is never hidden below results. */
+.error-banner{position:sticky;top:8px;z-index:20;display:flex;align-items:flex-start;gap:12px;margin:-8px 0 18px;padding:11px 13px;border:1px solid #e7adb3;border-left:5px solid var(--red);border-radius:10px;background:#fff6f6;box-shadow:0 5px 18px #7c1d281c;color:#7b2631}
+.error-banner__copy{min-width:0;flex:1}.error-banner__title{display:block;font-weight:800}.error-banner__message{margin:2px 0 0}.error-banner .btn{flex:none;background:#fff}.inputpanel.has-input-error{border-color:#df838d;box-shadow:0 0 0 3px #df838d26,var(--shadow)}
+tr.has-input-error td{background:#fff3f4!important}input.is-invalid,select.is-invalid{border-color:#b1353e!important;background:#fff8f8;box-shadow:0 0 0 2px #b1353e2b;outline-color:#b1353e}
+@media(max-width:640px){.error-banner{top:4px;align-items:stretch;flex-direction:column;margin:-4px 0 12px}.error-banner .btn{width:100%}}
+@media print{.error-banner{display:none!important}}
+</style>
 <link rel="stylesheet" href="/css/seo-pages.css">
 </head>
 <body>
@@ -127,11 +135,12 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
       </div>
     </div>
   </nav>
+  <section id="error-banner" class="error-banner noprint hide" role="alert" aria-live="assertive" aria-atomic="true" aria-label="Ошибки заполнения"></section>
   <div id="storage-banner" class="backup-banner noprint hide" role="alert"></div>
   <input type="file" id="file-json" accept="application/json,.json" hidden><input type="file" id="file-csv" accept="text/csv,.csv,.txt" hidden><input type="file" id="file-kompas" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
   <div class="layout">
   <div class="main">
-    <section class="panel inputpanel"><h2>01 · Проект и параметры резки</h2>
+    <section id="block-01" class="panel inputpanel"><h2>01 · Проект и параметры резки</h2>
     <div class="gridform">
       <label>Заказ / объект<input type="text" data-meta="order" placeholder="МК-2026-001"></label>
       <label>Заказчик / цех<input type="text" data-meta="client" placeholder="Цех металлоконструкций"></label>
@@ -154,11 +163,11 @@ dialog{max-width:min(800px,94vw);width:800px;border:1px solid #cfdee8;box-shadow
     </details>
     <div class="note"><b>Полезный остаток</b> — концевой отрезок не короче заданного порога, который после проведения попадёт в складской реестр. Более короткие — отходы. Для склада концевые остатки округляются вниз до целого миллиметра, дробная часть относится к отходам. Строгий приоритет расходует максимально возможное число складских хлыстов, даже если это увеличивает закупку; экономический приоритет сначала минимизирует выбранный показатель. Порог определяется технологом отдельно от длины деталей. Единицы измерения — миллиметры; длина деталей и хлыстов вводится с шагом 1 мм. Расчёт консервативный: каждый получаемый отрезок требует одного реза; дополнительно списываются оба торцевых припуска на каждый исходный хлыст.</div>
     </section>
-    <section class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
+    <section id="block-02" class="panel inputpanel"><h2>02 · Ведомость деталей</h2><div class="sub">Марка профиля и сталь должны совпадать с позицией на складе. Для разных марок расчёт выполняется независимо.</div>
       <div class="tablewrap"><table><thead><tr><th>Позиция</th><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Кол-во</th><th>Примечание</th><th></th></tr></thead><tbody id="parts-body"></tbody></table></div>
       <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addpart">+ Добавить деталь</button><button class="btn sm" id="pasteparts">▦ Вставить из Excel</button></div><span class="muted smtext">Количество: только целые шт. · Длина: дробные мм до 0,001; кнопки ± и клавиши ↑/↓ — шаг 1 мм</span></div>
     </section>
-    <section class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
+    <section id="block-03" class="panel inputpanel"><h2>03 · Доступные хлысты и складские остатки</h2><div class="sub">Можно указать разные длины и ограниченный запас. Покупка — вариант закупки исходного хлыста; пустое количество = без ограничения закупки. Складской остаток — физически имеющийся отрезок: его количество обязательно. На одну деталь нужен совместимый профиль и та же марка стали.</div>
       <div class="tablewrap stock-table-wrap"><table class="stock-table"><colgroup><col style="width:17%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:9%"><col style="width:14%"><col style="width:17%"><col style="width:5%"></colgroup><thead><tr><th>Профиль / сечение</th><th>Сталь / группа</th><th>Длина, мм</th><th>Доступно, шт</th><th>Цена/шт</th><th>Тип</th><th>Источник / место хранения</th><th>Удалить</th></tr></thead><tbody id="stock-body"></tbody></table></div>
       <div class="footerbar"><div class="insideActions"><button class="btn sm" id="addstock">+ Добавить длину / остаток</button><button class="btn sm" id="pastestocks">▦ Вставить из Excel</button></div><span class="muted smtext">При оформлении раскроя складские остатки списываются, а пригодные хвосты добавляются как новые складские позиции. Закупочные варианты не списываются.</span></div>
     </section>
@@ -298,7 +307,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const initial=()=>({version:7,bookedOrders:[],journal:[],lastBookedReport:null,meta:{order:'МК-2026-001',client:'Заготовительный участок',author:''},settings:{kerf:3,trim:0,remnantMin:500,objective:'purchase',searchMode:'balanced',warehousePolicy:'economic',groupMaps:'yes',currency:'₽'},parts:[{id:1,pos:'Д-01',material:'Труба 40×40×3',grade:'С245',length:1700,qty:10,note:''},{id:2,pos:'Д-02',material:'Труба 40×40×3',grade:'С245',length:1200,qty:3,note:''},{id:3,pos:'Д-03',material:'Труба 40×40×3',grade:'С245',length:500,qty:6,note:''}],stocks:[{id:11,material:'Труба 40×40×3',grade:'С245',length:6000,qty:'',price:'',kind:'new'},{id:12,material:'Труба 40×40×3',grade:'С245',length:3000,qty:'',price:'',kind:'new'},{id:13,material:'Труба 40×40×3',grade:'С245',length:2000,qty:'',price:'',kind:'new'}]});
 // Versioned data format. Never silently discard unreadable or newer projects.
 const DATA_SCHEMA=7, APP_RELEASE='5.4.0', STORAGE_KEY='cutting_pro_5';
-let state, result=null, comparisons=[], modeComparisons=[];
+let state, result=null, comparisons=[], modeComparisons=[], validationIssue=null;
 let startupOriginal=null, startupLoadError='', startupLock=false, startupKey='';
 function normalizeProject(input){
  if(!input || typeof input!=='object' || Array.isArray(input))throw Error('Корневой объект проекта не распознан.');
@@ -341,6 +350,49 @@ function inputs(){for(const el of $$('[data-meta]')){el.value=state.meta?.[el.da
 function renderParts(){const body=$('#parts-body');body.innerHTML=state.parts.map(p=>`<tr data-row-id="${p.id}" data-table="parts"><td><input class="pos" data-field="pos" value="${esc(p.pos)}" aria-label="Позиция"></td><td><input class="material" data-field="material" value="${esc(p.material)}" aria-label="Профиль"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}" aria-label="Сталь"></td><td><span class="length-stepper"><button class="len-step" type="button" data-step-length="-1" aria-label="Уменьшить длину на 1 мм">−</button><input class="tdnum" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-field="length" aria-label="Длина в миллиметрах" value="${esc(p.length)}"><button class="len-step" type="button" data-step-length="1" aria-label="Увеличить длину на 1 мм">+</button></span></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}"></td><td><input class="w130" data-field="note" value="${esc(p.note)}"></td><td><button class="btn sm danger" data-remove="parts" aria-label="Удалить деталь">×</button></td></tr>`).join('');}
 function renderStocks(){const body=$('#stock-body');body.innerHTML=state.stocks.map(p=>`<tr data-row-id="${p.id}" data-table="stocks"><td><input class="material" data-field="material" value="${esc(p.material)}"></td><td><input class="grade" data-field="grade" value="${esc(p.grade)}"></td><td><span class="length-stepper"><button class="len-step" type="button" data-step-length="-1" aria-label="Уменьшить длину на 1 мм">−</button><input class="tdnum" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-field="length" aria-label="Длина в миллиметрах" value="${esc(p.length)}"><button class="len-step" type="button" data-step-length="1" aria-label="Увеличить длину на 1 мм">+</button></span></td><td><input class="qty" type="number" min="0" step="1" data-field="qty" value="${esc(p.qty)}" placeholder="∞"></td><td><input class="tdnum" type="number" min="0" step="0.01" data-field="price" value="${esc(p.price)}" placeholder="—"></td><td><select class="w130" data-field="kind"><option value="new" ${p.kind==='new'?'selected':''}>Покупка</option><option value="remnant" ${p.kind==='remnant'?'selected':''}>Складской остаток</option></select></td><td><input class="w130" data-field="origin" value="${esc(p.origin||'')}" placeholder="Стеллаж / № заказа"></td><td><button class="btn sm danger" data-remove="stocks" aria-label="Удалить хлыст">×</button></td></tr>`).join('');}
 function renderAll(){inputs();renderParts();renderStocks();if(!result){$('#panel-summary').innerHTML='<div class="empty">Заполните ведомость и нажмите «Рассчитать раскрой».</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderWarehouse(null);renderJournal();renderSidebar(null)}}
+function describeValidationIssue(message){
+ const text=String(message||'Не удалось выполнить расчёт.'),row=/^(Деталь|Хлыст|Складской остаток) (\d+): (.+)$/.exec(text);
+ if(row){
+  const isPart=row[1]==='Деталь',field=/длина/i.test(row[3])?'length':/количеств/i.test(row[3])?'qty':/профил/i.test(row[3])?'material':null;
+  return {message:text,block:isPart?'block-02':'block-03',table:isPart?'parts':'stocks',rowIndex:Number(row[2])-1,field,fallback:isPart?'addpart':'addstock'};
+ }
+ if(/Ведомость деталей пуста/i.test(text))return {message:text,block:'block-02',fallback:'addpart'};
+ if(/Ширина реза/i.test(text))return {message:text,block:'block-01',setting:'kerf'};
+ if(/Подрезка торца/i.test(text))return {message:text,block:'block-01',setting:'trim'};
+ if(/Порог остатка/i.test(text))return {message:text,block:'block-01',setting:'remnantMin'};
+ // No source stock, incompatible stock or an insufficient stock is corrected in block 03.
+ if(/исходн(?:ой|ые) хлыст|хлыст|Не найдены/i.test(text))return {message:text,block:'block-03',fallback:'addstock'};
+ return {message:text,block:'block-01'};
+}
+function clearValidationFeedback(){
+ validationIssue=null;
+ const banner=$('#error-banner');if(banner){banner.classList.add('hide');banner.textContent='';}
+ $$('.has-input-error').forEach(el=>el.classList.remove('has-input-error'));
+ $$('.is-invalid').forEach(el=>{el.classList.remove('is-invalid');el.removeAttribute('aria-invalid');});
+}
+function validationTarget(issue){
+ if(issue.table!==undefined&&Number.isInteger(issue.rowIndex)){
+  const row=$(`#${issue.table==='parts'?'parts':'stock'}-body tr:nth-child(${issue.rowIndex+1})`);
+  if(row&&issue.field)return row.querySelector(`[data-field="${issue.field}"]`);
+  if(row)return row;
+ }
+ if(issue.setting)return $(`[data-setting="${issue.setting}"]`);
+ return issue.fallback?$(`#${issue.fallback}`):null;
+}
+function showValidationFeedback(message){
+ clearValidationFeedback();validationIssue=describeValidationIssue(message);
+ const issue=validationIssue,block=$('#'+issue.block),target=validationTarget(issue),banner=$('#error-banner');
+ if(block)block.classList.add('has-input-error');
+ if(target){target.classList.add('is-invalid');if(target.matches?.('tr'))target.classList.add('has-input-error');target.setAttribute('aria-invalid','true');}
+ if(banner){banner.innerHTML=`<div class="error-banner__copy"><span class="error-banner__title">Расчёт не выполнен: 1 ошибка</span><div class="error-banner__message">${esc(issue.message)}</div></div><button class="btn sm" type="button" data-error-target="validation">Перейти к ошибке</button>`;banner.classList.remove('hide');}
+}
+function goToValidationIssue(){
+ const issue=validationIssue;if(!issue)return;
+ const block=$('#'+issue.block),target=validationTarget(issue)||block;
+ if(!target)return;
+ target.focus?.({preventScroll:true});
+ (block||target).scrollIntoView({behavior:'smooth',block:'center'});
+}
 function collect(){const settings=state.settings, parts=[], stocks=[];
 for(const [idx,p] of state.parts.entries()){
  const length=num(p.length),qty=num(p.qty);if(qty===0||((qty===null)&&(length===0||length===null||String(p.material||'').trim()==='')))continue;
@@ -964,7 +1016,7 @@ function renderCompare(){if(!comparisons.length){$('#panel-compare').innerHTML='
  const mr=modeComparisons.map(x=>[x.mode==='quick'?'Быстрый':x.mode==='balanced'?'Сбалансированный':x.mode==='deep'?'Углублённый':'Точный',x.error?'—':nfmt(x.stats.newBars),x.error?'—':mf(x.stats.boughtLength/1000),x.error?'—':mf(x.stats.totalWaste/1000),x.error?'—':x.stats.cost===null?'—':nfmt(x.stats.cost,2),x.error?esc(x.error):(x.mode==='exact'?(x.proofs?.length&&x.proofs.every(p=>p.proven)?'Оптимум доказан':'Не доказан'):'Готово')]);
  const modes='<h2>Сравнение алгоритмов</h2><p class="sub">Расчёты независимы. Величина «покупка» показывает длину покупных хлыстов; окончательный выбор делается в параметрах проекта и повторным расчётом.</p><button class="btn" id="benchmark">Сравнить все 4 режима</button>'+(modeComparisons.length?niceTable(['Алгоритм','Купить хлыстов','Купить, м','Невозвратные потери, м','Стоимость','Статус'],mr):'<p class="note">Нажмите кнопку для сравнения быстрых, сбалансированных, углублённых и точных расчётов.</p>');
  $('#panel-compare').innerHTML=modes+'<h2>Сравнение исходных длин</h2><p class="sub">Каждый вариант считается отдельно (в «Точном» режиме — сбалансированным алгоритмом для быстрого сравнения) — исключительно из хлыстов соответствующей строки склада. Основной план из «Сводки» может сочетать разные длины и складские остатки.</p>'+niceTable(['Материал','Хлыст, мм','Тип','Хлыстов','Купить, м','Выход','Остаток, м','Цена закупки','Статус'],rows)+'<p class="note">В таблице «остаток» включает возвратный и невозвратный концевой остаток, без пропила и подрезок.</p>';$('#benchmark').onclick=benchmarkModes;}
-function calculate(){try{modeComparisons=[];const config=collect();result=solveAll(config);comparisons=calcCompare(config);renderSummary(result);renderMaps(result);renderCompare();renderSidebar(result.stats);renderWarehouse(result);renderJournal();flashBookState();persist();putStatus('Расчёт выполнен: '+nfmt(result.stats.pieceCount)+' деталей, '+nfmt(result.stats.barCount)+' хлыстов.');}catch(e){result=null;comparisons=[];$('#panel-summary').innerHTML='<div class="error">'+esc(e.message)+'</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderSidebar(null);renderWarehouse(null);renderJournal();flashBookState();putStatus('Ошибка входных данных: '+e.message,true)}}
+function calculate(){try{modeComparisons=[];const config=collect();result=solveAll(config);comparisons=calcCompare(config);clearValidationFeedback();renderSummary(result);renderMaps(result);renderCompare();renderSidebar(result.stats);renderWarehouse(result);renderJournal();flashBookState();persist();putStatus('Расчёт выполнен: '+nfmt(result.stats.pieceCount)+' деталей, '+nfmt(result.stats.barCount)+' хлыстов.');}catch(e){result=null;comparisons=[];showValidationFeedback(e.message);$('#panel-summary').innerHTML='<div class="empty">Исправьте данные по сообщению над формой и повторите расчёт.</div>';$('#panel-maps').innerHTML='';$('#panel-compare').innerHTML='';renderSidebar(null);renderWarehouse(null);renderJournal();flashBookState();putStatus('Ошибка входных данных: '+e.message,true)}}
 function switchTab(n){if(!result&&n!=='guide'&&n!=='journal'&&n!=='warehouse'&&n!=='about'&&n!=='backups')calculate();if(n==='backups')void renderBackups();$$('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));$$('.tabPanel').forEach(p=>p.classList.toggle('hide',p.id!=='panel-'+n));}
 function download(name,blob){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
 const makeName=s=>String(s||'заказ').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').slice(0,60);
@@ -1240,6 +1292,7 @@ function events(){
  document.addEventListener('input',e=>{const t=e.target;if(t.dataset.meta){state.meta[t.dataset.meta]=t.value;markDirty();persist();}if(t.dataset.setting){state.settings[t.dataset.setting]=t.value;markDirty();persist();}if(t.dataset.field){const row=t.closest('tr[data-row-id]');if(!row)return;const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p){p[t.dataset.field]=t.value;markDirty();persist();}}});
  document.addEventListener('change',e=>{const t=e.target;if(t.dataset.field||t.dataset.setting){if(t.dataset.field){const row=t.closest('tr[data-row-id]');const p=state[row.dataset.table].find(x=>String(x.id)===row.dataset.rowId);if(p)p[t.dataset.field]=t.value;}else state.settings[t.dataset.setting]=t.value;persist();}});
  document.addEventListener('click',async e=>{
+  if(e.target.closest('[data-error-target="validation"]')){goToValidationIssue();return;}
   const step=e.target.closest('[data-step-length]');
   if(step){const el=step.closest('tr[data-row-id]')?.querySelector('input[data-field="length"]');if(el)adjustLength(el,Number(step.dataset.stepLength));return;}
   const rem=e.target.closest('[data-remove]');if(rem){const row=rem.closest('tr[data-row-id]'),k=rem.dataset.remove;if(!await requiredSafetySnapshot('Перед удалением строки '+k))return;state[k]=state[k].filter(x=>String(x.id)!==row.dataset.rowId);if(k==='parts')renderParts();else renderStocks();markDirty();persist();return;}const tab=e.target.closest('[data-tab]');if(tab){
