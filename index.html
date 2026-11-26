@@ -93,9 +93,38 @@ tr.has-input-error td{background:#fff3f4!important}input.is-invalid,select.is-in
 @media print{.error-banner{display:none!important}}
 </style>
 <link rel="stylesheet" href="/css/seo-pages.css">
+<style>
+/* Corporate catalog: compact, independent of calculator controls. */
+.raskroy-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,350px);align-items:center;gap:24px}
+.raskroy-header-main{min-width:0}
+.raskroy-header .spk-catalog{min-width:0;border-left:1px solid #426173;padding-left:20px;display:grid;gap:3px;line-height:1.35}
+.spk-catalog-name{font-size:14px;letter-spacing:.035em;font-weight:750;color:#fff}
+.spk-catalog-item{display:grid;grid-template-columns:56px minmax(0,1fr);align-items:baseline;gap:8px;text-decoration:none;color:#bfd1df;font-size:12px;padding:1px 0}
+.spk-catalog-item strong{font-size:13px;color:#65d1be}
+.spk-catalog-item:hover span{text-decoration:underline;text-underline-offset:3px;color:#fff}
+.spk-catalog-footer{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-top:3px}
+.spk-catalog-cta{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:5px;background:#126b79;color:#fff;border:1px solid #34878c;text-decoration:none;font-size:12px;font-weight:650}
+.spk-catalog-cta:hover{background:#0b5663}
+.spk-catalog-domain{color:#bfd1df;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.spk-catalog a:focus-visible{outline:2px solid #65d1be;outline-offset:3px;border-radius:3px}
+@media(max-width:900px){.raskroy-header{grid-template-columns:minmax(0,1fr);gap:12px}.raskroy-header .spk-catalog{border-left:0;border-top:1px solid #426173;padding:10px 0 0;max-width:none}}
+@media(max-width:420px){.spk-catalog-item{grid-template-columns:48px minmax(0,1fr);gap:6px}.spk-catalog-footer{gap:6px 10px}}
+</style>
 </head>
 <body>
-<header><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Онлайн-калькулятор раскроя металлопроката — Раскрой PRO</h1><p class="smallprint" style="color:#bfd1df">Версия 5.4.0 · металлоконструкции</p><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат · и других длинномерных материалов</p></header>
+<header class="raskroy-header">
+  <div class="raskroy-header-main"><div class="kicker">ПРОИЗВОДСТВЕННЫЙ КАЛЬКУЛЯТОР • ОНЛАЙН</div><h1>Онлайн-калькулятор раскроя металлопроката — Раскрой PRO</h1><p class="smallprint" style="color:#bfd1df">Версия 5.4.0 · металлоконструкции</p><p>Профильные трубы · уголок · швеллер · двутавр · арматура · линейный прокат · и других длинномерных материалов</p></div>
+  <nav class="spk-catalog" aria-label="Каталог материалов СПК ЭФФА">
+    <div class="spk-catalog-name">СПК ЭФФА</div>
+    <a class="spk-catalog-item" href="https://spk-effa.ru/blank/" target="_blank" rel="noopener noreferrer"><strong>Blank</strong><span>Антикоррозионные материалы</span></a>
+    <a class="spk-catalog-item" href="https://spk-effa.ru/ognezaschita/" target="_blank" rel="noopener noreferrer"><strong>ЭФФА</strong><span>Огнезащитные материалы</span></a>
+    <a class="spk-catalog-item" href="https://spk-effa.ru/veksa/" target="_blank" rel="noopener noreferrer"><strong>VEKSA</strong><span>Промышленные наливные полы</span></a>
+    <div class="spk-catalog-footer">
+      <a class="spk-catalog-cta" href="https://spk-effa.ru/" target="_blank" rel="noopener noreferrer">Каталог материалов <span aria-hidden="true">↗</span></a>
+      <a class="spk-catalog-domain" href="https://spk-effa.ru/" target="_blank" rel="noopener noreferrer">spk-effa.ru</a>
+    </div>
+  </nav>
+</header>
 <div class="shell">
   <nav class="toolbar noprint" aria-label="Действия калькулятора">
     <div class="toolbar-group">
